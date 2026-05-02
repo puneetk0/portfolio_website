@@ -43,7 +43,7 @@ export function CustomCursor() {
           dot.style.border = '1px solid rgba(255,255,255,0.75)';
           break;
         case 'magnetic':
-          dot.style.width = '5px'; dot.style.height = '5px';
+          dot.style.width = '6px'; dot.style.height = '6px';
           dot.style.borderRadius = '50%';
           dot.style.backgroundColor = 'white';
           dot.style.border = 'none';
@@ -53,16 +53,23 @@ export function CustomCursor() {
 
     let rafId: number;
     const tick = () => {
+      let tx = mousePos.current.x;
+      let ty = mousePos.current.y;
+      
       if (modeRef.current === 'magnetic' && magnetEl.current) {
         const r = magnetEl.current.getBoundingClientRect();
         const cx = r.left + r.width / 2;
         const cy = r.top + r.height / 2;
-        curPos.current.x = lerp(curPos.current.x, cx, 0.14);
-        curPos.current.y = lerp(curPos.current.y, cy, 0.14);
-      } else {
-        curPos.current.x = mousePos.current.x;
-        curPos.current.y = mousePos.current.y;
+        // Perfect middle ground: 30% center gravity, 70% mouse. 
+        // Prevents violent horizontal snapping on long text lines.
+        tx = cx * 0.30 + mousePos.current.x * 0.70;
+        ty = cy * 0.30 + mousePos.current.y * 0.70;
       }
+
+      // Always lerp for liquid fluidity
+      curPos.current.x = lerp(curPos.current.x, tx, 0.15);
+      curPos.current.y = lerp(curPos.current.y, ty, 0.15);
+      
       dot.style.left = `${curPos.current.x}px`;
       dot.style.top = `${curPos.current.y}px`;
       label.style.left = `${curPos.current.x}px`;
@@ -106,7 +113,6 @@ export function CustomCursor() {
       );
       if (leaving) {
         modeRef.current = 'default'; magnetEl.current = null;
-        curPos.current = { ...mousePos.current };
         appear('default');
       }
     };
@@ -129,6 +135,7 @@ export function CustomCursor() {
         width: '8px', height: '8px', borderRadius: '50%',
         backgroundColor: 'white', border: 'none',
         transform: 'translate(-50%, -50%)', pointerEvents: 'none',
+        mixBlendMode: 'difference',
         transition: 'width 140ms ease, height 140ms ease, background-color 140ms ease, border 140ms ease, opacity 140ms ease, border-radius 140ms ease',
       }} />
       <div ref={labelRef} style={{

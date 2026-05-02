@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { figtree, CONTENT_LEFT, T, ls } from '../utils/constants';
+import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
 import { Polaroid } from '../components/Polaroid';
 import { CATEGORIES } from '../../data/portfolio';
 
@@ -55,28 +55,36 @@ export function AndWhat({ ek, isMobile, isActive }: { ek: number; isMobile: bool
         }}
       >
         <p style={{ fontWeight: 400, ...T.label, color: '#888', lineHeight: 'normal', margin: isMobile ? '0 0 10px' : '0 0 14px', ...ls(0) }}>
-          <span style={{ color: '#555' }}>//</span>
+          <span style={{ ...serifItalic, color: '#555', fontSize: '1.2em', marginRight: '6px' }}>//</span>
           <span style={{ color: '#888' }}>&nbsp;Beyond the screen</span>
         </p>
 
-        {CATEGORIES.map((cat, i) => (
-          <div
-            key={cat.name}
-            onMouseEnter={() => activateRow(i)}
-            onMouseLeave={scheduleLeave}
-            style={{
-              lineHeight: isMobile ? 1.65 : 2,
-              opacity: active !== null && active !== i ? 0.28 : 1,
-              transition: 'opacity 250ms ease',
-              ...ls(i + 1),
-            }}
-          >
-            <span style={{ color: '#666', fontWeight: 400, ...T.name }}>&amp;&nbsp;</span>
-            <span style={{ fontWeight: 600, ...T.name, color: active === i ? '#ffffff' : '#cccccc', transition: 'color 200ms ease' }}>
-              {cat.name}
-            </span>
-          </div>
-        ))}
+        {CATEGORIES.map((cat, i) => {
+          const isHovered = active === i;
+          return (
+            <div
+              key={cat.name}
+              onMouseEnter={() => activateRow(i)}
+              onMouseLeave={scheduleLeave}
+              style={{
+                lineHeight: isMobile ? 1.65 : 2,
+                opacity: active !== null && !isHovered ? 0.28 : 1,
+                transform: isHovered ? 'translateX(10px)' : 'translateX(0px)',
+                transition: 'opacity 250ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                padding: '4px 0',
+                cursor: 'pointer',
+                ...ls(i + 1),
+              }}
+            >
+              <div data-magnetic="true" style={{ display: 'inline-block' }}>
+                <span style={{ ...serifItalic, color: isHovered ? '#888' : '#555', fontSize: '1.3em', marginRight: '8px', transition: 'color 250ms ease' }}>&amp;</span>
+                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#ffffff' : '#cccccc', transition: 'color 200ms ease' }}>
+                  {cat.name}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

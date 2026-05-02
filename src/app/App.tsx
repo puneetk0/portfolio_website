@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { TOTAL, DURATION, EASE_PAGE } from './utils/constants';
 import { useIsMobile } from './hooks/useIsMobile';
 import { NoiseOverlay } from './components/NoiseOverlay';
+import { BackgroundGlow } from './components/BackgroundGlow';
 import { CustomCursor } from './components/CustomCursor';
 import { SocialLinks } from './components/SocialLinks';
 import { ProgressIndicator } from './components/ProgressIndicator';
@@ -114,11 +115,11 @@ export default function App() {
   const getStyle = (i: number): React.CSSProperties => {
     const isCurrent = i === current, isTarget = i === target;
     const maxActive = target !== null ? Math.max(current, target) : current;
-    if (isCurrent && isTrans) return { position: 'absolute', inset: 0, transform: dir === 'down' ? 'translateY(-6%)' : 'translateY(6%)', opacity: 0, transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
-    if (isCurrent) return { position: 'absolute', inset: 0, transform: 'translateY(0)', opacity: 1, zIndex: 2 };
-    if (isTarget && isTrans) return { position: 'absolute', inset: 0, transform: 'translateY(0)', opacity: 1, transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
-    if (i > maxActive) return { position: 'absolute', inset: 0, transform: 'translateY(100%)', opacity: 1, zIndex: 0, pointerEvents: 'none' };
-    return { position: 'absolute', inset: 0, transform: 'translateY(-100%)', opacity: 1, zIndex: 0, pointerEvents: 'none' };
+    if (isCurrent && isTrans) return { position: 'absolute', inset: 0, transform: dir === 'down' ? 'translateY(-6%) scale(0.98)' : 'translateY(6%) scale(0.98)', opacity: 0, filter: 'blur(8px)', transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}, filter ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
+    if (isCurrent) return { position: 'absolute', inset: 0, transform: 'translateY(0) scale(1)', opacity: 1, filter: 'blur(0px)', transition: `filter 300ms ease`, zIndex: 2 };
+    if (isTarget && isTrans) return { position: 'absolute', inset: 0, transform: 'translateY(0) scale(1)', opacity: 1, filter: 'blur(0px)', transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}, filter ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
+    if (i > maxActive) return { position: 'absolute', inset: 0, transform: 'translateY(100%)', opacity: 1, filter: 'blur(8px)', zIndex: 0, pointerEvents: 'none' };
+    return { position: 'absolute', inset: 0, transform: 'translateY(-100%)', opacity: 1, filter: 'blur(8px)', zIndex: 0, pointerEvents: 'none' };
   };
 
   const sections = [
@@ -138,11 +139,15 @@ export default function App() {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0);    }
         }
+        @keyframes bootSequence {
+          0% { opacity: 0; filter: blur(12px); transform: scale(1.02); }
+          100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+        }
         @media (max-width: 640px) {
           body { -webkit-text-size-adjust: 100%; }
         }
       `}</style>
-      <div style={{ position: 'fixed', inset: 0, background: '#141414', overflow: 'hidden', touchAction: 'none' }}>
+      <div style={{ position: 'fixed', inset: 0, background: '#141414', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
           {sections.map((section, i) => <div key={i} style={getStyle(i)}>{section}</div>)}
         </div>
@@ -152,6 +157,7 @@ export default function App() {
         }
         <SocialLinks />
       </div>
+      <BackgroundGlow />
       <NoiseOverlay />
       {!isMobile && <CustomCursor />}
     </>

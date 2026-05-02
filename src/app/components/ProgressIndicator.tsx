@@ -14,10 +14,25 @@ export function ProgressIndicator({ active, navigate }: { active: number; naviga
       {SECTION_LABELS.map((label, i) => {
         const isActive = i === active;
         const isHov = i === hov;
+        
+        // Calculate circle styles (reverted to the hollow circlet design)
+        let size = '4px';
+        let bg = 'rgba(255,255,255,0.25)';
+        let border = '0px solid white';
+        
+        if (isActive) {
+          size = '6px';
+          bg = 'white';
+        } else if (isHov) {
+          size = '14px';
+          bg = 'transparent';
+          border = '1.5px solid rgba(255,255,255,0.8)';
+        }
+
         return (
           <div
             key={i}
-            style={{ display: 'flex', alignItems: 'center', gap: '9px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
             onMouseEnter={() => setHov(i)}
             onMouseLeave={() => setHov(null)}
           >
@@ -38,15 +53,20 @@ export function ProgressIndicator({ active, navigate }: { active: number; naviga
                 background: 'none', border: 'none', padding: '8px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 lineHeight: 0,
+                width: '30px', 
+                height: '30px',
               }}
             >
               <div style={{
-                width: isActive ? '5px' : isHov ? '5px' : '3px',
-                height: isActive ? '5px' : isHov ? '5px' : '3px',
-                borderRadius: '50%', flexShrink: 0,
-                background: isActive ? 'white' : isHov ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.20)',
-                transition: 'width 220ms ease, height 220ms ease, background 220ms ease',
+                width: size,
+                height: size,
+                borderRadius: '50%',
+                flexShrink: 0,
+                background: bg,
+                border: border,
+                transition: 'width 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), height 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), background 250ms ease, border 250ms ease',
                 pointerEvents: 'none',
+                boxSizing: 'border-box'
               }} />
             </button>
           </div>

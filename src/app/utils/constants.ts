@@ -5,6 +5,8 @@ export const EASE_TEXT = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
 export const geist: React.CSSProperties = { fontFamily: "'Geist', sans-serif" };
 export const figtree: React.CSSProperties = { fontFamily: "'Figtree', sans-serif" };
+export const caveat: React.CSSProperties = { fontFamily: "'Caveat', cursive" };
+export const serifItalic: React.CSSProperties = { fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 };
 export const CONTENT_LEFT = 'min(142px, 9.4vw)';
 
 export const T = {

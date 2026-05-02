@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { figtree, CONTENT_LEFT, T, ls } from '../utils/constants';
+import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
 import { ImageCluster } from '../components/ImageCluster';
 import { SELECTED_PROJECTS, PROJECT_LAYOUTS } from '../../data/portfolio';
@@ -26,18 +26,31 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
         ...figtree, color: 'white', zIndex: 2,
       }}>
         <p style={{ fontWeight: 400, ...T.label, color: '#888', lineHeight: 'normal', margin: isMobile ? '0 0 10px' : '0 0 14px', ...ls(0) }}>
-          <span style={{ color: '#555' }}>//</span>
+          <span style={{ ...serifItalic, color: '#555', fontSize: '1.2em', marginRight: '6px' }}>//</span>
           <span style={{ color: '#888' }}>&nbsp;Selected Projects</span>
         </p>
-        {SELECTED_PROJECTS.map((p, i) => (
-          <div key={p.name} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
-            style={{ opacity: hovered !== null && hovered !== i ? 0.12 : 1, transition: 'opacity 280ms ease' }}>
-            <div style={{ lineHeight: isMobile ? 1.65 : 2, ...ls(i + 1) }}>
-              <span style={{ fontWeight: 600, ...T.name }}>{p.name}</span>
-              <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;{p.desc}</span>
+        {SELECTED_PROJECTS.map((p, i) => {
+          const isHovered = hovered === i;
+          return (
+            <div 
+              key={p.name} 
+              onMouseEnter={() => setHovered(i)} 
+              onMouseLeave={() => setHovered(null)}
+              style={{ 
+                opacity: hovered !== null && !isHovered ? 0.25 : 1, 
+                transform: isHovered ? 'translateX(10px)' : 'translateX(0px)',
+                transition: 'opacity 300ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                padding: '4px 0',
+                cursor: 'pointer'
+              }}
+            >
+              <div data-magnetic="true" style={{ display: 'inline-block', lineHeight: isMobile ? 1.65 : 2, ...ls(i + 1) }}>
+                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{p.name}</span>
+                <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
