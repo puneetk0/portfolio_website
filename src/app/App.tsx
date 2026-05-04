@@ -10,7 +10,7 @@ import { MobileIndicator } from './components/MobileIndicator';
 import { Hero } from './sections/Hero';
 import { Projects } from './sections/Projects';
 import { AndWhat } from './sections/AndWhat';
-import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
+import { CATEGORIES } from '../data/portfolio';
 
 export default function App() {
   const isMobile = useIsMobile();
@@ -35,8 +35,6 @@ export default function App() {
   // Preload images to prevent blank cards during transition
   useEffect(() => {
     const imagesToPreload: string[] = [];
-    HERO_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
-    PROJECT_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
     CATEGORIES.flatMap(cat => cat.cards).forEach(card => imagesToPreload.push(card.src));
     
     imagesToPreload.forEach(src => {

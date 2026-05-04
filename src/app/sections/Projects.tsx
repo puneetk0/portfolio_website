@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
-import { ImageCluster } from '../components/ImageCluster';
-import { SELECTED_PROJECTS, PROJECT_LAYOUTS } from '../../data/portfolio';
+import { SELECTED_PROJECTS } from '../../data/portfolio';
 
 export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boolean; isActive: boolean }) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
+  const { sectionRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
 
   return (
     <div
@@ -17,8 +16,6 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
       aria-hidden={!isActive}
       tabIndex={isActive ? 0 : -1}
     >
-      {!isMobile && <ImageCluster layouts={PROJECT_LAYOUTS} activeGroup={hovered} groupRef={groupRef} />}
-
       <div key={ek} style={{
         position: 'absolute', left: CONTENT_LEFT,
         top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
@@ -32,11 +29,16 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
         {SELECTED_PROJECTS.map((p, i) => {
           const isHovered = hovered === i;
           return (
-            <div 
+            <a 
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
               key={p.name} 
               onMouseEnter={() => setHovered(i)} 
               onMouseLeave={() => setHovered(null)}
               style={{ 
+                display: 'block',
+                textDecoration: 'none',
                 opacity: hovered !== null && !isHovered ? 0.25 : 1, 
                 transform: isHovered ? 'translateX(10px)' : 'translateX(0px)',
                 transition: 'opacity 300ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -48,7 +50,7 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
                 <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{p.name}</span>
                 <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
               </div>
-            </div>
+            </a>
           );
         })}
       </div>
