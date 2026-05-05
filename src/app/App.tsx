@@ -12,6 +12,7 @@ import { Hero } from './sections/Hero';
 import { Projects } from './sections/Projects';
 import { AndWhat } from './sections/AndWhat';
 import { CaseStudy } from './pages/CaseStudy';
+import { CamberCaseStudy } from './pages/CamberCaseStudy';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -161,6 +162,7 @@ export default function App() {
 
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home isMobile={isMobile} />} />
+        <Route path="/case-study/camber" element={<CamberCaseStudy />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 
