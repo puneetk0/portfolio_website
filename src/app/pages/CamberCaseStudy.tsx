@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { figtree, serifItalic } from '../utils/constants';
 
-// ─── Scroll reveal hook ───────────────────────────────────────────────────────
-function useReveal(threshold = 0.15) {
+// ─── Scroll reveal ────────────────────────────────────────────────────────────
+function useReveal(threshold = 0.12) {
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
     useEffect(() => {
@@ -19,8 +19,15 @@ function useReveal(threshold = 0.15) {
     return { ref, visible };
 }
 
-// ─── Reveal wrapper ───────────────────────────────────────────────────────────
-function Reveal({ children, delay = 0, y = 32 }: { children: React.ReactNode; delay?: number; y?: number }) {
+function Reveal({
+    children,
+    delay = 0,
+    y = 24,
+}: {
+    children: React.ReactNode;
+    delay?: number;
+    y?: number;
+}) {
     const { ref, visible } = useReveal();
     return (
         <div
@@ -28,7 +35,7 @@ function Reveal({ children, delay = 0, y = 32 }: { children: React.ReactNode; de
             style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? 'translateY(0px)' : `translateY(${y}px)`,
-                transition: `opacity 0.85s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.85s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+                transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
             }}
         >
             {children}
@@ -36,61 +43,88 @@ function Reveal({ children, delay = 0, y = 32 }: { children: React.ReactNode; de
     );
 }
 
-// ─── Section label ────────────────────────────────────────────────────────────
+// ─── Shared tokens ────────────────────────────────────────────────────────────
+const CONTENT_WIDTH = 'min(680px, calc(100vw - min(284px, 18.8vw)))';
+const CONTENT_LEFT = 'min(142px, 9.4vw)';
+
+const label: React.CSSProperties = {
+    fontSize: '0.72rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.22em',
+    color: '#444',
+    margin: '0 0 2.5rem',
+    ...figtree,
+};
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p style={{
-            fontSize: '0.72rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.22em',
-            color: '#444',
-            margin: '0 0 2rem',
-            ...figtree,
-        }}>
+        <p style={label}>
             <span style={{ ...serifItalic, color: '#333', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
 }
 
-// ─── Horizontal rule ─────────────────────────────────────────────────────────
 function HR() {
-    return <div style={{ width: '100%', height: '1px', background: 'linear-gradient(90deg, #2a2a2a 0%, transparent 100%)', margin: '6rem 0' }} />;
+    return (
+        <div style={{
+            width: '100%',
+            height: '1px',
+            background: 'linear-gradient(90deg, #2a2a2a 0%, transparent 70%)',
+            margin: '7rem 0',
+        }} />
+    );
 }
 
-// ─── Decision card ────────────────────────────────────────────────────────────
-function DecisionCard({ option, label, rationale, outcome, chosen }: {
-    option: string; label: string; rationale: string; outcome: string; chosen?: boolean;
+// ─── Decision card ─────────────────────────────────────────────────────────
+function DecisionCard({
+    index,
+    label: cardLabel,
+    rationale,
+    outcome,
+    chosen,
+}: {
+    index: string;
+    label: string;
+    rationale: string;
+    outcome?: string;
+    chosen?: boolean;
 }) {
     return (
         <div style={{
-            border: chosen ? '1px solid #2f2f2f' : '1px solid #1e1e1e',
-            padding: '2rem',
+            border: chosen ? '1px solid #303030' : '1px solid #1e1e1e',
+            padding: '1.75rem',
             position: 'relative',
-            background: chosen ? 'rgba(255,255,255,0.02)' : 'transparent',
-            transition: 'border-color 0.3s ease',
+            background: chosen ? 'rgba(255,255,255,0.018)' : 'transparent',
         }}>
             {chosen && (
                 <span style={{
-                    position: 'absolute', top: '-1px', right: '1.5rem',
+                    position: 'absolute', top: '-1px', right: '1.25rem',
                     background: '#e8e8e8', color: '#141414',
-                    fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase',
+                    fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase',
                     padding: '3px 10px', ...figtree, fontWeight: 600,
                 }}>
                     chosen
                 </span>
             )}
-            <p style={{ fontSize: '0.7rem', color: '#444', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 0.5rem', ...figtree }}>
-                {option}
+            <p style={{ fontSize: '0.65rem', color: '#3a3a3a', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 0.4rem', ...figtree }}>
+                {index}
             </p>
-            <p style={{ fontSize: '1.05rem', color: chosen ? '#eaeaea' : '#666', fontWeight: 600, margin: '0 0 1.25rem', ...figtree }}>
-                {label}
+            <p style={{
+                fontSize: '0.95rem', fontWeight: 600,
+                color: chosen ? '#ddd' : '#555',
+                margin: '0 0 1rem', ...figtree,
+            }}>
+                {cardLabel}
             </p>
-            <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.65, margin: '0 0 1rem', ...figtree }}>
+            <p style={{ fontSize: '0.875rem', color: '#555', lineHeight: 1.7, margin: 0, ...figtree }}>
                 {rationale}
             </p>
-            {chosen && (
-                <p style={{ fontSize: '0.85rem', color: '#888', lineHeight: 1.6, borderTop: '1px solid #222', paddingTop: '1rem', margin: 0, ...figtree }}>
+            {chosen && outcome && (
+                <p style={{
+                    fontSize: '0.82rem', color: '#777', lineHeight: 1.65,
+                    borderTop: '1px solid #222', paddingTop: '1rem', margin: '1.25rem 0 0', ...figtree,
+                }}>
                     → {outcome}
                 </p>
             )}
@@ -98,198 +132,180 @@ function DecisionCard({ option, label, rationale, outcome, chosen }: {
     );
 }
 
-// ─── Stat pill ────────────────────────────────────────────────────────────────
-function StatPill({ label, value }: { label: string; value: string }) {
+// ─── Inline stat row ──────────────────────────────────────────────────────────
+function MetaRow({ items }: { items: { k: string; v: string }[] }) {
     return (
-        <div style={{ borderTop: '1px solid #222', paddingTop: '1.25rem' }}>
-            <p style={{ fontSize: '0.7rem', color: '#444', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 0.4rem', ...figtree }}>{label}</p>
-            <p style={{ fontSize: '1rem', color: '#aaa', margin: 0, ...figtree, fontWeight: 500 }}>{value}</p>
+        <div style={{
+            display: 'flex', flexWrap: 'wrap', gap: '0',
+            borderTop: '1px solid #1e1e1e', borderBottom: '1px solid #1e1e1e',
+        }}>
+            {items.map(({ k, v }, i) => (
+                <div key={k} style={{
+                    flex: '1 1 160px',
+                    padding: '1.5rem 0',
+                    borderRight: i < items.length - 1 ? '1px solid #1e1e1e' : 'none',
+                    paddingRight: '2rem',
+                    paddingLeft: i > 0 ? '2rem' : '0',
+                }}>
+                    <p style={{ fontSize: '0.65rem', color: '#3a3a3a', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 0.5rem', ...figtree }}>{k}</p>
+                    <p style={{ fontSize: '0.9rem', color: '#888', margin: 0, ...figtree }}>{v}</p>
+                </div>
+            ))}
         </div>
     );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Pull quote ───────────────────────────────────────────────────────────────
+function PullQuote({ quote, attribution }: { quote: string; attribution: string }) {
+    return (
+        <div style={{ borderLeft: '2px solid #eaeaea', paddingLeft: '2rem', margin: '4rem 0' }}>
+            <p style={{
+                fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
+                ...serifItalic, color: '#bbb', lineHeight: 1.55, margin: '0 0 0.75rem',
+            }}>
+                "{quote}"
+            </p>
+            <p style={{ fontSize: '0.72rem', color: '#3a3a3a', margin: 0, letterSpacing: '0.15em', textTransform: 'uppercase', ...figtree }}>
+                — {attribution}
+            </p>
+        </div>
+    );
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
 export function CamberCaseStudy() {
     const navigate = useNavigate();
-    const heroRef = useRef<HTMLDivElement>(null);
-    const [heroOpacity, setHeroOpacity] = useState(1);
+    const [scrollY, setScrollY] = useState(0);
 
-    // Parallax fade on hero scroll
     useEffect(() => {
         window.scrollTo(0, 0);
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const fade = Math.max(0, 1 - scrollY / 500);
-            setHeroOpacity(fade);
-        };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        const onScroll = () => setScrollY(window.scrollY);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     }, []);
+
+    const heroOpacity = Math.max(0, 1 - scrollY / 420);
 
     return (
         <div style={{ minHeight: '100vh', background: '#141414', color: 'white', ...figtree, overflowX: 'hidden' }}>
 
-            {/* ── Back button ── */}
+            {/* ── Back ── */}
             <button
                 onClick={() => navigate('/')}
                 style={{
-                    position: 'fixed', top: '36px', left: 'min(142px, 9.4vw)',
-                    background: 'transparent', border: 'none', color: '#555',
-                    cursor: 'pointer', ...figtree, fontSize: '0.85rem', zIndex: 100,
+                    position: 'fixed', top: '36px', left: CONTENT_LEFT,
+                    background: 'transparent', border: 'none', color: '#444',
+                    cursor: 'pointer', ...figtree, fontSize: '0.82rem', zIndex: 100,
                     display: 'flex', alignItems: 'center', gap: '8px',
-                    transition: 'color 0.25s ease',
+                    transition: 'color 0.25s ease', padding: 0,
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#555')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#444')}
             >
-                <span style={{ fontSize: '1.1rem' }}>←</span> back
+                ← back
             </button>
 
-            {/* ══════════════════════════════════════════════════════
-          HERO — Full viewport, video behind, text over
-      ══════════════════════════════════════════════════════ */}
-            <div
-                ref={heroRef}
-                style={{
-                    position: 'relative', height: '100vh', width: '100%',
-                    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-                    overflow: 'hidden',
-                }}
-            >
-                {/* Hero media — replace src with actual video */}
-                {/*
-          MEDIA HINT:
-          Replace the div below with:
-          <video
-            src="/assets/camber/camber-hero.mp4"   ← your hero demo video
-            autoPlay muted loop playsInline
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.35)' }}
-          />
-          If using a static image instead:
-          <img src="/assets/camber/camber-hero.jpg" alt="Camber hero" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.35)' }} />
-        */}
+            {/* ══════════════════════════════════════════════════
+                HERO — typography only, no fake media
+            ══════════════════════════════════════════════════ */}
+            <div style={{
+                height: '100vh', display: 'flex', flexDirection: 'column',
+                justifyContent: 'flex-end', padding: `0 ${CONTENT_LEFT} min(88px, 8vh)`,
+                position: 'relative',
+                opacity: heroOpacity,
+                transition: 'opacity 0.08s linear',
+            }}>
+                {/* Subtle top-left ambient */}
                 <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #0f0f0f 100%)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                    {/* Logo placeholder */}
-                    {/*
-            MEDIA HINT: Replace this div with:
-            <img src="/assets/camber/camber-logo.svg" alt="Camber logo" style={{ width: '80px', opacity: 0.15 }} />
-          */}
-                    <div style={{
-                        width: '80px', height: '80px', borderRadius: '20px',
-                        border: '1px solid #2a2a2a', opacity: 0.3,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#555', fontSize: '0.7rem', letterSpacing: '0.1em',
-                    }}>
-                        LOGO
-                    </div>
-                </div>
-
-                {/* Bottom gradient fade */}
-                <div style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%',
-                    background: 'linear-gradient(to top, #141414 0%, transparent 100%)',
+                    position: 'absolute', top: 0, left: 0,
+                    width: '40vw', height: '40vh',
+                    background: 'radial-gradient(ellipse at top left, rgba(255,255,255,0.025) 0%, transparent 70%)',
                     pointerEvents: 'none',
                 }} />
 
-                {/* Hero text */}
-                <div
-                    style={{
-                        position: 'relative', zIndex: 2,
-                        padding: '0 min(142px, 9.4vw) min(80px, 7vh)',
-                        opacity: heroOpacity,
-                        transition: 'opacity 0.1s linear',
-                    }}
-                >
-                    <p style={{
-                        fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.22em',
-                        color: '#555', margin: '0 0 1.5rem', ...figtree,
-                    }}>
-                        <span style={{ ...serifItalic, color: '#444', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                        Case Study · macOS App
-                    </p>
+                <p style={{
+                    ...label, margin: '0 0 2rem',
+                    animation: 'lineUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                }}>
+                    <span style={{ ...serifItalic, color: '#333', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+                    Case Study · macOS App
+                </p>
 
-                    <h1 style={{
-                        fontSize: 'clamp(3rem, 7vw, 6rem)', fontWeight: 700,
-                        lineHeight: 1.0, margin: '0 0 1.5rem', letterSpacing: '-0.02em',
-                        maxWidth: '14ch',
-                    }}>
-                        Camber
-                    </h1>
+                <h1 style={{
+                    fontSize: 'clamp(3.5rem, 8vw, 7rem)',
+                    fontWeight: 700, lineHeight: 0.95,
+                    margin: '0 0 2rem', letterSpacing: '-0.03em',
+                    maxWidth: '12ch',
+                    animation: 'lineUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s both',
+                }}>
+                    Camber
+                </h1>
 
-                    <p style={{
-                        fontSize: 'clamp(1rem, 1.6vw, 1.3rem)', color: '#888',
-                        maxWidth: '52ch', lineHeight: 1.6, margin: 0, fontWeight: 400,
-                    }}>
-                        Traditional to-do lists are productivity traps — opening an app to track your work becomes a task itself.
-                    </p>
-                </div>
+                <p style={{
+                    fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
+                    color: '#666', maxWidth: '48ch', lineHeight: 1.65,
+                    margin: 0, fontWeight: 400,
+                    animation: 'lineUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.35s both',
+                }}>
+                    Every task manager promises to reduce friction — then buries itself three clicks deep.
+                </p>
 
-                {/* Scroll indicator */}
+                {/* Scroll line */}
                 <div style={{
-                    position: 'absolute', bottom: '2rem', right: 'min(142px, 9.4vw)',
+                    position: 'absolute', bottom: '2.5rem', right: CONTENT_LEFT,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
                     opacity: heroOpacity,
                 }}>
+                    <p style={{ fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#333', margin: 0, writingMode: 'vertical-rl', ...figtree }}>scroll</p>
                     <div style={{
-                        width: '1px', height: '48px',
-                        background: 'linear-gradient(to bottom, transparent, #444)',
-                        animation: 'scrollPulse 2s ease-in-out infinite',
+                        width: '1px', height: '40px',
+                        background: 'linear-gradient(to bottom, #333, transparent)',
+                        animation: 'scrollPulse 2.2s ease-in-out infinite',
                     }} />
                 </div>
             </div>
 
-            {/* ══════════════════════════════════════════════════════
-          CONTENT — padded container
-      ══════════════════════════════════════════════════════ */}
-            <div style={{ padding: '8rem min(142px, 9.4vw) 0' }}>
+            {/* ══════════════════════════════════════════════════
+                CONTENT
+            ══════════════════════════════════════════════════ */}
+            <div style={{ padding: `7rem ${CONTENT_LEFT} 0` }}>
 
-                {/* ── At a Glance ── */}
+                {/* ── Meta ── */}
                 <Reveal>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                        gap: '2.5rem',
-                        marginBottom: '8rem',
-                    }}>
-                        <StatPill label="Role" value="Solo — Design & Engineering" />
-                        <StatPill label="Platform" value="macOS (Universal)" />
-                        <StatPill label="Stack" value="Electron · React · sql.js" />
-                        <StatPill label="Status" value="Shipped · Open Source" />
-                        <StatPill label="Available at" value="camberapp.com" />
-                    </div>
+                    <MetaRow items={[
+                        { k: 'Role', v: 'Solo — Design & Engineering' },
+                        { k: 'Platform', v: 'macOS (Universal)' },
+                        { k: 'Stack', v: 'Electron · React · sql.js' },
+                        { k: 'Status', v: 'Shipped · Open Source' },
+                    ]} />
                 </Reveal>
 
                 <HR />
 
                 {/* ── The Problem ── */}
-                <section style={{ marginBottom: '8rem' }}>
+                <section style={{ maxWidth: CONTENT_WIDTH, marginBottom: '8rem' }}>
                     <Reveal>
                         <SectionLabel>The Problem</SectionLabel>
                     </Reveal>
 
                     <Reveal delay={80}>
-                        <p style={{
-                            fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)', fontWeight: 600,
-                            lineHeight: 1.25, color: '#eaeaea', maxWidth: '22ch',
-                            margin: '0 0 3rem', letterSpacing: '-0.01em',
+                        <h2 style={{
+                            fontSize: 'clamp(1.7rem, 3.2vw, 2.6rem)',
+                            fontWeight: 600, lineHeight: 1.2,
+                            color: '#eaeaea', margin: '0 0 2.5rem',
+                            letterSpacing: '-0.015em',
                         }}>
-                            The problem wasn't a lack of task managers. It was the psychological barrier of accessing them.
-                        </p>
+                            The problem was never a missing feature. It was the psychological cost of opening the app in the first place.
+                        </h2>
                     </Reveal>
 
                     <Reveal delay={120}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', maxWidth: '860px' }}>
-                            <p style={{ fontSize: '1.05rem', color: '#888', lineHeight: 1.75, margin: 0 }}>
-                                Opening an app, finding a list, opening a task, checking a subtask — four steps just to record five seconds of progress. That distance between thought and action breeds procrastination.
-                            </p>
-                            <p style={{ fontSize: '1.05rem', color: '#888', lineHeight: 1.75, margin: 0 }}>
-                                Standard lists are also emotionally flat. When the tool feels like work, you avoid the tool. Existing solutions treated productivity as data entry rather than an engaging loop.
-                            </p>
-                        </div>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                            I've tried every task manager. Notion, Things 3, Linear, plain text files. They all share the same failure mode: they live somewhere else. You're in the middle of a thought, you need to log a task, and suddenly you're navigating — switching apps, finding the right project, expanding the right list. By the time you've done that, the thought is less sharp and you've broken your flow.
+                        </p>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                            The deeper problem is emotional, not mechanical. When accessing the tool feels like a chore, you subconsciously avoid it. Then you avoid it more. Then it becomes a graveyard of tasks you entered optimistically two weeks ago. The tool stops reflecting reality, and you stop trusting it. That's the loop most productivity apps never break.
+                        </p>
                     </Reveal>
                 </section>
 
@@ -301,49 +317,55 @@ export function CamberCaseStudy() {
                         <SectionLabel>My Thinking</SectionLabel>
                     </Reveal>
 
-                    <Reveal delay={80}>
+                    <Reveal delay={60}>
                         <p style={{
-                            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)', color: '#aaa',
-                            maxWidth: '60ch', lineHeight: 1.7, margin: '0 0 4rem',
+                            fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
+                            color: '#999', maxWidth: CONTENT_WIDTH,
+                            lineHeight: 1.75, margin: '0 0 4rem',
                         }}>
-                            I needed tasks to be inescapable but unobtrusive. I explored three directions before landing on something no one had used before.
+                            The constraint I set for myself: tasks had to be reachable without switching apps, clicking anything, or breaking focus. And they had to feel good to complete — not just useful.
                         </p>
                     </Reveal>
 
-                    <Reveal delay={100}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1e1e1e', marginBottom: '5rem' }}>
+                    <Reveal delay={80}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: '1px',
+                            background: '#1a1a1a',
+                            marginBottom: '5rem',
+                        }}>
                             <DecisionCard
-                                option="Option 01"
-                                label="Standard dashboard app"
-                                rationale="Requires context switching. Gets buried under VS Code or browser windows the moment you start actually working."
-                                outcome=""
+                                index="Option 01"
+                                label="Dashboard app"
+                                rationale="Requires full context switching. Gets buried behind VS Code the moment you actually start working. Adds to the problem it claims to solve."
                             />
                             <DecisionCard
-                                option="Option 02"
+                                index="Option 02"
                                 label="Menu bar dropdown"
-                                rationale="Better, but still requires clicking, navigating tiny text, and adds to the existing menu bar clutter most developers already have."
-                                outcome=""
+                                rationale="Better proximity, but still requires a click, involves navigating dense text, and competes with Spotify, CleanMyMac, and every other menu bar squatter."
                             />
                             <DecisionCard
-                                option="Option 03"
-                                label="The MacBook Notch"
-                                rationale="Dead space on every modern MacBook display. A hover could reveal tasks instantly — no click, no navigation, no friction."
-                                outcome="Tasks are always exactly one motion away. Hovering drops the track; moving away hides it."
+                                index="Option 03"
+                                label="The MacBook notch"
+                                rationale="Dead real estate on every modern MacBook. A hover could surface tasks instantly — no click, no navigation, no app switch."
+                                outcome="Tasks become one motion away, always. The display itself becomes the interface."
                                 chosen
                             />
                         </div>
                     </Reveal>
 
-                    <Reveal delay={80}>
+                    <Reveal delay={60}>
                         <div style={{
-                            borderLeft: '1px solid #2a2a2a', paddingLeft: '2.5rem',
-                            maxWidth: '65ch',
+                            maxWidth: CONTENT_WIDTH,
+                            borderLeft: '1px solid #252525',
+                            paddingLeft: '2rem',
                         }}>
-                            <p style={{ fontSize: '0.7rem', color: '#444', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 1rem', ...figtree }}>
-                                The motivation problem
+                            <p style={{ fontSize: '0.65rem', color: '#3a3a3a', letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 1rem', ...figtree }}>
+                                The second problem — motivation
                             </p>
-                            <p style={{ fontSize: '1.1rem', color: '#888', lineHeight: 1.75, margin: 0 }}>
-                                Solving friction wasn't enough. The tool still had to feel rewarding. I leaned into a psychological lever: competition. Instead of checking boxes, what if completing tasks felt like a race? By applying a Formula 1 metaphor, the mundane act of finishing a subtask transforms into physical, visible momentum — a car approaching a chequered flag.
+                            <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                                Solving friction wasn't enough. An accessible task list is still just a list. I thought about what actually makes you want to finish something — not obligation, but momentum. The feeling that progress is visible and the end is near. Formula 1 has that in every single lap. By mapping tasks onto a race, completing a subtask stops being an admin action and starts being physical, forward motion. The car moves. The flag gets closer. That loop is genuinely motivating in a way that a checkbox never is.
                             </p>
                         </div>
                     </Reveal>
@@ -352,117 +374,79 @@ export function CamberCaseStudy() {
                 <HR />
 
                 {/* ── The Solution ── */}
-                <section style={{ marginBottom: '0' }}>
+                <section style={{ maxWidth: CONTENT_WIDTH, marginBottom: '8rem' }}>
                     <Reveal>
                         <SectionLabel>The Solution</SectionLabel>
                     </Reveal>
 
-                    <Reveal delay={80}>
+                    <Reveal delay={60}>
                         <h2 style={{
-                            fontSize: 'clamp(2rem, 4.5vw, 3.8rem)', fontWeight: 700,
-                            lineHeight: 1.1, color: '#eaeaea', margin: '0 0 6rem',
-                            letterSpacing: '-0.02em', maxWidth: '18ch',
+                            fontSize: 'clamp(1.7rem, 3.2vw, 2.6rem)',
+                            fontWeight: 600, lineHeight: 1.2,
+                            color: '#eaeaea', margin: '0 0 2.5rem',
+                            letterSpacing: '-0.015em',
                         }}>
-                            A task manager that lives inside your display.
+                            A task manager that lives inside your display — not beside it.
                         </h2>
                     </Reveal>
+
+                    <Reveal delay={100}>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                            Hover over the MacBook notch and Camber drops down: an F1 race track rendered inside a minimal popover, with your active tasks mapped as cars on constructor-themed lanes. Each subtask you complete advances the car. Finish everything and the car crosses the line.
+                        </p>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                            Move your cursor away and it disappears. No close button. No minimize. It doesn't need to be managed — it just appears when you need it and vanishes when you don't. The decision was deliberate: an interface you don't have to maintain is one you'll actually keep using.
+                        </p>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                            Constructors (teams) serve as project categories — Ferrari for design work, Mercedes for engineering, Williams for whatever you throw in last minute. Choosing a constructor isn't just labeling a project; it's a small act of identity that makes the whole system feel personal.
+                        </p>
+                    </Reveal>
                 </section>
-            </div>
 
-            {/* ── Full-bleed media 1 — App in action ── */}
-            <Reveal y={16}>
-                <div style={{ width: '100%', margin: '0 0 2px', position: 'relative', overflow: 'hidden' }}>
-                    {/*
-            MEDIA HINT: Replace this placeholder with:
-            <video
-              src="/assets/camber/camber-notch-demo.mp4"   ← video showing notch hover interaction
-              autoPlay muted loop playsInline
-              style={{ width: '100%', height: 'auto', display: 'block', filter: 'brightness(0.88)' }}
-            />
-            OR:
-            <img src="/assets/camber/camber-notch-open.jpg" alt="Camber notch open state" style={{ width: '100%', height: 'auto', display: 'block' }} />
-          */}
-                    <div style={{
-                        width: '100%', aspectRatio: '16/9',
-                        background: 'linear-gradient(160deg, #1a1a1a 0%, #111 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#333', fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', ...figtree,
-                    }}>
-                        [ camber-notch-demo.mp4 — notch hover interaction video ]
-                    </div>
-                </div>
-            </Reveal>
+                <HR />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '2px' }}>
-                <Reveal y={16}>
-                    <div style={{ position: 'relative', overflow: 'hidden' }}>
-                        {/*
-              MEDIA HINT:
-              <img src="/assets/camber/camber-track-view.jpg" alt="Camber F1 track view" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            */}
-                        <div style={{
-                            width: '100%', aspectRatio: '4/3',
-                            background: '#111',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#2a2a2a', fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', ...figtree,
-                        }}>
-                            [ camber-track-view.jpg — F1 track UI ]
-                        </div>
-                    </div>
-                </Reveal>
-                <Reveal y={16} delay={80}>
-                    <div style={{ position: 'relative', overflow: 'hidden' }}>
-                        {/*
-              MEDIA HINT:
-              <img src="/assets/camber/camber-constructor-select.jpg" alt="Constructor selection screen" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            */}
-                        <div style={{
-                            width: '100%', aspectRatio: '4/3',
-                            background: '#0f0f0f',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#2a2a2a', fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', ...figtree,
-                        }}>
-                            [ camber-constructor-select.jpg — team/constructor picker ]
-                        </div>
-                    </div>
-                </Reveal>
-            </div>
-
-            {/* ── Execution ── */}
-            <div style={{ padding: '8rem min(142px, 9.4vw)' }}>
+                {/* ── Execution ── */}
                 <section style={{ marginBottom: '8rem' }}>
                     <Reveal>
                         <SectionLabel>Execution</SectionLabel>
                     </Reveal>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8rem', alignItems: 'start' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: `${CONTENT_WIDTH} 1fr`, gap: '6rem', alignItems: 'start', maxWidth: 'calc(100vw - min(284px, 18.8vw))' }}>
                         <Reveal delay={60}>
                             <div>
-                                <p style={{
-                                    fontSize: 'clamp(1.4rem, 2.5vw, 2rem)', fontWeight: 600,
-                                    color: '#eaeaea', lineHeight: 1.3, margin: '0 0 2rem',
-                                    letterSpacing: '-0.01em',
+                                <h3 style={{
+                                    fontSize: 'clamp(1.1rem, 1.8vw, 1.4rem)',
+                                    fontWeight: 600, color: '#ccc', lineHeight: 1.35,
+                                    margin: '0 0 1.5rem', letterSpacing: '-0.01em',
                                 }}>
                                     The notch problem macOS doesn't want you to solve.
+                                </h3>
+                                <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                                    Apple exposes no public API for notch interaction — it's display real estate the system treats as off-limits. To work around this, I built a mouse polling loop using Electron's <code style={{ color: '#999', fontSize: '0.88em', background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px' }}>screen.getCursorScreenPoint()</code>, running every 100ms. When the cursor enters a 200×25px hit zone mapped exactly to the notch position, it triggers a frameless, transparent <code style={{ color: '#999', fontSize: '0.88em', background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px' }}>BrowserWindow</code> anchored to the top of the display.
                                 </p>
-                                <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.8, margin: 0 }}>
-                                    macOS exposes no public API for notch interaction. To bypass this, I engineered a mouse polling loop using Electron's <code style={{ color: '#aaa', fontSize: '0.9em', background: '#1e1e1e', padding: '2px 6px' }}>screen.getCursorScreenPoint()</code> — checking global cursor position every 100ms. When it enters a precise 200×25px hit zone, it triggers a frameless, transparent BrowserWindow anchored to the display top, with a 300ms grace period to prevent flickering.
+                                <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                                    The trickiest part was the 300ms grace period — without it, the popover flickered aggressively every time the cursor passed through on its way somewhere else. The grace period holds the window open briefly after the cursor leaves, which makes the whole interaction feel intentional rather than janky. That single timing tweak was the difference between a prototype and something usable.
                                 </p>
                             </div>
                         </Reveal>
 
                         <Reveal delay={120}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
                                 {[
-                                    { k: 'Framework', v: 'Electron + React (HTM — no build step for JSX)' },
-                                    { k: 'Data Layer', v: 'sql.js · in-memory SQLite via WebAssembly. 100% local, zero server.' },
-                                    { k: 'Notch Trigger', v: '100ms polling loop · 200×25px hit zone · 300ms grace period' },
-                                    { k: 'Window type', v: 'Frameless transparent BrowserWindow · top-anchored' },
-                                    { k: 'Distribution', v: 'GitHub Releases · Universal binary (Intel + Apple Silicon)' },
-                                ].map(({ k, v }) => (
-                                    <div key={k} style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '1rem', borderBottom: '1px solid #1e1e1e', paddingBottom: '1.5rem' }}>
-                                        <p style={{ fontSize: '0.78rem', color: '#444', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0, ...figtree }}>{k}</p>
-                                        <p style={{ fontSize: '0.9rem', color: '#888', margin: 0, lineHeight: 1.55 }}>{v}</p>
+                                    { k: 'Framework', v: 'Electron + React' },
+                                    { k: 'JSX Strategy', v: 'HTM — no build step' },
+                                    { k: 'Data', v: 'sql.js · in-memory SQLite via WASM · 100% local' },
+                                    { k: 'Notch trigger', v: '100ms poll · 200×25px zone · 300ms grace' },
+                                    { k: 'Window', v: 'Frameless transparent BrowserWindow, top-anchored' },
+                                    { k: 'Distribution', v: 'GitHub Releases · Universal binary' },
+                                ].map(({ k, v }, i, arr) => (
+                                    <div key={k} style={{
+                                        display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '1rem',
+                                        padding: '1.25rem 0',
+                                        borderBottom: i < arr.length - 1 ? '1px solid #1a1a1a' : 'none',
+                                    }}>
+                                        <p style={{ fontSize: '0.7rem', color: '#3a3a3a', textTransform: 'uppercase', letterSpacing: '0.14em', margin: 0, ...figtree }}>{k}</p>
+                                        <p style={{ fontSize: '0.875rem', color: '#777', margin: 0, lineHeight: 1.55 }}>{v}</p>
                                     </div>
                                 ))}
                             </div>
@@ -473,135 +457,79 @@ export function CamberCaseStudy() {
                 <HR />
 
                 {/* ── Impact ── */}
-                <section style={{ marginBottom: '8rem' }}>
+                <section style={{ maxWidth: CONTENT_WIDTH, marginBottom: '8rem' }}>
                     <Reveal>
                         <SectionLabel>Impact</SectionLabel>
                     </Reveal>
 
                     <Reveal delay={60}>
-                        {/* Pull quote */}
-                        <div style={{
-                            borderLeft: '2px solid #eaeaea', paddingLeft: '2.5rem',
-                            margin: '0 0 5rem', maxWidth: '55ch',
-                        }}>
-                            <p style={{
-                                fontSize: 'clamp(1.2rem, 2.2vw, 1.7rem)',
-                                ...serifItalic, color: '#ccc', lineHeight: 1.5, margin: '0 0 1rem',
-                            }}>
-                                "The execution deserved a star."
-                            </p>
-                            <p style={{ fontSize: '0.8rem', color: '#444', margin: 0, letterSpacing: '0.12em', textTransform: 'uppercase', ...figtree }}>
-                                — GitHub user, unsolicited DM
-                            </p>
-                        </div>
+                        <PullQuote
+                            quote="The execution deserved a star."
+                            attribution="GitHub user, unsolicited DM"
+                        />
                     </Reveal>
 
                     <Reveal delay={80}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '3rem', maxWidth: '860px' }}>
-                            <div>
-                                <p style={{ fontSize: '2.5rem', fontWeight: 700, color: '#eaeaea', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                                    Open source
-                                </p>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0, lineHeight: 1.6 }}>
-                                    Published on GitHub. Qualitative feedback over vanity metrics — users reached out directly.
-                                </p>
-                            </div>
-                            <div>
-                                <p style={{ fontSize: '2.5rem', fontWeight: 700, color: '#eaeaea', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                                    Daily use
-                                </p>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0, lineHeight: 1.6 }}>
-                                    I use it every day. It solved the problem it was built for — procrastination habits visibly shifted.
-                                </p>
-                            </div>
-                            <div>
-                                <p style={{ fontSize: '2.5rem', fontWeight: 700, color: '#eaeaea', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                                    Gamification
-                                </p>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0, lineHeight: 1.6 }}>
-                                    Users explicitly reported the F1 metaphor actively helped them get things done.
-                                </p>
-                            </div>
-                        </div>
-                    </Reveal>
-                </section>
-
-                {/* ── Full-bleed media 2 — website / download page ── */}
-            </div>
-
-            <Reveal y={16}>
-                <div style={{ width: '100%', marginBottom: '2px' }}>
-                    {/*
-            MEDIA HINT:
-            <img
-              src="/assets/camber/camber-website.jpg"    ← screenshot of camberapp.com
-              alt="Camber download website"
-              style={{ width: '100%', height: 'auto', display: 'block', filter: 'brightness(0.85)' }}
-            />
-          */}
-                    <div style={{
-                        width: '100%', aspectRatio: '16/7',
-                        background: 'linear-gradient(160deg, #111 0%, #0d0d0d 100%)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#222', fontSize: '0.78rem', letterSpacing: '0.15em', textTransform: 'uppercase', ...figtree,
-                    }}>
-                        [ camber-website.jpg — camberapp.com screenshot ]
-                    </div>
-                </div>
-            </Reveal>
-
-            {/* ── Reflection ── */}
-            <div style={{ padding: '8rem min(142px, 9.4vw) 0' }}>
-                <section style={{ marginBottom: '10rem' }}>
-                    <Reveal>
-                        <SectionLabel>What I Learned</SectionLabel>
-                    </Reveal>
-
-                    <Reveal delay={80}>
-                        <p style={{
-                            fontSize: 'clamp(1.3rem, 2.8vw, 2.2rem)', fontWeight: 500,
-                            color: '#aaa', lineHeight: 1.45, maxWidth: '28ch',
-                            letterSpacing: '-0.01em',
-                        }}>
-                            The best interfaces sometimes shouldn't look like interfaces at all.
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                            Camber is open source and I haven't chased metrics for it. The feedback that mattered came in unsolicited — a DM here, a GitHub comment there, people saying the F1 angle actually made them finish things. That's the signal I cared about: not stars, but whether the core bet (that motivation matters as much as friction) was right.
                         </p>
-                    </Reveal>
-
-                    <Reveal delay={120}>
-                        <p style={{
-                            fontSize: '1.05rem', color: '#666', lineHeight: 1.8,
-                            maxWidth: '60ch', marginTop: '2rem',
-                        }}>
-                            Reducing friction isn't just about minimizing clicks — it's about completely changing the user's emotional response to doing the work. By turning a boring utility into a physical race and placing it in an unconventional hardware space, I proved that the container matters as much as the content.
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                            I use Camber every day. That's not me being precious about it — it's the most honest impact metric I have. It solved the problem it was built for. My open tabs are less chaotic. The tasks I log actually get done because checking them off feels like something, not nothing.
                         </p>
                     </Reveal>
                 </section>
 
                 <HR />
 
-                {/* ── Next Project ── */}
+                {/* ── What I Learned ── */}
+                <section style={{ maxWidth: CONTENT_WIDTH, marginBottom: '10rem' }}>
+                    <Reveal>
+                        <SectionLabel>What I Learned</SectionLabel>
+                    </Reveal>
+
+                    <Reveal delay={60}>
+                        <h2 style={{
+                            fontSize: 'clamp(1.5rem, 2.8vw, 2.2rem)',
+                            fontWeight: 500, color: '#999',
+                            lineHeight: 1.35, margin: '0 0 2.5rem',
+                            letterSpacing: '-0.01em',
+                        }}>
+                            Constraints you invent are more interesting than constraints you inherit.
+                        </h2>
+                    </Reveal>
+
+                    <Reveal delay={100}>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: '0 0 1.5rem' }}>
+                            Every app I'd built before Camber lived inside the rules macOS hands you. Windows, menus, sidebars. Camber taught me that the most interesting design decisions happen when you ask where the interface doesn't have to live, not where it should. The notch wasn't in any list of "valid" surfaces. I only considered it because I gave myself permission to be unreasonable about the constraint first.
+                        </p>
+                        <p style={{ fontSize: '1rem', color: '#777', lineHeight: 1.85, margin: 0 }}>
+                            The other thing: gamification gets a bad reputation because most implementations are cynical — badges nobody wants, streaks that punish you for living your life. The F1 metaphor works in Camber because it maps onto something real. Progress is spatial. Finishing is physical. It doesn't feel grafted on. If I build another tool that has a motivation problem, I'll look for a metaphor that earns its place instead of one that decorates the surface.
+                        </p>
+                    </Reveal>
+                </section>
+
+                <HR />
+
+                {/* ── Next / All ── */}
                 <div style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
                     paddingBottom: '8rem',
                 }}>
                     <Reveal>
                         <div>
-                            <p style={{ fontSize: '0.72rem', color: '#444', letterSpacing: '0.22em', textTransform: 'uppercase', margin: '0 0 1rem', ...figtree }}>
+                            <p style={{ ...label, margin: '0 0 0.75rem' }}>
                                 Next project
                             </p>
-                            {/* 
-                Update the name below and the onClick to navigate to your next case study slug 
-              */}
                             <button
                                 onClick={() => navigate('/case-study/vocaforms')}
                                 style={{
                                     background: 'transparent', border: 'none', color: '#eaeaea',
-                                    fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 700,
+                                    fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)', fontWeight: 700,
                                     cursor: 'pointer', padding: 0, ...figtree,
                                     letterSpacing: '-0.02em',
                                     transition: 'opacity 0.3s ease',
                                 }}
-                                onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+                                onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
                                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                             >
                                 Vocaforms →
@@ -613,27 +541,30 @@ export function CamberCaseStudy() {
                         <button
                             onClick={() => navigate('/')}
                             style={{
-                                background: 'transparent', border: '1px solid #2a2a2a', color: '#666',
-                                padding: '12px 28px', cursor: 'pointer', ...figtree, fontSize: '0.85rem',
+                                background: 'transparent', border: '1px solid #222', color: '#555',
+                                padding: '11px 26px', cursor: 'pointer', ...figtree, fontSize: '0.82rem',
                                 transition: 'all 0.25s ease',
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#555'; e.currentTarget.style.color = '#fff'; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.color = '#666'; }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#eee'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = '#222'; e.currentTarget.style.color = '#555'; }}
                         >
                             All projects
                         </button>
                     </Reveal>
                 </div>
+
             </div>
 
-            {/* Scroll pulse animation */}
             <style>{`
-        @keyframes scrollPulse {
-          0%, 100% { opacity: 0.2; transform: scaleY(1); }
-          50% { opacity: 0.8; transform: scaleY(1.2); }
-        }
-      `}</style>
-
+                @keyframes lineUp {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes scrollPulse {
+                    0%, 100% { opacity: 0.2; }
+                    50%       { opacity: 0.7; }
+                }
+            `}</style>
         </div>
     );
 }
