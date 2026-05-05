@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
-import { PERSONAL_INFO, BUILDING_PROJECTS } from '../../data/portfolio';
+import { ImageCluster } from '../components/ImageCluster';
+import { PERSONAL_INFO, BUILDING_PROJECTS, HERO_LAYOUTS } from '../../data/portfolio';
 
 export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean; isActive: boolean }) {
   const [greetingHover, setGreetingHover] = useState(false);
   const [hoveredBuild, setHoveredBuild] = useState<number | null>(null);
-  const { sectionRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
+  const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
+
+  const activeGroup = greetingHover ? 0 : hoveredBuild !== null ? hoveredBuild + 1 : null;
 
   return (
     <div
@@ -17,6 +21,8 @@ export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean
       aria-hidden={!isActive}
       tabIndex={isActive ? 0 : -1}
     >
+      {!isMobile && <ImageCluster layouts={HERO_LAYOUTS} activeGroup={activeGroup} groupRef={groupRef} />}
+
       <div key={ek} style={{
         position: 'absolute', left: CONTENT_LEFT,
         top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
@@ -46,11 +52,9 @@ export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean
         {BUILDING_PROJECTS.map((item, i) => {
           const isHovered = hoveredBuild === i;
           return (
-            <a
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
               key={item.name}
+              to={`/case-study/${item.slug}`}
               onMouseEnter={() => setHoveredBuild(i)}
               onMouseLeave={() => setHoveredBuild(null)}
               style={{
@@ -68,7 +72,7 @@ export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean
                 <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{item.name}</span>
                 <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{item.desc}</span>
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>

@@ -56,15 +56,8 @@ export function CustomCursor() {
       let tx = mousePos.current.x;
       let ty = mousePos.current.y;
       
-      if (modeRef.current === 'magnetic' && magnetEl.current) {
-        const r = magnetEl.current.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        // Perfect middle ground: 30% center gravity, 70% mouse. 
-        // Prevents violent horizontal snapping on long text lines.
-        tx = cx * 0.30 + mousePos.current.x * 0.70;
-        ty = cy * 0.30 + mousePos.current.y * 0.70;
-      }
+      // Removed the physical magnetic gravity as requested.
+      // The cursor will still transition states visually, but will no longer hijack mouse movement.
 
       // Always lerp for liquid fluidity
       curPos.current.x = lerp(curPos.current.x, tx, 0.15);

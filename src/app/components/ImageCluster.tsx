@@ -5,7 +5,7 @@ import type { ImgDef } from '../../data/portfolio';
 export function ImageCluster({ layouts, activeGroup, groupRef }: {
   layouts: ImgDef[][];
   activeGroup: number | null;
-  groupRef: React.RefObject<HTMLDivElement | null>;
+  groupRef: React.RefObject<HTMLDivElement>;
 }) {
   return (
     <div ref={groupRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1 }}>
