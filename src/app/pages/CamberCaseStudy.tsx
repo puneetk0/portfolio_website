@@ -104,7 +104,7 @@ const LBL: React.CSSProperties = {
     fontSize: '0.68rem',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.22em',
-    color: '#383838',
+    color: '#666',
     ...figtree,
     margin: 0,
 };
@@ -112,7 +112,7 @@ const LBL: React.CSSProperties = {
 function SL({ children }: { children: React.ReactNode }) {
     return (
         <p style={{ ...LBL, margin: '0 0 3rem' }}>
-            <span style={{ ...serifItalic, color: '#303030', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+            <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
@@ -191,33 +191,66 @@ function SideNav({
 }
 
 // ─── Media placeholder ────────────────────────────────────────────────────────
-function Media({ filename, aspect = '16/9' }: { filename: string; aspect?: string }) {
-    /*
-     * ── SWAP INSTRUCTIONS ───────────────────────────────────────────────────
-     * Video:
-     *   <video src={`/assets/camber/${filename}`} autoPlay muted loop playsInline
-     *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
-     * Image:
-     *   <img src={`/assets/camber/${filename}`} alt=""
-     *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
-     * ────────────────────────────────────────────────────────────────────────
-     */
+function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, bgColor = '#0a0a0a' }: { 
+    filename: string; aspect?: string; hint?: string; objectFit?: 'cover' | 'contain' | 'fill';
+    padding?: string; bgColor?: string;
+}) {
+    const isVideo = filename.endsWith('.mp4') || filename.endsWith('.webm');
+    const path = `/assets/camber/${filename}`;
+    const [loaded, setLoaded] = React.useState(false);
+
     return (
         <div style={{
-            width: '100%', aspectRatio: aspect,
-            background: '#0e0e0e',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '100%', 
+            aspectRatio: aspect === 'auto' ? 'auto' : aspect,
+            background: bgColor, 
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
             position: 'relative', overflow: 'hidden',
+            padding: padding || '0',
+            boxSizing: 'border-box',
         }}>
-            <div style={{
-                position: 'absolute', inset: 0,
-                backgroundImage: 'linear-gradient(#181818 1px, transparent 1px), linear-gradient(90deg, #181818 1px, transparent 1px)',
-                backgroundSize: '52px 52px',
-                opacity: 0.7,
-            }} />
-            <p style={{ ...LBL, fontSize: '0.58rem', letterSpacing: '0.16em', color: '#242424', position: 'relative', margin: 0 }}>
-                {filename}
-            </p>
+            {isVideo ? (
+                <video
+                    src={path}
+                    autoPlay muted loop playsInline
+                    onLoadedData={() => setLoaded(true)}
+                    style={{ 
+                        width: '100%', 
+                        height: aspect === 'auto' ? 'auto' : '100%', 
+                        objectFit: objectFit, 
+                        display: 'block',
+                        opacity: loaded ? 1 : 0,
+                        transition: 'opacity 0.4s ease',
+                    }}
+                />
+            ) : (
+                <img
+                    src={path}
+                    alt={hint || filename}
+                    onLoad={() => setLoaded(true)}
+                    style={{ 
+                        width: '100%', 
+                        height: aspect === 'auto' ? 'auto' : '100%', 
+                        objectFit: objectFit, 
+                        display: 'block',
+                        opacity: loaded ? 1 : 0,
+                        transition: 'opacity 0.4s ease',
+                    }}
+                />
+            )}
+
+            {!loaded && (
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    pointerEvents: 'none', zIndex: 0,
+                }}>
+                    <p style={{ ...LBL, fontSize: '0.55rem', letterSpacing: '0.18em', color: '#222', margin: 0 }}>
+                        {filename}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }
@@ -309,13 +342,13 @@ export function CamberCaseStudy() {
                 onClick={() => navigate('/')}
                 style={{
                     position: 'absolute', top: '36px', left: PAD,
-                    background: 'transparent', border: 'none', color: '#555',
+                    background: 'transparent', border: 'none', color: '#888',
                     cursor: 'pointer', ...figtree, fontSize: '0.8rem', zIndex: 100,
                     display: 'flex', alignItems: 'center', gap: '8px',
                     transition: 'color 0.2s ease', padding: 0,
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#555')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#888')}
             >
                 ← back
             </button>
@@ -342,7 +375,7 @@ export function CamberCaseStudy() {
                 }} />
 
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
-                    <span style={{ ...serifItalic, color: '#282828', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+                    <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
                     Case Study · macOS App · 2024
                 </p>
 
@@ -358,12 +391,11 @@ export function CamberCaseStudy() {
 
                 <p style={{
                     fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
-                    color: '#555', maxWidth: '44ch',
+                    color: '#888', maxWidth: '44ch',
                     lineHeight: 1.65, margin: 0, fontWeight: 400,
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.32s both',
                 }}>
-                    Every task manager promises to reduce friction —
-                    then buries itself three clicks deep.
+                    Every task manager promises to reduce friction, then buries itself three clicks deep.
                 </p>
 
                 <div style={{
@@ -371,7 +403,7 @@ export function CamberCaseStudy() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
                     opacity: Math.min(heroFade * 1.5, 0.5),
                 }}>
-                    <p style={{ ...LBL, fontSize: '0.54rem', writingMode: 'vertical-rl', color: '#242424' }}>scroll</p>
+                    <p style={{ ...LBL, fontSize: '0.54rem', writingMode: 'vertical-rl', color: '#555' }}>scroll</p>
                     <div style={{
                         width: '1px', height: '44px',
                         background: 'linear-gradient(to bottom, #262626, transparent)',
@@ -387,7 +419,7 @@ export function CamberCaseStudy() {
             <Reveal>
                 <div style={{ display: 'flex', padding: `1.75rem ${PAD}`, overflowX: 'auto', gap: 0 }}>
                     {[
-                        { k: 'Role', v: 'Solo — Design & Engineering' },
+                        { k: 'Role', v: 'Solo | Design & Engineering' },
                         { k: 'Platform', v: 'macOS Universal' },
                         { k: 'Stack', v: 'Electron · React · sql.js' },
                         { k: 'Status', v: 'Shipped · Open Source' },
@@ -400,7 +432,7 @@ export function CamberCaseStudy() {
                             borderRight: i < arr.length - 1 ? '1px solid #1a1a1a' : 'none',
                         }}>
                             <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.35rem' }}>{k}</p>
-                            <p style={{ ...figtree, fontSize: '0.82rem', color: '#888', margin: 0 }}>{v}</p>
+                            <p style={{ ...figtree, fontSize: '0.82rem', color: '#aaa', margin: 0 }}>{v}</p>
                         </div>
                     ))}
                 </div>
@@ -432,10 +464,10 @@ export function CamberCaseStudy() {
 
                     <Reveal delay={130}>
                         <div>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
-                                I've tried every task manager. They all share the same failure mode: they live somewhere else. You're mid-thought, need to log something, and suddenly you're navigating — switching apps, finding the right project, expanding the right list. The thought dulls. Your flow is gone.
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
+                                I've tried every task manager. They all share the same failure mode: they live somewhere else. You're mid-thought, need to log something, and suddenly you're navigating: switching apps, finding the right project, expanding the right list. The thought dulls. Your flow is gone.
                             </p>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
                                 The deeper problem is emotional. When accessing the tool feels like a chore, you avoid it. Then avoid it more. It becomes a graveyard of tasks you entered optimistically two weeks ago. The tool stops reflecting reality. You stop trusting it. That loop is what most productivity apps never break.
                             </p>
                         </div>
@@ -443,9 +475,11 @@ export function CamberCaseStudy() {
                 </div>
             </div>
 
-            {/* FULL-BLEED MEDIA 1 */}
+            {/* MEDIA 1 */}
             <Reveal y={10}>
-                <Media filename="camber-notch-demo.mp4" aspect="16/9" />
+                <div style={{ padding: `0 ${PAD}` }}>
+                    <Media filename="camber-notch-demo.mp4" aspect="auto" objectFit="contain" />
+                </div>
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -457,7 +491,7 @@ export function CamberCaseStudy() {
                 <Reveal delay={60}>
                     <p style={{
                         ...figtree, fontSize: 'clamp(1rem, 1.6vw, 1.2rem)',
-                        color: '#888', maxWidth: '54ch', lineHeight: 1.8,
+                        color: '#aaa', maxWidth: '54ch', lineHeight: 1.8,
                         margin: '0 0 5rem',
                     }}>
                         The constraint I set: tasks had to be reachable without switching apps, clicking anything, or breaking flow. And they had to feel good to complete — not just useful.
@@ -511,21 +545,21 @@ export function CamberCaseStudy() {
                         gap: '5rem',
                         alignItems: 'start',
                     }}>
-                        <p style={{ ...LBL, fontSize: '0.58rem', margin: '4px 0 0', lineHeight: 1.7, color: '#2a2a2a' }}>
-                            The second problem —<br />motivation
+                        <p style={{ ...LBL, fontSize: '0.58rem', margin: '4px 0 0', lineHeight: 1.7, color: '#666' }}>
+                            The second problem:<br />motivation
                         </p>
-                        <p style={{ ...figtree, fontSize: 'clamp(0.95rem, 1.5vw, 1.08rem)', color: '#999', lineHeight: 1.88, margin: 0 }}>
-                            Solving friction wasn't enough. An accessible task list is still just a list. I thought about what actually makes you want to finish something — not obligation, but momentum. Formula 1 has that in every lap. By mapping tasks onto a race, completing a subtask stops being an admin action and starts being physical forward motion. The car moves. The flag gets closer. That loop is motivating in a way a checkbox never is.
+                        <p style={{ ...figtree, fontSize: 'clamp(0.95rem, 1.5vw, 1.08rem)', color: '#bbb', lineHeight: 1.88, margin: 0 }}>
+                            Solving friction wasn't enough. An accessible task list is still just a list. I thought about what actually makes you want to finish something, not obligation, but momentum. Formula 1 has that in every lap. By mapping tasks onto a race, completing a subtask stops being an admin action and starts being physical forward motion. The car moves. The flag gets closer. That loop is motivating in a way a checkbox never is.
                         </p>
                     </div>
                 </Reveal>
             </div>
 
-            {/* FULL-BLEED MEDIA 2 */}
+            {/* MEDIA 2 */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                    <Media filename="camber-track-view.jpg" aspect="4/3" />
-                    <Media filename="camber-constructor-select.jpg" aspect="4/3" />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
+                    <Media filename="camber-track-view.png" aspect="auto" objectFit="contain" />
+                    <Media filename="camber-constructor-select.png" aspect="auto" objectFit="contain" />
                 </div>
             </Reveal>
 
@@ -548,11 +582,11 @@ export function CamberCaseStudy() {
 
                 <Reveal delay={100}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(3rem, 6vw, 7rem)' }}>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
                             Hover over the MacBook notch and Camber drops down: an F1 race track rendered inside a minimal popover, with your tasks mapped as cars on constructor-themed lanes. Each subtask you complete advances the car. Finish everything and the car crosses the line.
                         </p>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Move your cursor away and it disappears. No close button. No minimize. It doesn't need to be managed — it just appears when you need it and vanishes when you don't. Constructors serve as project categories. Choosing one isn't just labeling a project — it's a small act of identity.
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
+                            Move your cursor away and it disappears. No close button, no minimize. It doesn't need to be managed: it just appears when you need it and vanishes when you don't. Constructors serve as project categories. Choosing one isn't just labeling a project, it's a small act of identity.
                         </p>
                     </div>
                 </Reveal>
@@ -613,7 +647,7 @@ export function CamberCaseStudy() {
                                     padding: '1.1rem 0', borderBottom: '1px solid #1a1a1a',
                                 }}>
                                     <p style={{ ...LBL, fontSize: '0.56rem', margin: 0 }}>{k}</p>
-                                    <p style={{ ...figtree, fontSize: '0.82rem', color: '#888', margin: 0, lineHeight: 1.55 }}>{v}</p>
+                                    <p style={{ ...figtree, fontSize: '0.82rem', color: '#aaa', margin: 0, lineHeight: 1.55 }}>{v}</p>
                                 </div>
                             ))}
                         </div>
@@ -622,9 +656,11 @@ export function CamberCaseStudy() {
             </div>
             <HR />
 
-            {/* FULL-BLEED MEDIA 3 */}
+            {/* MEDIA 3 */}
             <Reveal y={10}>
-                <Media filename="camber-website.jpg" aspect="16/7" />
+                <div style={{ padding: `0 ${PAD}` }}>
+                    <Media filename="camber-website.png" aspect="auto" objectFit="contain" />
+                </div>
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -644,8 +680,8 @@ export function CamberCaseStudy() {
                         }}>
                             "The execution deserved a star."
                         </p>
-                        <p style={{ ...LBL, fontSize: '0.58rem', color: '#282828' }}>
-                            GitHub user — unsolicited DM
+                        <p style={{ ...LBL, fontSize: '0.58rem', color: '#666' }}>
+                            GitHub user: unsolicited DM
                         </p>
                     </div>
                 </Reveal>
@@ -668,7 +704,7 @@ export function CamberCaseStudy() {
                                 borderRight: i < 2 ? '1px solid #1e1e1e' : 'none',
                             }}>
                                 <p style={{ ...figtree, fontSize: '1rem', fontWeight: 600, color: '#ffffff', margin: '0 0 0.9rem' }}>{head}</p>
-                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>{body}</p>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#aaa', lineHeight: 1.8, margin: 0 }}>{body}</p>
                             </div>
                         ))}
                     </div>
@@ -700,11 +736,11 @@ export function CamberCaseStudy() {
                         gap: 'clamp(3rem, 6vw, 7rem)',
                         marginBottom: '8rem',
                     }}>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Every app I'd built before Camber lived inside the rules macOS hands you. Windows, menus, sidebars. Camber taught me that the most interesting design decisions happen when you ask where the interface <em>doesn't</em> have to live, not where it should. The notch wasn't in any list of valid surfaces — I only found it because I gave myself permission to be unreasonable first.
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
+                            Every app I'd built before Camber lived inside the rules macOS hands you: windows, menus, sidebars. Camber taught me that the most interesting design decisions happen when you ask where the interface <em>doesn't</em> have to live, not where it should. The notch wasn't in any list of valid surfaces: I only found it because I gave myself permission to be unreasonable first.
                         </p>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Gamification gets a bad reputation because most implementations are cynical — badges nobody wants, streaks that punish you. The F1 metaphor works because it maps onto something real. Progress is spatial. Finishing is physical. If I build another tool with a motivation problem, I'll look for a metaphor that earns its place instead of one that decorates the surface.
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
+                            Gamification gets a bad reputation because most implementations are cynical: badges nobody wants, streaks that punish you. The F1 metaphor works because it maps onto something real. Progress is spatial. Finishing is physical. If I build another tool with a motivation problem, I'll look for a metaphor that earns its place instead of one that decorates the surface.
                         </p>
                     </div>
                 </Reveal>
@@ -720,7 +756,7 @@ export function CamberCaseStudy() {
             }}>
                 <Reveal>
                     <div>
-                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#262626' }}>Next project</p>
+                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#666' }}>Next project</p>
                         <button
                             onClick={() => navigate('/case-study/vocaforms')}
                             style={{

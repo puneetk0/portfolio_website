@@ -104,7 +104,7 @@ const LBL: React.CSSProperties = {
     fontSize: '0.68rem',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.22em',
-    color: '#383838',
+    color: '#666',
     ...figtree,
     margin: 0,
 };
@@ -112,7 +112,7 @@ const LBL: React.CSSProperties = {
 function SL({ children }: { children: React.ReactNode }) {
     return (
         <p style={{ ...LBL, margin: '0 0 3rem' }}>
-            <span style={{ ...serifItalic, color: '#303030', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+            <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
@@ -170,32 +170,66 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
 }
 
 // ─── Media placeholder ────────────────────────────────────────────────────────
-function Media({ filename, aspect = '16/9', hint }: { filename: string; aspect?: string; hint?: string }) {
-    /*
-     * ── SWAP INSTRUCTIONS ───────────────────────────────────────────────────
-     * Video:
-     *   <video src={`/assets/voca/${filename}`} autoPlay muted loop playsInline
-     *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
-     * Image:
-     *   <img src={`/assets/voca/${filename}`} alt={hint ?? ''}
-     *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
-     * ────────────────────────────────────────────────────────────────────────
-     */
+function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, bgColor = '#0a0a0a' }: {
+    filename: string; aspect?: string; hint?: string; objectFit?: 'cover' | 'contain' | 'fill';
+    padding?: string; bgColor?: string;
+}) {
+    const isVideo = filename.endsWith('.mp4') || filename.endsWith('.webm');
+    const path = `/assets/voca/${filename}`;
+    const [loaded, setLoaded] = React.useState(false);
+
     return (
         <div style={{
-            width: '100%', aspectRatio: aspect,
-            background: '#0a0a0a', border: '1px solid #141414',
+            width: '100%',
+            aspectRatio: aspect === 'auto' ? 'auto' : aspect,
+            background: bgColor, 
             display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '8px',
+            alignItems: 'center', justifyContent: 'center',
             position: 'relative', overflow: 'hidden',
+            padding: padding || '0',
+            boxSizing: 'border-box',
         }}>
-            <p style={{ ...LBL, fontSize: '0.55rem', letterSpacing: '0.18em', color: '#333', position: 'relative', margin: 0 }}>
-                {filename}
-            </p>
-            {hint && (
-                <p style={{ ...LBL, fontSize: '0.48rem', letterSpacing: '0.12em', color: '#222', position: 'relative', margin: 0, textTransform: 'none' as const }}>
-                    {hint}
-                </p>
+            {isVideo ? (
+                <video
+                    src={path}
+                    autoPlay muted loop playsInline
+                    onLoadedData={() => setLoaded(true)}
+                    style={{
+                        width: '100%',
+                        height: aspect === 'auto' ? 'auto' : '100%',
+                        objectFit: objectFit,
+                        display: 'block',
+                        opacity: loaded ? 1 : 0,
+                        transition: 'opacity 0.4s ease',
+                    }}
+                />
+            ) : (
+                <img
+                    src={path}
+                    alt={hint || filename}
+                    onLoad={() => setLoaded(true)}
+                    style={{
+                        width: '100%',
+                        height: aspect === 'auto' ? 'auto' : '100%',
+                        objectFit: objectFit,
+                        display: 'block',
+                        opacity: loaded ? 1 : 0,
+                        transition: 'opacity 0.4s ease',
+                    }}
+                />
+            )}
+
+            {/* Debug/Placeholder Label — only visible while loading or if it fails */}
+            {!loaded && (
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    pointerEvents: 'none', zIndex: 0,
+                }}>
+                    <p style={{ ...LBL, fontSize: '0.55rem', letterSpacing: '0.18em', color: '#222', margin: 0 }}>
+                        {filename}
+                    </p>
+                </div>
             )}
         </div>
     );
@@ -293,13 +327,13 @@ export function VocaCaseStudy() {
                 onClick={() => navigate('/')}
                 style={{
                     position: 'absolute', top: '36px', left: PAD,
-                    background: 'transparent', border: 'none', color: '#555',
+                    background: 'transparent', border: 'none', color: '#888',
                     cursor: 'pointer', ...figtree, fontSize: '0.8rem', zIndex: 100,
                     display: 'flex', alignItems: 'center', gap: '8px',
                     transition: 'color 0.2s ease', padding: 0,
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#555')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#888')}
             >
                 ← back
             </button>
@@ -319,8 +353,8 @@ export function VocaCaseStudy() {
                 transition: 'opacity 0.06s linear',
             }}>
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
-                    <span style={{ ...serifItalic, color: '#282828', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                    Case Study · Voice AI · Web App · 2024
+                    <span style={{ ...serifItalic, color: '#666', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+                    Case Study : Voice AI : Web App : 2024
                 </p>
 
                 <h1 style={{
@@ -335,11 +369,11 @@ export function VocaCaseStudy() {
 
                 <p style={{
                     fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
-                    color: '#555', maxWidth: '44ch',
+                    color: '#aaa', maxWidth: '44ch',
                     lineHeight: 1.65, margin: 0, fontWeight: 400,
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.32s both',
                 }}>
-                    Forms treat users like data-entry clerks — stripping the nuance out of how answers are actually spoken.
+                    Forms treat users like data-entry clerks, stripping the nuance out of how answers are actually spoken.
                 </p>
 
                 <div style={{
@@ -347,7 +381,7 @@ export function VocaCaseStudy() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
                     opacity: Math.min(heroFade * 1.5, 0.5),
                 }}>
-                    <p style={{ ...LBL, fontSize: '0.54rem', writingMode: 'vertical-rl', color: '#242424' }}>scroll</p>
+                    <p style={{ ...LBL, fontSize: '0.54rem', writingMode: 'vertical-rl', color: '#666' }}>scroll</p>
                     <div style={{
                         width: '1px', height: '44px',
                         background: 'linear-gradient(to bottom, #262626, transparent)',
@@ -363,11 +397,11 @@ export function VocaCaseStudy() {
             <Reveal>
                 <div style={{ display: 'flex', padding: `1.75rem ${PAD}`, overflowX: 'auto', gap: 0 }}>
                     {[
-                        { k: 'Role', v: 'Solo — Design & Engineering' },
+                        { k: 'Role', v: 'Solo : Design & Engineering' },
                         { k: 'Platform', v: 'Web (Next.js 14)' },
-                        { k: 'Stack', v: 'Gemini · Groq Whisper · Supabase' },
+                        { k: 'Stack', v: 'Gemini : Groq Whisper : Supabase' },
                         { k: 'Also known as', v: 'Vocaforms' },
-                        { k: 'Status', v: 'Shipped · MVP' },
+                        { k: 'Status', v: 'Shipped : MVP' },
                     ].map(({ k, v }, i, arr) => (
                         <div key={k} style={{
                             flex: '1 0 auto',
@@ -376,7 +410,7 @@ export function VocaCaseStudy() {
                             borderRight: i < arr.length - 1 ? '1px solid #1a1a1a' : 'none',
                         }}>
                             <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.35rem' }}>{k}</p>
-                            <p style={{ ...figtree, fontSize: '0.82rem', color: '#888', margin: 0 }}>{v}</p>
+                            <p style={{ ...figtree, fontSize: '0.82rem', color: '#aaa', margin: 0 }}>{v}</p>
                         </div>
                     ))}
                 </div>
@@ -402,36 +436,33 @@ export function VocaCaseStudy() {
                             color: '#ffffff', margin: 0,
                             letterSpacing: '-0.03em',
                         }}>
-                            Existing data collection has two separate failure modes — one for users, one for creators.
+                            Existing data collection has two separate failure modes: one for users, one for creators.
                         </h2>
                     </Reveal>
 
                     <Reveal delay={130}>
                         <div>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
-                                For the user: static HTML forms are rigid, friction-heavy, and assume a baseline of digital literacy that excludes many people — especially on mobile. A person who could give you a fluent, confident verbal answer gets stuck on a text box.
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
+                                For the user: static HTML forms are rigid, friction-heavy, and assume a baseline of digital literacy that excludes many people, especially on mobile. A person who could give you a fluent, confident verbal answer gets stuck on a text box.
                             </p>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                                For the creator: text boxes strip vital qualitative context. You can't gauge a candidate's confidence, clarity, or tone from a polished paragraph — especially one that may have been rewritten by an AI. The audio of the answer is as critical as the words. Every existing tool discards it entirely.
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: 0 }}>
+                                For the creator: text boxes strip vital qualitative context. You cannot gauge a candidate's confidence, clarity, or tone from a polished paragraph, especially one that may have been rewritten by an AI. The audio of the answer is as critical as the words. Every existing tool discards it entirely.
                             </p>
                         </div>
                     </Reveal>
                 </div>
             </div>
 
-            {/* FULL-BLEED MEDIA 1 — Hero demo of the conversation UI */}
+            {/* MEDIA 1 */}
             <Reveal y={10}>
-                {/*
-                  MEDIA HINT:
-                  This should be a screen recording or demo of Voca's conversational flow —
-                  the voice agent speaking, the waveform animating, the transcript appearing.
-                  Ideal: voca-conversation-demo.mp4
-                */}
-                <Media
-                    filename="voca-conversation-demo.mp4"
-                    aspect="16/9"
-                    hint="Screen recording — voice agent conversation flow"
-                />
+                <div style={{ padding: `0 ${PAD}` }}>
+                    <Media
+                        filename="voca-conversation-demo.mp4"
+                        aspect="auto"
+                        objectFit="contain"
+                        hint="Screen recording : voice agent conversation flow"
+                    />
+                </div>
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -443,10 +474,10 @@ export function VocaCaseStudy() {
                 <Reveal delay={60}>
                     <p style={{
                         ...figtree, fontSize: 'clamp(1rem, 1.6vw, 1.2rem)',
-                        color: '#888', maxWidth: '54ch', lineHeight: 1.8,
+                        color: '#aaa', maxWidth: '54ch', lineHeight: 1.8,
                         margin: '0 0 5rem',
                     }}>
-                        The shift I needed to make wasn't a UI improvement — it was a paradigm change. From "filling out a form" to "conducting an interview."
+                        The shift I needed to make was not a UI improvement: it was a paradigm change. From filling out a form to conducting an interview.
                     </p>
                 </Reveal>
             </div>
@@ -459,12 +490,12 @@ export function VocaCaseStudy() {
                         {
                             index: 'Option 01',
                             label: 'Voice-to-text on standard forms',
-                            rationale: 'A band-aid. The user still has to navigate a rigid visual UI — the friction just shifts from typing to microphone management. The mental model doesn\'t change.',
+                            rationale: 'A band-aid. The user still has to navigate a rigid visual UI : the friction just shifts from typing to microphone management. The mental model does not change.',
                         },
                         {
                             index: 'Option 02',
                             label: 'Purely conversational AI agent',
-                            rationale: 'The user speaks naturally. The agent guides them through a narrative flow — no rigid fields, no sequence to manage. It extracts structured data from natural speech.',
+                            rationale: 'The user speaks naturally. The agent guides them through a narrative flow: no rigid fields, no sequence to manage. It extracts structured data from natural speech.',
                             outcome: 'A user can say "Um, my email is john doe at gmail... oh wait, yahoo" and the AI extracts johndoe@yahoo.com into the database perfectly, without ever making them feel like they answered wrong.',
                             chosen: true,
                         },
@@ -485,38 +516,34 @@ export function VocaCaseStudy() {
                         gridTemplateColumns: '160px 1fr',
                         gap: '5rem', alignItems: 'start',
                     }}>
-                        <p style={{ ...LBL, fontSize: '0.58rem', margin: '4px 0 0', lineHeight: 1.7, color: '#2a2a2a' }}>
+                        <p style={{ ...LBL, fontSize: '0.58rem', margin: '4px 0 0', lineHeight: 1.7, color: '#666' }}>
                             The forgiving<br />AI problem
                         </p>
-                        <p style={{ ...figtree, fontSize: 'clamp(0.95rem, 1.5vw, 1.08rem)', color: '#999', lineHeight: 1.88, margin: 0 }}>
-                            For this to work, the AI had to be genuinely forgiving. Not just of spelling or grammar, but of how people actually talk — colloquial speech, mid-sentence corrections, code-switching between languages. My audience included Hinglish speakers. The agent had to handle a mix of Hindi and English naturally, extract perfectly structured JSON, and never once make the user feel like they'd answered incorrectly. That's a much harder brief than just "transcribe speech."
+                        <p style={{ ...figtree, fontSize: 'clamp(0.95rem, 1.5vw, 1.08rem)', color: '#aaa', lineHeight: 1.88, margin: 0 }}>
+                            For this to work, the AI had to be genuinely forgiving. Not just of spelling or grammar, but of how people actually talk: colloquial speech, mid-sentence corrections, code-switching between languages. My audience included Hinglish speakers. The agent had to handle a mix of Hindi and English naturally, extract perfectly structured JSON, and never once make the user feel like they had answered incorrectly. That is a much harder brief than just transcribing speech.
                         </p>
                     </div>
                 </Reveal>
             </div>
 
-            {/* FULL-BLEED MEDIA 2 — split: form builder + admin dashboard */}
+            {/* MEDIA 2 */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                    {/*
-                      MEDIA HINT (left):
-                      Form builder / creator interface — where someone designs a Voca form.
-                      Ideal: voca-form-builder.jpg or voca-form-builder.mp4
-                    */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
                     <Media
-                        filename="voca-form-builder.jpg"
-                        aspect="4/3"
-                        hint="Form builder — creator interface"
+                        filename="voca-form-builder.png"
+                        aspect="auto"
+                        objectFit="contain"
+                        padding="4rem"
+                        bgColor="#080808"
+                        hint="Form builder : creator interface"
                     />
-                    {/*
-                      MEDIA HINT (right):
-                      Admin dashboard — showing a response with the audio player and structured data side-by-side.
-                      Ideal: voca-admin-dashboard.jpg
-                    */}
                     <Media
-                        filename="voca-admin-dashboard.jpg"
-                        aspect="4/3"
-                        hint="Admin dashboard — audio + structured response"
+                        filename="voca-admin-dashboard.png"
+                        aspect="auto"
+                        objectFit="contain"
+                        padding="4rem"
+                        bgColor="#080808"
+                        hint="Admin dashboard : audio + structured response"
                     />
                 </div>
             </Reveal>
@@ -540,11 +567,11 @@ export function VocaCaseStudy() {
 
                 <Reveal delay={100}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(4rem, 8vw, 10rem)', marginBottom: '6rem' }}>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            The user speaks to an AI agent that guides them through the form as a natural conversation. No fields, no next buttons, no mandatory format. The agent extracts structured data from whatever they say and stores it — alongside the original audio — in real time.
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: 0 }}>
+                            The user speaks to an AI agent that guides them through the form as a natural conversation. No fields, no next buttons, no mandatory format. The agent extracts structured data from whatever they say and stores it, alongside the original audio, in real time.
                         </p>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Form creators get a dashboard where every response renders as both a clean data table and a native audio player. The structure is there for analysis. The audio is there for everything a text box can't capture — confidence, hesitation, tone, authenticity.
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: 0 }}>
+                            Form creators get a dashboard where every response renders as both a clean data table and a native audio player. The structure is there for analysis. The audio is there for everything a text box cannot capture: confidence, hesitation, tone, authenticity.
                         </p>
                     </div>
                 </Reveal>
@@ -556,17 +583,17 @@ export function VocaCaseStudy() {
                             {
                                 decision: 'Conversational data extraction',
                                 rationale: 'Eliminates manual typing and complex regex validation.',
-                                outcome: 'Natural speech — corrections, fillers, and all — maps cleanly to structured database fields.',
+                                outcome: 'Natural speech, corrections, fillers, and all, maps cleanly to structured database fields.',
                             },
                             {
                                 decision: 'Retaining the source audio',
-                                rationale: 'Captures tonal nuance and confidence the transcript can\'t convey.',
+                                rationale: 'Captures tonal nuance and confidence the transcript cannot convey.',
                                 outcome: 'Every response in the admin dashboard pairs structured text with a native audio player.',
                             },
                             {
                                 decision: 'Optimistic UI with local TTS fallbacks',
                                 rationale: 'Awkward silence while waiting for an LLM breaks the conversational illusion immediately.',
-                                outcome: 'The app plays local filler audio ("Hmm...", "Let me see...") while querying Gemini in the background — latency becomes invisible.',
+                                outcome: 'The app plays local filler audio (Hmm..., Let me see...) while querying Gemini in the background, latency becomes invisible.',
                             },
                         ].map(({ decision, rationale, outcome }, i) => (
                             <div key={decision} style={{
@@ -578,15 +605,15 @@ export function VocaCaseStudy() {
                                 alignItems: 'start',
                             }}>
                                 <p style={{ ...figtree, fontWeight: 600, fontSize: '0.9rem', color: '#eaeaea', margin: 0, lineHeight: 1.45 }}>
-                                    <span style={{ ...LBL, fontSize: '0.54rem', display: 'block', margin: '0 0 0.6rem', color: '#2e2e2e' }}>
+                                    <span style={{ ...LBL, fontSize: '0.54rem', display: 'block', margin: '0 0 0.6rem', color: '#666' }}>
                                         Decision {String(i + 1).padStart(2, '0')}
                                     </span>
                                     {decision}
                                 </p>
-                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#aaa', lineHeight: 1.8, margin: 0 }}>
                                     {rationale}
                                 </p>
-                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#888', lineHeight: 1.8, margin: 0 }}>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#aaa', lineHeight: 1.8, margin: 0 }}>
                                     → {outcome}
                                 </p>
                             </div>
@@ -616,15 +643,15 @@ export function VocaCaseStudy() {
                                 lineHeight: 1.35, margin: '0 0 2.5rem',
                                 letterSpacing: '-0.02em',
                             }}>
-                                The hardest problem wasn't AI — it was binary data crossing the Next.js boundary.
+                                The hardest problem was not AI, it was binary data crossing the Next.js boundary.
                             </h3>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
                                 My first approach was Base64 JSON encoding for audio transport. It bloated memory instantly, blocked the main thread, and caused severe browser lag on recordings longer than thirty seconds. Not viable.
                             </p>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
-                                I re-architected the submission pipeline around native <Code>FormData</Code>, directly piping binary objects to array buffers on the server and straight into Supabase Storage — bypassing the JSON layer entirely. The lag disappeared.
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
+                                I re-architected the submission pipeline around native <Code>FormData</Code>, directly piping binary objects to array buffers on the server and straight into Supabase Storage, bypassing the JSON layer entirely. The lag disappeared.
                             </p>
-                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: 0 }}>
                                 For speech recognition, I combined Google Cloud STT as the primary with an immediate Groq Whisper fallback for accent robustness and zero-downtime failover. Neither the user nor the form creator ever sees the switch happen.
                             </p>
                         </div>
@@ -646,7 +673,7 @@ export function VocaCaseStudy() {
                                     padding: '1.1rem 0', borderBottom: '1px solid #1a1a1a',
                                 }}>
                                     <p style={{ ...LBL, fontSize: '0.56rem', margin: 0 }}>{k}</p>
-                                    <p style={{ ...figtree, fontSize: '0.82rem', color: '#888', margin: 0, lineHeight: 1.55 }}>{v}</p>
+                                    <p style={{ ...figtree, fontSize: '0.82rem', color: '#aaa', margin: 0, lineHeight: 1.55 }}>{v}</p>
                                 </div>
                             ))}
                         </div>
@@ -655,19 +682,18 @@ export function VocaCaseStudy() {
             </div>
             <HR />
 
-            {/* FULL-BLEED MEDIA 3 — mobile view or accessibility angle */}
+            {/* MEDIA 3 */}
             <Reveal y={10}>
-                {/*
-                  MEDIA HINT:
-                  Show Voca on mobile — the accessibility angle is strong here.
-                  A user speaking into their phone, the transcript appearing in real time.
-                  Ideal: voca-mobile-view.mp4 or voca-mobile.jpg
-                */}
-                <Media
-                    filename="voca-mobile-view.mp4"
-                    aspect="16/7"
-                    hint="Mobile view — voice interaction on device"
-                />
+                <div style={{ padding: `0 ${PAD}` }}>
+                    <Media
+                        filename="voca-admin-dashboard.png"
+                        aspect="auto"
+                        objectFit="contain"
+                        padding="6rem"
+                        bgColor="#080808"
+                        hint="Mobile view : voice interaction on device"
+                    />
+                </div>
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -676,7 +702,7 @@ export function VocaCaseStudy() {
             <div ref={setRef(4)} style={{ padding: `8rem ${PAD}` }}>
                 <Reveal><SL>Impact</SL></Reveal>
 
-                {/* Pull quote — the paradigm shift framing */}
+                {/* Pull quote : the paradigm shift framing */}
                 <Reveal delay={60}>
                     <div style={{ margin: '0 0 7rem' }}>
                         <p style={{
@@ -687,8 +713,8 @@ export function VocaCaseStudy() {
                         }}>
                             "What was written" is no longer the whole answer.
                         </p>
-                        <p style={{ ...LBL, fontSize: '0.58rem', color: '#282828' }}>
-                            Form admins now receive structured data alongside source audio — for every response
+                        <p style={{ ...LBL, fontSize: '0.58rem', color: '#666' }}>
+                            Form admins now receive structured data alongside source audio, for every response
                         </p>
                     </div>
                 </Reveal>
@@ -703,7 +729,7 @@ export function VocaCaseStudy() {
                         {[
                             {
                                 head: 'Accessible by design',
-                                body: 'Replaces a typing interface with a conversation. Users who struggle with forms on mobile — or with text input generally — are fully included.',
+                                body: 'Replaces a typing interface with a conversation. Users who struggle with forms on mobile, or with text input generally, are fully included.',
                             },
                             {
                                 head: 'Richer data for creators',
@@ -711,7 +737,7 @@ export function VocaCaseStudy() {
                             },
                             {
                                 head: 'Latency made invisible',
-                                body: 'The optimistic UI system means users experience the agent as responsive and human — regardless of backend processing time.',
+                                body: 'The optimistic UI system means users experience the agent as responsive and human, regardless of backend processing time.',
                             },
                         ].map(({ head, body }, i) => (
                             <div key={head} style={{
@@ -720,7 +746,7 @@ export function VocaCaseStudy() {
                                 borderRight: i < 2 ? '1px solid #1e1e1e' : 'none',
                             }}>
                                 <p style={{ ...figtree, fontSize: '1rem', fontWeight: 600, color: '#ffffff', margin: '0 0 0.9rem' }}>{head}</p>
-                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>{body}</p>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#aaa', lineHeight: 1.8, margin: 0 }}>{body}</p>
                             </div>
                         ))}
                     </div>
@@ -752,10 +778,10 @@ export function VocaCaseStudy() {
                         gap: 'clamp(3rem, 6vw, 7rem)',
                         marginBottom: '8rem',
                     }}>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
                             The latency-masking system was the most revealing part of this build. Users don't need instant backend processing — they need the immediate, human-like signal that they're being heard. A well-timed "Hmm..." does more for trust than a 200ms API response that arrives in silence. The perception of responsiveness matters more than the reality of it.
                         </p>
-                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
+                        <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
                             The audio retention decision started as a feature, but ended up reframing the entire product. Once I committed to keeping the source recording, Voca stopped being "a better form" and became something closer to an asynchronous interview tool. The data model changed, the admin UI changed, the value proposition changed. One decision can restructure everything downstream.
                         </p>
                     </div>
@@ -772,7 +798,7 @@ export function VocaCaseStudy() {
             }}>
                 <Reveal>
                     <div>
-                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#262626' }}>Next project</p>
+                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#666' }}>Next project</p>
                         {/*
                           UPDATE: Change the label and slug below to your next case study.
                           navigate('/case-study/YOUR_NEXT_SLUG')
