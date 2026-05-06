@@ -94,11 +94,11 @@ export const SELECTED_PROJECTS: ProjectDef[] = [
     }
   },
   { 
-    name: 'GitRepo', 
+    name: 'findMyRepo', 
     desc: 'Find open source repos by chatting with AI',
-    slug: 'gitrepo',
+    slug: 'find-my-repo',
     caseStudy: {
-      title: 'GitRepo: AI-Powered Discovery',
+      title: 'findMyRepo: AI-Powered Discovery',
       overview: 'A smarter way to discover open-source projects on GitHub.',
       challenge: 'GitHub search is powerful but often requires knowing exactly what you are looking for.',
       solution: 'Semantic search engine that understands intent and suggests repos based on project needs.',

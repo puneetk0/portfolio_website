@@ -14,6 +14,7 @@ import { AndWhat } from './sections/AndWhat';
 import { CaseStudy } from './pages/CaseStudy';
 import { CamberCaseStudy } from './pages/CamberCaseStudy';
 import { VocaCaseStudy } from './pages/VocaCaseStudy';
+import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -179,6 +180,9 @@ export default function App() {
         <Route path="/case-study/voca" element={<VocaCaseStudy />} />
         <Route path="/case-study/vocaforms" element={<VocaCaseStudy />} />
         <Route path="/case-study/voca-form" element={<VocaCaseStudy />} />
+        <Route path="/case-study/find-my-repo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/findmyrepo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 
