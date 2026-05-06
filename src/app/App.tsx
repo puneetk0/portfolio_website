@@ -13,6 +13,7 @@ import { Projects } from './sections/Projects';
 import { AndWhat } from './sections/AndWhat';
 import { CaseStudy } from './pages/CaseStudy';
 import { CamberCaseStudy } from './pages/CamberCaseStudy';
+import { VocaCaseStudy } from './pages/VocaCaseStudy';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -145,7 +146,19 @@ export default function App() {
   return (
     <>
       <style>{`
-        html, body { overscroll-behavior: none; min-height: 100%; background: #141414; cursor: none !important; margin: 0; padding: 0; }
+        html, body { 
+          overscroll-behavior: none; 
+          min-height: 100%; 
+          background: #141414; 
+          cursor: none !important; 
+          margin: 0; padding: 0; 
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE and Edge */
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none; /* Chrome, Safari and Opera */
+        }
         *, *::before, *::after { cursor: none !important; }
         @keyframes lineUp {
           from { opacity: 0; transform: translateY(10px); }
@@ -163,6 +176,9 @@ export default function App() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home isMobile={isMobile} />} />
         <Route path="/case-study/camber" element={<CamberCaseStudy />} />
+        <Route path="/case-study/voca" element={<VocaCaseStudy />} />
+        <Route path="/case-study/vocaforms" element={<VocaCaseStudy />} />
+        <Route path="/case-study/voca-form" element={<VocaCaseStudy />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 

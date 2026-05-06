@@ -14,6 +14,11 @@ export function CustomCursor() {
     const label = labelRef.current;
     if (!dot || !label) return;
 
+    // ✅ Inject cursor:none globally so the native cursor never shows
+    const style = document.createElement('style');
+    style.textContent = `*, *::before, *::after { cursor: none !important; }`;
+    document.head.appendChild(style);
+
     const appear = (m: typeof modeRef.current) => {
       if (m === 'hidden') {
         dot.style.opacity = '0';
@@ -53,16 +58,8 @@ export function CustomCursor() {
 
     let rafId: number;
     const tick = () => {
-      let tx = mousePos.current.x;
-      let ty = mousePos.current.y;
-      
-      // Removed the physical magnetic gravity as requested.
-      // The cursor will still transition states visually, but will no longer hijack mouse movement.
-
-      // Always lerp for liquid fluidity
-      curPos.current.x = lerp(curPos.current.x, tx, 0.15);
-      curPos.current.y = lerp(curPos.current.y, ty, 0.15);
-      
+      curPos.current.x = lerp(curPos.current.x, mousePos.current.x, 0.15);
+      curPos.current.y = lerp(curPos.current.y, mousePos.current.y, 0.15);
       dot.style.left = `${curPos.current.x}px`;
       dot.style.top = `${curPos.current.y}px`;
       label.style.left = `${curPos.current.x}px`;
@@ -77,6 +74,15 @@ export function CustomCursor() {
         appear('default');
       }
       mousePos.current = { x: e.clientX, y: e.clientY };
+    };
+
+    // ✅ When mouse re-enters the window, snap position instantly to avoid
+    // the custom cursor sliding in from its last known off-screen position
+    const onWindowEnter = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      curPos.current = { x: e.clientX, y: e.clientY };
+      modeRef.current = 'default';
+      appear('default');
     };
 
     const onOver = (e: MouseEvent) => {
@@ -96,14 +102,13 @@ export function CustomCursor() {
     const onOut = (e: MouseEvent) => {
       const to = e.relatedTarget as HTMLElement | null;
       if (!to) {
+        // ✅ Cursor left the browser window entirely — hide custom cursor
         modeRef.current = 'hidden'; magnetEl.current = null; appear('hidden');
         return;
       }
-      const leaving = !to || (
-        !to.closest('[data-cursor="greeting"]') &&
+      const leaving = !to.closest('[data-cursor="greeting"]') &&
         !to.closest('[data-magnetic]') &&
-        !to.closest('a, button')
-      );
+        !to.closest('a, button');
       if (leaving) {
         modeRef.current = 'default'; magnetEl.current = null;
         appear('default');
@@ -113,11 +118,15 @@ export function CustomCursor() {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseover', onOver);
     window.addEventListener('mouseout', onOut);
+    window.addEventListener('mouseenter', onWindowEnter); // ✅ re-entry snap
+
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseover', onOver);
       window.removeEventListener('mouseout', onOut);
+      window.removeEventListener('mouseenter', onWindowEnter);
+      document.head.removeChild(style); // ✅ clean up injected style
     };
   }, []);
 

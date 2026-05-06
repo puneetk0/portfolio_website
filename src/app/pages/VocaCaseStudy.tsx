@@ -125,24 +125,13 @@ function HR() {
 // ─── Sidebar Nav ──────────────────────────────────────────────────────────────
 const NAV_SECTIONS = ['Problem', 'Thinking', 'Solution', 'Execution', 'Impact', 'Learned'];
 
-function SideNav({
-    active,
-    onNav,
-}: {
-    active: number;
-    onNav: (i: number) => void;
-}) {
+function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void }) {
     return (
         <div style={{
-            position: 'fixed',
-            right: '36px',
-            top: '50%',
+            position: 'fixed', right: '36px', top: '50%',
             transform: 'translateY(-50%)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            zIndex: 50,
-            alignItems: 'flex-end',
+            display: 'flex', flexDirection: 'column', gap: '20px',
+            zIndex: 50, alignItems: 'flex-end',
         }}>
             {NAV_SECTIONS.map((label, i) => {
                 const isActive = active === i;
@@ -152,13 +141,9 @@ function SideNav({
                         onClick={() => onNav(i)}
                         title={label}
                         style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: 0,
+                            background: 'transparent', border: 'none',
+                            cursor: 'pointer', display: 'flex', alignItems: 'center',
+                            gap: '10px', padding: 0,
                             opacity: isActive ? 1 : 0.3,
                             transition: 'opacity 0.3s ease',
                         }}
@@ -166,22 +151,16 @@ function SideNav({
                         onMouseLeave={e => (e.currentTarget.style.opacity = isActive ? '1' : '0.3')}
                     >
                         <span style={{
-                            ...LBL,
-                            fontSize: '0.58rem',
-                            letterSpacing: '0.18em',
+                            ...LBL, fontSize: '0.58rem', letterSpacing: '0.18em',
                             color: isActive ? '#aaa' : '#555',
-                            transition: 'color 0.3s ease',
-                            whiteSpace: 'nowrap' as const,
+                            transition: 'color 0.3s ease', whiteSpace: 'nowrap' as const,
                         }}>
                             {label}
                         </span>
                         <span style={{
-                            width: isActive ? '20px' : '6px',
-                            height: '1px',
-                            background: isActive ? '#aaa' : '#333',
-                            display: 'block',
-                            transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
-                            flexShrink: 0,
+                            width: isActive ? '20px' : '6px', height: '1px',
+                            background: isActive ? '#aaa' : '#333', display: 'block',
+                            transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)', flexShrink: 0,
                         }} />
                     </button>
                 );
@@ -191,33 +170,33 @@ function SideNav({
 }
 
 // ─── Media placeholder ────────────────────────────────────────────────────────
-function Media({ filename, aspect = '16/9' }: { filename: string; aspect?: string }) {
+function Media({ filename, aspect = '16/9', hint }: { filename: string; aspect?: string; hint?: string }) {
     /*
      * ── SWAP INSTRUCTIONS ───────────────────────────────────────────────────
      * Video:
-     *   <video src={`/assets/camber/${filename}`} autoPlay muted loop playsInline
+     *   <video src={`/assets/voca/${filename}`} autoPlay muted loop playsInline
      *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
      * Image:
-     *   <img src={`/assets/camber/${filename}`} alt=""
+     *   <img src={`/assets/voca/${filename}`} alt={hint ?? ''}
      *     style={{ width:'100%', aspectRatio:aspect, objectFit:'cover', display:'block' }} />
      * ────────────────────────────────────────────────────────────────────────
      */
     return (
         <div style={{
             width: '100%', aspectRatio: aspect,
-            background: '#0e0e0e',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: '#0a0a0a', border: '1px solid #141414',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '8px',
             position: 'relative', overflow: 'hidden',
         }}>
-            <div style={{
-                position: 'absolute', inset: 0,
-                backgroundImage: 'linear-gradient(#181818 1px, transparent 1px), linear-gradient(90deg, #181818 1px, transparent 1px)',
-                backgroundSize: '52px 52px',
-                opacity: 0.7,
-            }} />
-            <p style={{ ...LBL, fontSize: '0.58rem', letterSpacing: '0.16em', color: '#242424', position: 'relative', margin: 0 }}>
+            <p style={{ ...LBL, fontSize: '0.55rem', letterSpacing: '0.18em', color: '#333', position: 'relative', margin: 0 }}>
                 {filename}
             </p>
+            {hint && (
+                <p style={{ ...LBL, fontSize: '0.48rem', letterSpacing: '0.12em', color: '#222', position: 'relative', margin: 0, textTransform: 'none' as const }}>
+                    {hint}
+                </p>
+            )}
         </div>
     );
 }
@@ -232,8 +211,7 @@ function DCard({ index, label, rationale, outcome, chosen }: {
             position: 'relative',
             background: 'transparent',
             borderTop: chosen ? '1px solid #333' : '1px solid transparent',
-            height: '100%',
-            boxSizing: 'border-box' as const,
+            height: '100%', boxSizing: 'border-box' as const,
         }}>
             {chosen && (
                 <span style={{ ...LBL, fontSize: '0.5rem', position: 'absolute', top: '3.5rem', right: '2.5rem', color: '#888' }}>
@@ -245,8 +223,7 @@ function DCard({ index, label, rationale, outcome, chosen }: {
             </p>
             <p style={{
                 ...figtree, fontSize: '1.05rem', fontWeight: 500,
-                color: chosen ? '#ffffff' : '#aaa',
-                margin: '0 0 1.5rem', lineHeight: 1.3, letterSpacing: '-0.01em'
+                color: chosen ? '#ffffff' : '#aaa', margin: '0 0 1.5rem', lineHeight: 1.3, letterSpacing: '-0.01em'
             }}>
                 {label}
             </p>
@@ -266,14 +243,25 @@ function DCard({ index, label, rationale, outcome, chosen }: {
     );
 }
 
+// ─── Inline code ──────────────────────────────────────────────────────────────
+function Code({ children }: { children: React.ReactNode }) {
+    return (
+        <code style={{
+            color: '#bbb', fontSize: '0.875em',
+            background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px',
+        }}>
+            {children}
+        </code>
+    );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
-export function CamberCaseStudy() {
+export function VocaCaseStudy() {
     const navigate = useNavigate();
     const { scrollTo } = useSmoothScroll();
     const [scrollY, setScrollY] = useState(0);
     const [activeNav, setActiveNav] = useState(0);
 
-    // Section refs for nav
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null, null]);
 
     useEffect(() => {
@@ -281,8 +269,6 @@ export function CamberCaseStudy() {
         const onScroll = () => {
             const y = window.scrollY;
             setScrollY(y);
-
-            // Determine active section
             const offsets = sectionRefs.current.map(el => el ? el.getBoundingClientRect().top : Infinity);
             let active = 0;
             offsets.forEach((top, i) => { if (top < window.innerHeight * 0.5) active = i; });
@@ -293,12 +279,10 @@ export function CamberCaseStudy() {
     }, []);
 
     const heroFade = Math.max(0, 1 - scrollY / 500);
-
     const handleNav = (i: number) => {
         const el = sectionRefs.current[i];
         if (el) scrollTo(el.getBoundingClientRect().top + window.scrollY);
     };
-
     const setRef = (i: number) => (el: HTMLDivElement | null) => { sectionRefs.current[i] = el; };
 
     return (
@@ -334,26 +318,19 @@ export function CamberCaseStudy() {
                 opacity: heroFade,
                 transition: 'opacity 0.06s linear',
             }}>
-                <div style={{
-                    position: 'absolute', top: '-5%', right: '-5%',
-                    width: '45vw', height: '55vh',
-                    background: 'radial-gradient(ellipse at top right, rgba(255,255,255,0.02) 0%, transparent 60%)',
-                    pointerEvents: 'none',
-                }} />
-
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
                     <span style={{ ...serifItalic, color: '#282828', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                    Case Study · macOS App · 2024
+                    Case Study · Voice AI · Web App · 2024
                 </p>
 
                 <h1 style={{
-                    fontSize: 'clamp(4rem, 9.5vw, 8.5rem)',
-                    fontWeight: 700, lineHeight: 0.9,
-                    letterSpacing: '-0.03em',
+                    fontSize: 'clamp(4.5rem, 10vw, 9.5rem)',
+                    fontWeight: 500, lineHeight: 0.9,
+                    letterSpacing: '-0.04em',
                     margin: '0 0 2.5rem', color: '#ffffff',
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s both',
                 }}>
-                    Camber
+                    Voca
                 </h1>
 
                 <p style={{
@@ -362,8 +339,7 @@ export function CamberCaseStudy() {
                     lineHeight: 1.65, margin: 0, fontWeight: 400,
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.32s both',
                 }}>
-                    Every task manager promises to reduce friction —
-                    then buries itself three clicks deep.
+                    Forms treat users like data-entry clerks — stripping the nuance out of how answers are actually spoken.
                 </p>
 
                 <div style={{
@@ -388,10 +364,10 @@ export function CamberCaseStudy() {
                 <div style={{ display: 'flex', padding: `1.75rem ${PAD}`, overflowX: 'auto', gap: 0 }}>
                     {[
                         { k: 'Role', v: 'Solo — Design & Engineering' },
-                        { k: 'Platform', v: 'macOS Universal' },
-                        { k: 'Stack', v: 'Electron · React · sql.js' },
-                        { k: 'Status', v: 'Shipped · Open Source' },
-                        { k: 'Site', v: 'camberapp.com' },
+                        { k: 'Platform', v: 'Web (Next.js 14)' },
+                        { k: 'Stack', v: 'Gemini · Groq Whisper · Supabase' },
+                        { k: 'Also known as', v: 'Vocaforms' },
+                        { k: 'Status', v: 'Shipped · MVP' },
                     ].map(({ k, v }, i, arr) => (
                         <div key={k} style={{
                             flex: '1 0 auto',
@@ -415,37 +391,47 @@ export function CamberCaseStudy() {
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: '1.1fr 0.9fr',
-                    gap: 'clamp(4rem, 8vw, 9rem)',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 'clamp(5rem, 10vw, 12rem)',
                     alignItems: 'start',
                 }}>
                     <Reveal delay={60}>
                         <h2 style={{
                             fontSize: 'clamp(1.8rem, 3.5vw, 2.9rem)',
-                            fontWeight: 700, lineHeight: 1.1,
+                            fontWeight: 500, lineHeight: 1.15,
                             color: '#ffffff', margin: 0,
-                            letterSpacing: '-0.02em',
+                            letterSpacing: '-0.03em',
                         }}>
-                            The problem was never a missing feature. It was the psychological cost of opening the app.
+                            Existing data collection has two separate failure modes — one for users, one for creators.
                         </h2>
                     </Reveal>
 
                     <Reveal delay={130}>
                         <div>
                             <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
-                                I've tried every task manager. They all share the same failure mode: they live somewhere else. You're mid-thought, need to log something, and suddenly you're navigating — switching apps, finding the right project, expanding the right list. The thought dulls. Your flow is gone.
+                                For the user: static HTML forms are rigid, friction-heavy, and assume a baseline of digital literacy that excludes many people — especially on mobile. A person who could give you a fluent, confident verbal answer gets stuck on a text box.
                             </p>
                             <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                                The deeper problem is emotional. When accessing the tool feels like a chore, you avoid it. Then avoid it more. It becomes a graveyard of tasks you entered optimistically two weeks ago. The tool stops reflecting reality. You stop trusting it. That loop is what most productivity apps never break.
+                                For the creator: text boxes strip vital qualitative context. You can't gauge a candidate's confidence, clarity, or tone from a polished paragraph — especially one that may have been rewritten by an AI. The audio of the answer is as critical as the words. Every existing tool discards it entirely.
                             </p>
                         </div>
                     </Reveal>
                 </div>
             </div>
 
-            {/* FULL-BLEED MEDIA 1 */}
+            {/* FULL-BLEED MEDIA 1 — Hero demo of the conversation UI */}
             <Reveal y={10}>
-                <Media filename="camber-notch-demo.mp4" aspect="16/9" />
+                {/*
+                  MEDIA HINT:
+                  This should be a screen recording or demo of Voca's conversational flow —
+                  the voice agent speaking, the waveform animating, the transcript appearing.
+                  Ideal: voca-conversation-demo.mp4
+                */}
+                <Media
+                    filename="voca-conversation-demo.mp4"
+                    aspect="16/9"
+                    hint="Screen recording — voice agent conversation flow"
+                />
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -460,41 +446,30 @@ export function CamberCaseStudy() {
                         color: '#888', maxWidth: '54ch', lineHeight: 1.8,
                         margin: '0 0 5rem',
                     }}>
-                        The constraint I set: tasks had to be reachable without switching apps, clicking anything, or breaking flow. And they had to feel good to complete — not just useful.
+                        The shift I needed to make wasn't a UI improvement — it was a paradigm change. From "filling out a form" to "conducting an interview."
                     </p>
                 </Reveal>
             </div>
 
-            {/* Decision cards — full-bleed, inside HR border */}
+            {/* Decision cards */}
             <Reveal y={8}>
                 <HR />
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    padding: `0 calc(${PAD} - 2.5rem)`
-                }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', padding: `0 calc(${PAD} - 2.5rem)` }}>
                     {([
                         {
                             index: 'Option 01',
-                            label: 'Dashboard app',
-                            rationale: 'Requires full context switching. Gets buried behind VS Code the moment you actually start working. Adds to the problem it claims to solve.',
+                            label: 'Voice-to-text on standard forms',
+                            rationale: 'A band-aid. The user still has to navigate a rigid visual UI — the friction just shifts from typing to microphone management. The mental model doesn\'t change.',
                         },
                         {
                             index: 'Option 02',
-                            label: 'Menu bar dropdown',
-                            rationale: 'Better proximity, but still needs a click, dense navigation, and competes with every other menu bar squatter you already have.',
-                        },
-                        {
-                            index: 'Option 03',
-                            label: 'The MacBook notch',
-                            rationale: 'Dead real estate on every modern MacBook. A hover could surface tasks instantly — no click, no navigation, no app switch.',
-                            outcome: 'Tasks become one motion away, always. The display itself becomes the interface.',
+                            label: 'Purely conversational AI agent',
+                            rationale: 'The user speaks naturally. The agent guides them through a narrative flow — no rigid fields, no sequence to manage. It extracts structured data from natural speech.',
+                            outcome: 'A user can say "Um, my email is john doe at gmail... oh wait, yahoo" and the AI extracts johndoe@yahoo.com into the database perfectly, without ever making them feel like they answered wrong.',
                             chosen: true,
                         },
                     ] as const).map((card, i) => (
-                        <div key={i} style={{
-                            borderRight: i < 2 ? '1px solid #1e1e1e' : 'none',
-                        }}>
+                        <div key={i} style={{ borderRight: i < 1 ? '1px solid #1e1e1e' : 'none' }}>
                             <DCard {...card} />
                         </div>
                     ))}
@@ -502,30 +477,47 @@ export function CamberCaseStudy() {
                 <HR />
             </Reveal>
 
-            {/* Motivation aside */}
+            {/* The forgiveness problem */}
             <div style={{ padding: `6rem ${PAD}` }}>
                 <Reveal>
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: '160px 1fr',
-                        gap: '5rem',
-                        alignItems: 'start',
+                        gap: '5rem', alignItems: 'start',
                     }}>
                         <p style={{ ...LBL, fontSize: '0.58rem', margin: '4px 0 0', lineHeight: 1.7, color: '#2a2a2a' }}>
-                            The second problem —<br />motivation
+                            The forgiving<br />AI problem
                         </p>
                         <p style={{ ...figtree, fontSize: 'clamp(0.95rem, 1.5vw, 1.08rem)', color: '#999', lineHeight: 1.88, margin: 0 }}>
-                            Solving friction wasn't enough. An accessible task list is still just a list. I thought about what actually makes you want to finish something — not obligation, but momentum. Formula 1 has that in every lap. By mapping tasks onto a race, completing a subtask stops being an admin action and starts being physical forward motion. The car moves. The flag gets closer. That loop is motivating in a way a checkbox never is.
+                            For this to work, the AI had to be genuinely forgiving. Not just of spelling or grammar, but of how people actually talk — colloquial speech, mid-sentence corrections, code-switching between languages. My audience included Hinglish speakers. The agent had to handle a mix of Hindi and English naturally, extract perfectly structured JSON, and never once make the user feel like they'd answered incorrectly. That's a much harder brief than just "transcribe speech."
                         </p>
                     </div>
                 </Reveal>
             </div>
 
-            {/* FULL-BLEED MEDIA 2 */}
+            {/* FULL-BLEED MEDIA 2 — split: form builder + admin dashboard */}
             <Reveal y={10}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                    <Media filename="camber-track-view.jpg" aspect="4/3" />
-                    <Media filename="camber-constructor-select.jpg" aspect="4/3" />
+                    {/*
+                      MEDIA HINT (left):
+                      Form builder / creator interface — where someone designs a Voca form.
+                      Ideal: voca-form-builder.jpg or voca-form-builder.mp4
+                    */}
+                    <Media
+                        filename="voca-form-builder.jpg"
+                        aspect="4/3"
+                        hint="Form builder — creator interface"
+                    />
+                    {/*
+                      MEDIA HINT (right):
+                      Admin dashboard — showing a response with the audio player and structured data side-by-side.
+                      Ideal: voca-admin-dashboard.jpg
+                    */}
+                    <Media
+                        filename="voca-admin-dashboard.jpg"
+                        aspect="4/3"
+                        hint="Admin dashboard — audio + structured response"
+                    />
                 </div>
             </Reveal>
 
@@ -538,22 +530,67 @@ export function CamberCaseStudy() {
                 <Reveal delay={60}>
                     <h2 style={{
                         fontSize: 'clamp(2.2rem, 5.5vw, 4.8rem)',
-                        fontWeight: 700, lineHeight: 0.95,
-                        color: '#ffffff', margin: '0 0 5rem',
-                        letterSpacing: '-0.028em', maxWidth: '16ch',
+                        fontWeight: 500, lineHeight: 1.0,
+                        color: '#ffffff', margin: '0 0 6rem',
+                        letterSpacing: '-0.035em', maxWidth: '18ch',
                     }}>
-                        A task manager that lives inside your display.
+                        A form engine that listens instead of waits.
                     </h2>
                 </Reveal>
 
                 <Reveal delay={100}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(3rem, 6vw, 7rem)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(4rem, 8vw, 10rem)', marginBottom: '6rem' }}>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Hover over the MacBook notch and Camber drops down: an F1 race track rendered inside a minimal popover, with your tasks mapped as cars on constructor-themed lanes. Each subtask you complete advances the car. Finish everything and the car crosses the line.
+                            The user speaks to an AI agent that guides them through the form as a natural conversation. No fields, no next buttons, no mandatory format. The agent extracts structured data from whatever they say and stores it — alongside the original audio — in real time.
                         </p>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Move your cursor away and it disappears. No close button. No minimize. It doesn't need to be managed — it just appears when you need it and vanishes when you don't. Constructors serve as project categories. Choosing one isn't just labeling a project — it's a small act of identity.
+                            Form creators get a dashboard where every response renders as both a clean data table and a native audio player. The structure is there for analysis. The audio is there for everything a text box can't capture — confidence, hesitation, tone, authenticity.
                         </p>
+                    </div>
+                </Reveal>
+
+                {/* Three decisions as a column list */}
+                <Reveal delay={80}>
+                    <div style={{ borderTop: '1px solid #1e1e1e' }}>
+                        {[
+                            {
+                                decision: 'Conversational data extraction',
+                                rationale: 'Eliminates manual typing and complex regex validation.',
+                                outcome: 'Natural speech — corrections, fillers, and all — maps cleanly to structured database fields.',
+                            },
+                            {
+                                decision: 'Retaining the source audio',
+                                rationale: 'Captures tonal nuance and confidence the transcript can\'t convey.',
+                                outcome: 'Every response in the admin dashboard pairs structured text with a native audio player.',
+                            },
+                            {
+                                decision: 'Optimistic UI with local TTS fallbacks',
+                                rationale: 'Awkward silence while waiting for an LLM breaks the conversational illusion immediately.',
+                                outcome: 'The app plays local filler audio ("Hmm...", "Let me see...") while querying Gemini in the background — latency becomes invisible.',
+                            },
+                        ].map(({ decision, rationale, outcome }, i) => (
+                            <div key={decision} style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr 1fr',
+                                gap: '4rem',
+                                padding: '2.5rem 0',
+                                borderBottom: '1px solid #1a1a1a',
+                                alignItems: 'start',
+                            }}>
+                                <p style={{ ...figtree, fontWeight: 600, fontSize: '0.9rem', color: '#eaeaea', margin: 0, lineHeight: 1.45 }}>
+                                    <span style={{ ...LBL, fontSize: '0.54rem', display: 'block', margin: '0 0 0.6rem', color: '#2e2e2e' }}>
+                                        Decision {String(i + 1).padStart(2, '0')}
+                                    </span>
+                                    {decision}
+                                </p>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>
+                                    {rationale}
+                                </p>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#888', lineHeight: 1.8, margin: 0 }}>
+                                    → {outcome}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </Reveal>
             </div>
@@ -574,26 +611,21 @@ export function CamberCaseStudy() {
                     <Reveal delay={60}>
                         <div>
                             <h3 style={{
-                                ...figtree, fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
-                                fontWeight: 600, color: '#ffffff',
-                                lineHeight: 1.3, margin: '0 0 2rem',
-                                letterSpacing: '-0.01em',
+                                ...figtree, fontSize: 'clamp(1.2rem, 2.2vw, 1.6rem)',
+                                fontWeight: 500, color: '#ffffff',
+                                lineHeight: 1.35, margin: '0 0 2.5rem',
+                                letterSpacing: '-0.02em',
                             }}>
-                                The notch problem macOS doesn't want you to solve.
+                                The hardest problem wasn't AI — it was binary data crossing the Next.js boundary.
                             </h3>
                             <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
-                                Apple exposes no public API for notch interaction. To work around this, I built a mouse polling loop using Electron's{' '}
-                                <code style={{ color: '#bbb', fontSize: '0.875em', background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px' }}>
-                                    screen.getCursorScreenPoint()
-                                </code>
-                                {' '}running every 100ms. When the cursor enters a 200×25px hit zone, it triggers a frameless, transparent{' '}
-                                <code style={{ color: '#bbb', fontSize: '0.875em', background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px' }}>
-                                    BrowserWindow
-                                </code>
-                                {' '}anchored to the display top.
+                                My first approach was Base64 JSON encoding for audio transport. It bloated memory instantly, blocked the main thread, and caused severe browser lag on recordings longer than thirty seconds. Not viable.
+                            </p>
+                            <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: '0 0 1.5rem' }}>
+                                I re-architected the submission pipeline around native <Code>FormData</Code>, directly piping binary objects to array buffers on the server and straight into Supabase Storage — bypassing the JSON layer entirely. The lag disappeared.
                             </p>
                             <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                                The trickiest part was the 300ms grace period — without it, the popover flickered every time the cursor passed through. That single timing tweak was the difference between a prototype and something actually usable.
+                                For speech recognition, I combined Google Cloud STT as the primary with an immediate Groq Whisper fallback for accent robustness and zero-downtime failover. Neither the user nor the form creator ever sees the switch happen.
                             </p>
                         </div>
                     </Reveal>
@@ -601,12 +633,13 @@ export function CamberCaseStudy() {
                     <Reveal delay={140}>
                         <div style={{ borderTop: '1px solid #1e1e1e' }}>
                             {[
-                                { k: 'Framework', v: 'Electron + React' },
-                                { k: 'JSX', v: 'HTM — no build step' },
-                                { k: 'Data', v: 'sql.js · WASM SQLite · local' },
-                                { k: 'Trigger', v: '100ms · 200×25px · 300ms grace' },
-                                { k: 'Window', v: 'Frameless transparent, top-anchored' },
-                                { k: 'Ships as', v: 'Universal binary · GitHub Releases' },
+                                { k: 'Framework', v: 'Next.js 14 (App Router)' },
+                                { k: 'AI / LLM', v: 'Gemini 2.5 Flash' },
+                                { k: 'STT Primary', v: 'Google Cloud Speech-to-Text' },
+                                { k: 'STT Fallback', v: 'Groq Whisper' },
+                                { k: 'Database', v: 'Supabase (Postgres + Storage)' },
+                                { k: 'Audio transport', v: 'FormData → ArrayBuffer → Supabase' },
+                                { k: 'Latency masking', v: 'Local TTS filler + optimistic UI' },
                             ].map(({ k, v }) => (
                                 <div key={k} style={{
                                     display: 'grid', gridTemplateColumns: '80px 1fr', gap: '1rem',
@@ -622,9 +655,19 @@ export function CamberCaseStudy() {
             </div>
             <HR />
 
-            {/* FULL-BLEED MEDIA 3 */}
+            {/* FULL-BLEED MEDIA 3 — mobile view or accessibility angle */}
             <Reveal y={10}>
-                <Media filename="camber-website.jpg" aspect="16/7" />
+                {/*
+                  MEDIA HINT:
+                  Show Voca on mobile — the accessibility angle is strong here.
+                  A user speaking into their phone, the transcript appearing in real time.
+                  Ideal: voca-mobile-view.mp4 or voca-mobile.jpg
+                */}
+                <Media
+                    filename="voca-mobile-view.mp4"
+                    aspect="16/7"
+                    hint="Mobile view — voice interaction on device"
+                />
             </Reveal>
 
             {/* ══════════════════════════════════════════════════
@@ -633,19 +676,19 @@ export function CamberCaseStudy() {
             <div ref={setRef(4)} style={{ padding: `8rem ${PAD}` }}>
                 <Reveal><SL>Impact</SL></Reveal>
 
-                {/* Big pull quote */}
+                {/* Pull quote — the paradigm shift framing */}
                 <Reveal delay={60}>
                     <div style={{ margin: '0 0 7rem' }}>
                         <p style={{
                             fontSize: 'clamp(1.8rem, 4.5vw, 3.8rem)',
                             ...serifItalic, color: '#e0e0e0',
                             lineHeight: 1.1, margin: '0 0 1.5rem',
-                            letterSpacing: '-0.01em', maxWidth: '22ch',
+                            letterSpacing: '-0.01em', maxWidth: '24ch',
                         }}>
-                            "The execution deserved a star."
+                            "What was written" is no longer the whole answer.
                         </p>
                         <p style={{ ...LBL, fontSize: '0.58rem', color: '#282828' }}>
-                            GitHub user — unsolicited DM
+                            Form admins now receive structured data alongside source audio — for every response
                         </p>
                     </div>
                 </Reveal>
@@ -658,9 +701,18 @@ export function CamberCaseStudy() {
                         borderTop: '1px solid #1e1e1e',
                     }}>
                         {[
-                            { head: 'Open source', body: 'Published on GitHub. Qualitative feedback over vanity metrics — users reached out directly with unsolicited praise.' },
-                            { head: 'Daily use', body: "I use it every day. It solved the problem it was built for — my procrastination habits around tasks visibly shifted." },
-                            { head: 'Motivation works', body: 'Users explicitly reported the F1 metaphor helped them finish things, not just log them.' },
+                            {
+                                head: 'Accessible by design',
+                                body: 'Replaces a typing interface with a conversation. Users who struggle with forms on mobile — or with text input generally — are fully included.',
+                            },
+                            {
+                                head: 'Richer data for creators',
+                                body: 'Every response includes both structured JSON and the original audio recording. Context that text boxes permanently destroy is now preserved.',
+                            },
+                            {
+                                head: 'Latency made invisible',
+                                body: 'The optimistic UI system means users experience the agent as responsive and human — regardless of backend processing time.',
+                            },
                         ].map(({ head, body }, i) => (
                             <div key={head} style={{
                                 padding: '2.5rem 2.5rem 2.5rem 0',
@@ -684,12 +736,12 @@ export function CamberCaseStudy() {
 
                 <Reveal delay={60}>
                     <p style={{
-                        fontSize: 'clamp(1.4rem, 2.8vw, 2.3rem)',
-                        fontWeight: 600, color: '#e8e8e8',
-                        lineHeight: 1.25, margin: '0 0 3.5rem',
-                        letterSpacing: '-0.015em', maxWidth: '28ch',
+                        fontSize: 'clamp(1.6rem, 3.2vw, 2.6rem)',
+                        fontWeight: 500, color: '#e8e8e8',
+                        lineHeight: 1.3, margin: '0 0 4.5rem',
+                        letterSpacing: '-0.025em', maxWidth: '30ch',
                     }}>
-                        Constraints you invent are more interesting than constraints you inherit.
+                        Managing state in a conversational UI is as much about psychology as it is about technology.
                     </p>
                 </Reveal>
 
@@ -701,10 +753,10 @@ export function CamberCaseStudy() {
                         marginBottom: '8rem',
                     }}>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Every app I'd built before Camber lived inside the rules macOS hands you. Windows, menus, sidebars. Camber taught me that the most interesting design decisions happen when you ask where the interface <em>doesn't</em> have to live, not where it should. The notch wasn't in any list of valid surfaces — I only found it because I gave myself permission to be unreasonable first.
+                            The latency-masking system was the most revealing part of this build. Users don't need instant backend processing — they need the immediate, human-like signal that they're being heard. A well-timed "Hmm..." does more for trust than a 200ms API response that arrives in silence. The perception of responsiveness matters more than the reality of it.
                         </p>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#999', lineHeight: 1.9, margin: 0 }}>
-                            Gamification gets a bad reputation because most implementations are cynical — badges nobody wants, streaks that punish you. The F1 metaphor works because it maps onto something real. Progress is spatial. Finishing is physical. If I build another tool with a motivation problem, I'll look for a metaphor that earns its place instead of one that decorates the surface.
+                            The audio retention decision started as a feature, but ended up reframing the entire product. Once I committed to keeping the source recording, Voca stopped being "a better form" and became something closer to an asynchronous interview tool. The data model changed, the admin UI changed, the value proposition changed. One decision can restructure everything downstream.
                         </p>
                     </div>
                 </Reveal>
@@ -721,8 +773,12 @@ export function CamberCaseStudy() {
                 <Reveal>
                     <div>
                         <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#262626' }}>Next project</p>
+                        {/*
+                          UPDATE: Change the label and slug below to your next case study.
+                          navigate('/case-study/YOUR_NEXT_SLUG')
+                        */}
                         <button
-                            onClick={() => navigate('/case-study/vocaforms')}
+                            onClick={() => navigate('/case-study/visual-vortex')}
                             style={{
                                 background: 'transparent', border: 'none',
                                 color: '#ffffff',
@@ -734,7 +790,7 @@ export function CamberCaseStudy() {
                             onMouseEnter={e => (e.currentTarget.style.opacity = '0.3')}
                             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                         >
-                            Vocaforms →
+                            Visual Vortex →
                         </button>
                     </div>
                 </Reveal>
