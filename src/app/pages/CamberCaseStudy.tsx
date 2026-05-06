@@ -150,38 +150,44 @@ function SideNav({
                     <button
                         key={label}
                         onClick={() => onNav(i)}
-                        title={label}
                         style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: 0,
+                            background: 'transparent', border: 'none',
+                            cursor: 'pointer', display: 'flex', alignItems: 'center',
+                            gap: '12px', padding: 0,
                             opacity: isActive ? 1 : 0.3,
                             transition: 'opacity 0.3s ease',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                        onMouseLeave={e => (e.currentTarget.style.opacity = isActive ? '1' : '0.3')}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.opacity = '1';
+                            const labelEl = e.currentTarget.querySelector('.nav-label') as HTMLElement;
+                            if (labelEl) labelEl.style.opacity = '1';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.opacity = isActive ? '1' : '0.3';
+                            const labelEl = e.currentTarget.querySelector('.nav-label') as HTMLElement;
+                            if (labelEl && !isActive) labelEl.style.opacity = '0.15';
+                        }}
                     >
-                        <span style={{
-                            ...LBL,
-                            fontSize: '0.58rem',
-                            letterSpacing: '0.18em',
-                            color: isActive ? '#aaa' : '#555',
-                            transition: 'color 0.3s ease',
-                            whiteSpace: 'nowrap' as const,
-                        }}>
+                        <span 
+                            className="nav-label"
+                            style={{
+                                ...LBL, fontSize: '0.52rem', letterSpacing: '0.18em',
+                                color: isActive ? '#fff' : '#666',
+                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)', 
+                                whiteSpace: 'nowrap' as const,
+                                opacity: isActive ? 1 : 0.5,
+                                transform: isActive ? 'translateX(0)' : 'translateX(8px)',
+                                pointerEvents: 'none',
+                            }}
+                        >
                             {label}
                         </span>
                         <span style={{
-                            width: isActive ? '20px' : '6px',
-                            height: '1px',
-                            background: isActive ? '#aaa' : '#333',
+                            width: isActive ? '24px' : '8px', height: '1px',
+                            background: isActive ? '#fff' : '#666', 
+                            opacity: isActive ? 1 : 0.4,
                             display: 'block',
-                            transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
-                            flexShrink: 0,
+                            transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)', flexShrink: 0,
                         }} />
                     </button>
                 );

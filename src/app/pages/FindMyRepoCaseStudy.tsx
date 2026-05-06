@@ -144,7 +144,7 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                             background: 'transparent', border: 'none',
                             cursor: 'pointer', display: 'flex', alignItems: 'center',
                             gap: '12px', padding: 0,
-                            opacity: isActive ? 1 : 0.3,
+                            opacity: isActive ? 1 : 0.5,
                             transition: 'opacity 0.3s ease',
                         }}
                         onMouseEnter={e => {
@@ -155,17 +155,17 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                         onMouseLeave={e => {
                             e.currentTarget.style.opacity = isActive ? '1' : '0.3';
                             const labelEl = e.currentTarget.querySelector('.nav-label') as HTMLElement;
-                            if (labelEl && !isActive) labelEl.style.opacity = '0';
+                            if (labelEl && !isActive) labelEl.style.opacity = '0.15';
                         }}
                     >
-                        <span 
+                        <span
                             className="nav-label"
                             style={{
                                 ...LBL, fontSize: '0.52rem', letterSpacing: '0.18em',
-                                color: isActive ? '#aaa' : '#666',
-                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)', 
+                                color: isActive ? '#fff' : '#666',
+                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
                                 whiteSpace: 'nowrap' as const,
-                                opacity: isActive ? 1 : 0,
+                                opacity: isActive ? 1 : 0.5,
                                 transform: isActive ? 'translateX(0)' : 'translateX(8px)',
                                 pointerEvents: 'none',
                             }}
@@ -174,7 +174,9 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                         </span>
                         <span style={{
                             width: isActive ? '24px' : '8px', height: '1px',
-                            background: isActive ? '#aaa' : '#333', display: 'block',
+                            background: isActive ? '#fff' : '#666',
+                            opacity: isActive ? 1 : 0.4,
+                            display: 'block',
                             transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)', flexShrink: 0,
                         }} />
                     </button>
@@ -544,7 +546,7 @@ export function FindMyRepoCaseStudy() {
                       Ideal: find-my-repo-search.png or find-my-repo-search.mp4
                     */}
                     <Media
-                        filename="find-my-repo-search.png"
+                        filename="find-my-repo-search.gif"
                         aspect="auto"
                         objectFit="contain"
                         padding="4rem"
@@ -885,7 +887,7 @@ export function FindMyRepoCaseStudy() {
                       Ideal: find-my-repo-onboarding.png or find-my-repo-onboarding.mp4
                     */}
                     <Media
-                        filename="find-my-repo-onboarding.png"
+                        filename="find-my-repo-dashboard.png"
                         aspect="auto"
                         objectFit="contain"
                         padding="5rem"
