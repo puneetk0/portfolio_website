@@ -122,6 +122,33 @@ function HR() {
     return <div style={{ width: '100%', height: '1px', background: '#1e1e1e' }} />;
 }
 
+function ActionLink({ href, label }: { href: string; label: string }) {
+    return (
+        <a 
+            href={href} target="_blank" rel="noreferrer"
+            style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                padding: '0.65rem 1.25rem',
+                border: '1px solid #2a2a2a', borderRadius: '4px',
+                textDecoration: 'none', color: '#eaeaea',
+                fontSize: '0.75rem', letterSpacing: '0.04em', ...figtree,
+                transition: 'all 0.2s ease',
+                background: 'rgba(255,255,255,0.015)',
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.borderColor = '#444';
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.015)';
+                e.currentTarget.style.borderColor = '#2a2a2a';
+            }}
+        >
+            {label} ↗
+        </a>
+    );
+}
+
 // ─── Sidebar Nav ──────────────────────────────────────────────────────────────
 const NAV_SECTIONS = ['Problem', 'Thinking', 'Solution', 'Execution', 'Impact', 'Learned'];
 
@@ -386,11 +413,18 @@ export function VocaCaseStudy() {
                 <p style={{
                     fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
                     color: '#aaa', maxWidth: '44ch',
-                    lineHeight: 1.65, margin: 0, fontWeight: 400,
+                    lineHeight: 1.65, margin: '0 0 2.5rem', fontWeight: 400,
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.32s both',
                 }}>
                     Forms treat users like data-entry clerks, stripping the nuance out of how answers are actually spoken.
                 </p>
+
+                <div style={{
+                    display: 'flex', gap: '1rem',
+                    animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s both',
+                }}>
+                    <ActionLink href="https://example.com" label="Live Website" />
+                </div>
 
                 <div style={{
                     position: 'absolute', bottom: '2.5rem', right: PAD,
