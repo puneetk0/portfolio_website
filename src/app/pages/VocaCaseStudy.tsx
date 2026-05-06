@@ -157,14 +157,14 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                             if (labelEl && !isActive) labelEl.style.opacity = '0.15';
                         }}
                     >
-                        <span 
+                        <span
                             className="nav-label"
                             style={{
                                 ...LBL, fontSize: '0.52rem', letterSpacing: '0.18em',
                                 color: isActive ? '#fff' : '#666',
-                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)', 
+                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
                                 whiteSpace: 'nowrap' as const,
-                                opacity: isActive ? 1 : 0.5,
+                                opacity: isActive ? 1 : 0.6,
                                 transform: isActive ? 'translateX(0)' : 'translateX(8px)',
                                 pointerEvents: 'none',
                             }}
@@ -173,7 +173,7 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                         </span>
                         <span style={{
                             width: isActive ? '24px' : '8px', height: '1px',
-                            background: isActive ? '#fff' : '#666', 
+                            background: isActive ? '#fff' : '#666',
                             opacity: isActive ? 1 : 0.4,
                             display: 'block',
                             transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)', flexShrink: 0,
@@ -198,7 +198,7 @@ function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, 
         <div style={{
             width: '100%',
             aspectRatio: aspect === 'auto' ? 'auto' : aspect,
-            background: bgColor, 
+            background: bgColor,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             position: 'relative', overflow: 'hidden',

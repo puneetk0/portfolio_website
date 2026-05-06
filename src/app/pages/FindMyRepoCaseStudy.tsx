@@ -165,7 +165,7 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                                 color: isActive ? '#fff' : '#666',
                                 transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
                                 whiteSpace: 'nowrap' as const,
-                                opacity: isActive ? 1 : 0.5,
+                                opacity: isActive ? 1 : 0.6,
                                 transform: isActive ? 'translateX(0)' : 'translateX(8px)',
                                 pointerEvents: 'none',
                             }}

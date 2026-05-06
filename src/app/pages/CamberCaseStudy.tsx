@@ -154,7 +154,7 @@ function SideNav({
                             background: 'transparent', border: 'none',
                             cursor: 'pointer', display: 'flex', alignItems: 'center',
                             gap: '12px', padding: 0,
-                            opacity: isActive ? 1 : 0.3,
+                            opacity: isActive ? 1 : 0.6,
                             transition: 'opacity 0.3s ease',
                         }}
                         onMouseEnter={e => {
@@ -168,12 +168,12 @@ function SideNav({
                             if (labelEl && !isActive) labelEl.style.opacity = '0.15';
                         }}
                     >
-                        <span 
+                        <span
                             className="nav-label"
                             style={{
                                 ...LBL, fontSize: '0.52rem', letterSpacing: '0.18em',
                                 color: isActive ? '#fff' : '#666',
-                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)', 
+                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
                                 whiteSpace: 'nowrap' as const,
                                 opacity: isActive ? 1 : 0.5,
                                 transform: isActive ? 'translateX(0)' : 'translateX(8px)',
@@ -184,7 +184,7 @@ function SideNav({
                         </span>
                         <span style={{
                             width: isActive ? '24px' : '8px', height: '1px',
-                            background: isActive ? '#fff' : '#666', 
+                            background: isActive ? '#fff' : '#666',
                             opacity: isActive ? 1 : 0.4,
                             display: 'block',
                             transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)', flexShrink: 0,
@@ -197,7 +197,7 @@ function SideNav({
 }
 
 // ─── Media placeholder ────────────────────────────────────────────────────────
-function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, bgColor = '#0a0a0a' }: { 
+function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, bgColor = '#0a0a0a' }: {
     filename: string; aspect?: string; hint?: string; objectFit?: 'cover' | 'contain' | 'fill';
     padding?: string; bgColor?: string;
 }) {
@@ -207,9 +207,9 @@ function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, 
 
     return (
         <div style={{
-            width: '100%', 
+            width: '100%',
             aspectRatio: aspect === 'auto' ? 'auto' : aspect,
-            background: bgColor, 
+            background: bgColor,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             position: 'relative', overflow: 'hidden',
@@ -221,10 +221,10 @@ function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, 
                     src={path}
                     autoPlay muted loop playsInline
                     onLoadedData={() => setLoaded(true)}
-                    style={{ 
-                        width: '100%', 
-                        height: aspect === 'auto' ? 'auto' : '100%', 
-                        objectFit: objectFit, 
+                    style={{
+                        width: '100%',
+                        height: aspect === 'auto' ? 'auto' : '100%',
+                        objectFit: objectFit,
                         display: 'block',
                         opacity: loaded ? 1 : 0,
                         transition: 'opacity 0.4s ease',
@@ -235,10 +235,10 @@ function Media({ filename, aspect = '16/9', hint, objectFit = 'cover', padding, 
                     src={path}
                     alt={hint || filename}
                     onLoad={() => setLoaded(true)}
-                    style={{ 
-                        width: '100%', 
-                        height: aspect === 'auto' ? 'auto' : '100%', 
-                        objectFit: objectFit, 
+                    style={{
+                        width: '100%',
+                        height: aspect === 'auto' ? 'auto' : '100%',
+                        objectFit: objectFit,
                         display: 'block',
                         opacity: loaded ? 1 : 0,
                         transition: 'opacity 0.4s ease',
