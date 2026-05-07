@@ -124,7 +124,7 @@ function HR() {
 
 function ActionLink({ href, label }: { href: string; label: string }) {
     return (
-        <a 
+        <a
             href={href} target="_blank" rel="noreferrer"
             style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -171,7 +171,7 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                             background: 'transparent', border: 'none',
                             cursor: 'pointer', display: 'flex', alignItems: 'center',
                             gap: '12px', padding: 0,
-                            opacity: isActive ? 1 : 0.5,
+                            opacity: isActive ? 1 : 0.6,
                             transition: 'opacity 0.3s ease',
                         }}
                         onMouseEnter={e => {
@@ -180,9 +180,9 @@ function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void
                             if (labelEl) labelEl.style.opacity = '1';
                         }}
                         onMouseLeave={e => {
-                            e.currentTarget.style.opacity = isActive ? '1' : '0.3';
+                            e.currentTarget.style.opacity = isActive ? '1' : '0.6';
                             const labelEl = e.currentTarget.querySelector('.nav-label') as HTMLElement;
-                            if (labelEl && !isActive) labelEl.style.opacity = '0.15';
+                            if (labelEl && !isActive) labelEl.style.opacity = '0.6';
                         }}
                     >
                         <span
@@ -327,7 +327,7 @@ function StatBlock({ value, label, sub }: { value: string; label: string; sub?: 
     return (
         <div style={{ borderTop: '1px solid #1e1e1e', paddingTop: '2rem' }}>
             <p style={{
-                fontSize: 'clamp(2.2rem, 5vw, 4rem)', fontWeight: 700,
+                fontSize: 'clamp(2.2rem, 5vw, 3rem)', fontWeight: 700,
                 color: '#ffffff', margin: '0 0 0.5rem',
                 letterSpacing: '-0.03em', lineHeight: 1,
                 ...figtree,
@@ -952,12 +952,12 @@ export function FindMyRepoCaseStudy() {
                             sub="Fetched, cleaned, and embedded searchable by intent."
                         />
                         <StatBlock
-                            value="< 100ms"
+                            value="<100 ms"
                             label="Query time"
                             sub="End-to-end from search input to ranked results."
                         />
                         <StatBlock
-                            value="60–100"
+                            value="60 - 100"
                             label="Results"
                             sub="vs. 28 results from the LLM-filter approach."
                         />

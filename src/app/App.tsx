@@ -15,6 +15,7 @@ import { CaseStudy } from './pages/CaseStudy';
 import { CamberCaseStudy } from './pages/CamberCaseStudy';
 import { VocaCaseStudy } from './pages/VocaCaseStudy';
 import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
+import { SportfolioCaseStudy } from './pages/SportfolioCaseStudy';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -39,7 +40,7 @@ function Home({ isMobile }: { isMobile: boolean }) {
     HERO_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
     PROJECT_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
     CATEGORIES.flatMap(cat => cat.cards).forEach(card => imagesToPreload.push(card.src));
-    
+
     imagesToPreload.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -65,7 +66,7 @@ function Home({ isMobile }: { isMobile: boolean }) {
       if (now - lastWheelT.current > 150) wheelAccum.current = 0;
       lastWheelT.current = now;
       wheelAccum.current += e.deltaY;
-      
+
       if (Math.abs(wheelAccum.current) >= WHEEL_THRESHOLD) {
         const direction = wheelAccum.current > 0 ? 1 : -1;
         wheelAccum.current = 0;
@@ -121,7 +122,7 @@ function Home({ isMobile }: { isMobile: boolean }) {
   };
 
   const sections = [
-    <Hero ek={entryKeys[0]} isMobile={isMobile} isActive={activeSection === 0} />,
+    <Hero ek={entryKeys[0]} isMobile={isMobile} isActive={activeSection === 0} navigate={navigate} />,
     <Projects ek={entryKeys[1]} isMobile={isMobile} isActive={activeSection === 1} />,
     <AndWhat ek={entryKeys[2]} isMobile={isMobile} isActive={activeSection === 2} />,
   ];
@@ -183,6 +184,8 @@ export default function App() {
         <Route path="/case-study/find-my-repo" element={<FindMyRepoCaseStudy />} />
         <Route path="/case-study/findmyrepo" element={<FindMyRepoCaseStudy />} />
         <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/sportfolio" element={<SportfolioCaseStudy />} />
+        <Route path="/case-study/sportsolio" element={<SportfolioCaseStudy />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 

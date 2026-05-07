@@ -77,7 +77,6 @@ export function AndWhat({ ek, isMobile, isActive }: { ek: number; isMobile: bool
               }}
             >
               <div data-magnetic="true" style={{ display: 'inline-block' }}>
-                <span style={{ ...serifItalic, color: isHovered ? '#888' : '#555', fontSize: '1.3em', marginRight: '8px', transition: 'color 250ms ease' }}>&amp;</span>
                 <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#ffffff' : '#cccccc', transition: 'color 200ms ease' }}>
                   {cat.name}
                 </span>

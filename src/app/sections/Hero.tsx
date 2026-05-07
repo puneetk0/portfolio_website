@@ -5,7 +5,7 @@ import { useParallax } from '../hooks/useParallax';
 import { ImageCluster } from '../components/ImageCluster';
 import { PERSONAL_INFO, BUILDING_PROJECTS, HERO_LAYOUTS } from '../../data/portfolio';
 
-export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean; isActive: boolean }) {
+export function Hero({ ek, isMobile, isActive, navigate }: { ek: number; isMobile: boolean; isActive: boolean; navigate: (to: number) => void }) {
   const [greetingHover, setGreetingHover] = useState(false);
   const [hoveredBuild, setHoveredBuild] = useState<number | null>(null);
   const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
@@ -75,6 +75,35 @@ export function Hero({ ek, isMobile, isActive }: { ek: number; isMobile: boolean
             </Link>
           );
         })}
+
+        <div style={{
+          marginTop: isMobile ? '14px' : '24px',
+          opacity: 0.8,
+          animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.6s both',
+          ...ls(5)
+        }}>
+          <button
+            onClick={() => navigate(1)}
+            style={{
+              background: 'none', border: 'none', padding: 0,
+              color: '#666', cursor: 'pointer', ...figtree,
+              fontSize: '0.68rem', textTransform: 'uppercase',
+              letterSpacing: '0.15em', fontWeight: 500,
+              display: 'flex', alignItems: 'center', gap: '8px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.transform = 'translateX(5px)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = '#666';
+              e.currentTarget.style.transform = 'translateX(0px)';
+            }}
+          >
+            Show more projects <span style={{ fontSize: '.5rem', lineHeight: 1 }}>→</span>
+          </button>
+        </div>
       </div>
     </div>
   );
