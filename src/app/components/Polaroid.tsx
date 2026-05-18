@@ -35,7 +35,7 @@ export function Polaroid({ card, isVisible, cancelLeave, scheduleLeave }: {
       }}
       onMouseMove={handleMouseMove}
       style={{
-        width: 220, // Scaled up
+        width: 260, // Scaled up further
         backgroundColor: '#f9f8f4', 
         boxShadow: [
           '0 2px 4px rgba(0,0,0,0.4)',
@@ -43,7 +43,7 @@ export function Polaroid({ card, isVisible, cancelLeave, scheduleLeave }: {
           '0 16px 32px rgba(0,0,0,0.3)',
           '0 32px 64px rgba(0,0,0,0.4)',
         ].join(', '),
-        padding: '14px 14px 60px 14px', 
+        padding: '16px 16px 70px 16px', 
         opacity: isVisible ? 1 : 0,
         transform: `scale(${isVisible ? 1 : 0.85}) translateY(${isVisible ? 0 : 20}px)`,
         transition: `opacity ${dur}ms ${EASE_TEXT} ${delay}ms, transform ${dur}ms ${EASE_TEXT} ${delay}ms`,
@@ -62,7 +62,7 @@ export function Polaroid({ card, isVisible, cancelLeave, scheduleLeave }: {
         pointerEvents: 'none'
       }} />
 
-      <div style={{ position: 'relative', width: 192, height: 192, background: '#111' }}>
+      <div style={{ position: 'relative', width: 228, height: 228, background: '#111' }}>
         <img
           src={card.src}
           alt={card.caption}
@@ -88,10 +88,10 @@ export function Polaroid({ card, isVisible, cancelLeave, scheduleLeave }: {
         alignItems: 'center', justifyContent: 'center',
         gap: 0,
       }}>
-        <div style={{ ...caveat, fontSize: '24px', fontWeight: 700, color: '#1a1816', lineHeight: 1 }}>
+        <div style={{ ...caveat, fontSize: '28px', fontWeight: 700, color: '#1a1816', lineHeight: 1 }}>
           {card.caption}
         </div>
-        <div style={{ ...caveat, fontSize: '18px', fontWeight: 500, color: '#6a625b', lineHeight: 1 }}>
+        <div style={{ ...caveat, fontSize: '20px', fontWeight: 500, color: '#6a625b', lineHeight: 1 }}>
           {card.subtitle}
         </div>
       </div>

@@ -46,10 +46,10 @@ export const SECTION_LABELS = ['intro', 'projects', 'and ?'];
 
 export const SOCIAL_LINKS = [
   { id: 'mail', label: 'mail', href: 'mailto:puneetkathuria2525@gmail.com' },
-  { id: 'linkedin', label: 'linkedin', href: 'https://linkedin.com/in/puneet' },
+  { id: 'linkedin', label: 'linkedin', href: 'https://www.linkedin.com/in/puneet-kathuria-33a296220/' },
   { id: 'instagram', label: 'instagram', href: 'https://instagram.com/puneet.25_' },
   { id: 'github', label: 'github', href: 'https://github.com/puneetk0' },
-  { id: "Resume", label: "Resume", href: "https://drive.google.com/file/d/1uK9V1j7y6R_u2t7l_q3f7-r7d_6s7n-q/view?usp=sharing" }
+  { id: "Resume", label: "Resume", href: "https://drive.google.com/drive/folders/1c4YqG7klP6moDcZ5KS_R36m7GOEs5-pB?usp=drive_link" }
 ];
 
 export const BUILDING_PROJECTS: ProjectDef[] = [
@@ -144,25 +144,23 @@ export const CATEGORIES: CategoryDef[] = [
   {
     name: "I've won things",
     cards: [
-      { src: '/assets/and-what/won-01.jpg', caption: 'Cognizance — 2025', subtitle: 'Prod-G winner', x: 28, y: 88, r: -5, delay: 0 },
-      { src: '/assets/and-what/won-02.jpg', caption: 'DCode — 2025', subtitle: 'Best UI/UX award', x: 218, y: 236, r: 3, delay: 65 },
-      { src: '/assets/and-what/won-03.jpg', caption: 'DesignX — 2026', subtitle: 'Designathon finalist', x: 78, y: 384, r: -2, delay: 130 },
+      { src: '/assets/and-what/cognizance.jpeg', caption: 'Cognizance — 2025', subtitle: 'Prod-G winner', x: 28, y: 88, r: -5, delay: 0 },
+      { src: '/assets/and-what/dcode.jpeg', caption: 'DCode — 2025', subtitle: 'Runner Up', x: 288, y: 236, r: 3, delay: 65 },
+      { src: '/assets/and-what/designx.jpeg', caption: 'DesignX — 2026', subtitle: 'Designathon finalist', x: 60, y: 404, r: -2, delay: 130 },
     ],
   },
   {
     name: "I've built rooms full of people",
     cards: [
-      { src: '/assets/and-what/rooms-01.jpg', caption: 'Visual Vortex', subtitle: '2000+ attendees', x: 36, y: 74, r: 4, delay: 0 },
-      { src: '/assets/and-what/rooms-02.jpg', caption: 'UI/UX Workshop', subtitle: 'taught design', x: 228, y: 220, r: -6, delay: 65 },
-      { src: '/assets/and-what/rooms-03.jpg', caption: "Neutron '25", subtitle: 'North India', x: 64, y: 366, r: 2, delay: 130 },
+      { src: '/assets/and-what/visual-vortex.png', caption: 'Visual Vortex', subtitle: '400+ attendees', x: 40, y: 100, r: -4, delay: 0 },
+      { src: '/assets/and-what/workshop.jpeg', caption: 'UI/UX Workshop', subtitle: 'taught design', x: 240, y: 360, r: 5, delay: 65 },
     ],
   },
   {
     name: 'and everything else',
     cards: [
-      { src: '/assets/and-what/misc-01.jpg', caption: '12M views', subtitle: 'most viewed Figma vid', x: 32, y: 96, r: -3, delay: 0 },
-      { src: '/assets/and-what/misc-02.jpg', caption: '14 cities', subtitle: 'I collect airports', x: 228, y: 246, r: 5, delay: 65 },
-      { src: '/assets/and-what/misc-03.jpg', caption: 'Tifosi.', subtitle: 'F1 & snooker', x: 54, y: 394, r: -4, delay: 130 },
+      { src: '/assets/and-what/youtube.png', caption: '600k+ views', subtitle: 'most viewed Figma vid', x: 40, y: 100, r: -4, delay: 0 },
+      { src: '/assets/and-what/travel.jpg', caption: 'Travel', subtitle: 'I love to explore new places!', x: 240, y: 360, r: 5, delay: 65 },
     ],
   },
 ];
