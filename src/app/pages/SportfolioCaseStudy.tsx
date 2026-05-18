@@ -749,18 +749,18 @@ export function SportfolioCaseStudy() {
         </Reveal>
     </div>
 
-    {/* Screen showcase — uniform 4-column grid */ }
+    {/* Screen showcase — uniform 3-column grid */ }
     <div style={{ padding: `8rem ${PAD} 12rem` }}>
         {[
-            ['marketplace.png', 'trading.png', 'athlete-detail.png', 'portfolio.png'],
-            ['watchlist.png', 'athlete-dashboard.png', 'analytics.png', 'compare.png']
+            ['dashboard.png', 'marketplace.png', 'portfolio.png'],
+            ['analytics.png', 'athelete_detail.png', 'compare.png']
         ].map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2.5rem', marginBottom: '4rem' }}>
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem', marginBottom: '4rem' }}>
                 {row.map((file, j) => (
-                    <div key={file} style={{ width: 'min(240px, 100%)', margin: '0 auto' }}>
-                        <Reveal y={10} delay={(i * 4 + j) * 80}>
-                            <Media filename={`sportfolio-${file}`} />
-                            <ScreenLabel name={file.replace('.png', '').split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')} note="Interface" />
+                    <div key={file} style={{ width: 'min(320px, 100%)', margin: '0 auto' }}>
+                        <Reveal y={10} delay={(i * 3 + j) * 80}>
+                            <Media filename={file} />
+                            <ScreenLabel name={file.replace('.png', '').split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')} note="Interface" />
                         </Reveal>
                     </div>
                 ))}

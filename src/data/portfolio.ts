@@ -125,9 +125,9 @@ export const HERO_LAYOUTS: ImgDef[][] = [
 
 export const PROJECT_LAYOUTS: ImgDef[][] = [
   [
-    { src: '/assets/sportfolio/sportfolio-home.png', x: 55, y: -155, w: 360, h: 240, r: -1.5, delay: 0 },
-    { src: '/assets/sportfolio/sportfolio-marketplace.png', x: 335, y: -35, w: 360, h: 240, r: 2.0, delay: 80 },
-    { src: '/assets/sportfolio/sportfolio-trading.png', x: 72, y: 118, w: 360, h: 240, r: -0.5, delay: 160 },
+    { src: '/assets/sportfolio/dashboard.png', x: 20, y: -280, w: 210, h: 440, r: -2.5, delay: 0 },
+    { src: '/assets/sportfolio/marketplace.png', x: 380, y: -100, w: 210, h: 440, r: 3.5, delay: 80 },
+    { src: '/assets/sportfolio/portfolio.png', x: 180, y: -40, w: 210, h: 440, r: -1.5, delay: 160 },
   ],
   [
     { src: '/assets/projects/findmyrepo-01.jpg', x: 28, y: -128, w: 348, h: 238, r: 1.0, delay: 0 },

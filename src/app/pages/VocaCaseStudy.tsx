@@ -124,7 +124,7 @@ function HR() {
 
 function ActionLink({ href, label }: { href: string; label: string }) {
     return (
-        <a 
+        <a
             href={href} target="_blank" rel="noreferrer"
             style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -507,10 +507,11 @@ export function VocaCaseStudy() {
             <Reveal y={10}>
                 <div style={{ padding: `0 ${PAD}` }}>
                     <Media
-                        filename="voca-conversation-demo.mp4"
+                        filename="voca-desktop.png"
                         aspect="auto"
                         objectFit="contain"
-                        hint="Screen recording : voice agent conversation flow"
+                        bgColor="transparent"
+                        hint="Desktop view : voca interface"
                     />
                 </div>
             </Reveal>
@@ -578,21 +579,19 @@ export function VocaCaseStudy() {
 
             {/* MEDIA 2 */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 280px))', justifyContent: 'center', gap: '16rem', padding: `0 ${PAD}` }}>
                     <Media
                         filename="voca-form-builder.png"
                         aspect="auto"
                         objectFit="contain"
-                        padding="4rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="Form builder : creator interface"
                     />
                     <Media
                         filename="voca-admin-dashboard.png"
                         aspect="auto"
                         objectFit="contain"
-                        padding="4rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="Admin dashboard : audio + structured response"
                     />
                 </div>
@@ -732,19 +731,7 @@ export function VocaCaseStudy() {
             </div>
             <HR />
 
-            {/* MEDIA 3 */}
-            <Reveal y={10}>
-                <div style={{ padding: `0 ${PAD}` }}>
-                    <Media
-                        filename="voca-admin-dashboard.png"
-                        aspect="auto"
-                        objectFit="contain"
-                        padding="6rem"
-                        bgColor="#080808"
-                        hint="Mobile view : voice interaction on device"
-                    />
-                </div>
-            </Reveal>
+
 
             {/* ══════════════════════════════════════════════════
                 IMPACT
