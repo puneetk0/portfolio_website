@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
-import { SELECTED_PROJECTS } from '../../data/portfolio';
+import { ImageCluster } from '../components/ImageCluster';
+import { SELECTED_PROJECTS, PROJECT_LAYOUTS } from '../../data/portfolio';
 
 export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boolean; isActive: boolean }) {
   const [hovered, setHovered] = useState<number | null>(null);
-  const { sectionRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
+  const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
 
   return (
     <div
@@ -16,6 +18,8 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
       aria-hidden={!isActive}
       tabIndex={isActive ? 0 : -1}
     >
+      {!isMobile && <ImageCluster layouts={PROJECT_LAYOUTS} activeGroup={hovered} groupRef={groupRef} />}
+
       <div key={ek} style={{
         position: 'absolute', left: CONTENT_LEFT,
         top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
@@ -29,11 +33,9 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
         {SELECTED_PROJECTS.map((p, i) => {
           const isHovered = hovered === i;
           return (
-            <a 
-              href={p.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={p.name} 
+            <Link 
+              key={p.name}
+              to={`/case-study/${p.slug}`}
               onMouseEnter={() => setHovered(i)} 
               onMouseLeave={() => setHovered(null)}
               style={{ 
@@ -50,7 +52,7 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
                 <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{p.name}</span>
                 <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { TOTAL, DURATION, EASE_PAGE } from './utils/constants';
 import { useIsMobile } from './hooks/useIsMobile';
 import { NoiseOverlay } from './components/NoiseOverlay';
@@ -10,11 +11,14 @@ import { MobileIndicator } from './components/MobileIndicator';
 import { Hero } from './sections/Hero';
 import { Projects } from './sections/Projects';
 import { AndWhat } from './sections/AndWhat';
-import { CATEGORIES } from '../data/portfolio';
+import { CaseStudy } from './pages/CaseStudy';
+import { CamberCaseStudy } from './pages/CamberCaseStudy';
+import { VocaCaseStudy } from './pages/VocaCaseStudy';
+import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
+import { SportfolioCaseStudy } from './pages/SportfolioCaseStudy';
+import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
-export default function App() {
-  const isMobile = useIsMobile();
-
+function Home({ isMobile }: { isMobile: boolean }) {
   const [current, setCurrent] = useState(0);
   const [target, setTarget] = useState<number | null>(null);
   const [isTrans, setIsTrans] = useState(false);
@@ -28,15 +32,15 @@ export default function App() {
   const touchY = useRef(0);
   const touchX = useRef(0);
 
-  // Increased threshold to prevent accidental trackpad double-skips
   const WHEEL_THRESHOLD = 120;
   const activeSection = target !== null ? target : current;
 
-  // Preload images to prevent blank cards during transition
   useEffect(() => {
     const imagesToPreload: string[] = [];
+    HERO_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
+    PROJECT_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
     CATEGORIES.flatMap(cat => cat.cards).forEach(card => imagesToPreload.push(card.src));
-    
+
     imagesToPreload.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -54,7 +58,6 @@ export default function App() {
     setTimeout(() => { setCurrent(to); setTarget(null); setIsTrans(false); transiting.current = false; }, DURATION);
   }, [current]);
 
-  // Desktop wheel scroll with stricter debouncing for trackpads
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -63,11 +66,11 @@ export default function App() {
       if (now - lastWheelT.current > 150) wheelAccum.current = 0;
       lastWheelT.current = now;
       wheelAccum.current += e.deltaY;
-      
+
       if (Math.abs(wheelAccum.current) >= WHEEL_THRESHOLD) {
         const direction = wheelAccum.current > 0 ? 1 : -1;
         wheelAccum.current = 0;
-        navLock.current = now; // Lock immediately
+        navLock.current = now;
         navigate(current + direction);
       }
     };
@@ -75,7 +78,6 @@ export default function App() {
     return () => window.removeEventListener('wheel', onWheel);
   }, [current, navigate]);
 
-  // Touch scroll
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
       touchY.current = e.touches[0].clientY;
@@ -100,7 +102,6 @@ export default function App() {
     };
   }, [current, navigate]);
 
-  // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'PageDown') navigate(current + 1);
@@ -121,18 +122,46 @@ export default function App() {
   };
 
   const sections = [
-    <Hero ek={entryKeys[0]} isMobile={isMobile} isActive={activeSection === 0} />,
+    <Hero ek={entryKeys[0]} isMobile={isMobile} isActive={activeSection === 0} navigate={navigate} />,
     <Projects ek={entryKeys[1]} isMobile={isMobile} isActive={activeSection === 1} />,
     <AndWhat ek={entryKeys[2]} isMobile={isMobile} isActive={activeSection === 2} />,
   ];
 
   return (
+    <div style={{ position: 'fixed', inset: 0, background: '#141414', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {sections.map((section, i) => <div key={i} style={getStyle(i)}>{section}</div>)}
+      </div>
+      {isMobile
+        ? <MobileIndicator active={activeSection} navigate={navigate} />
+        : <ProgressIndicator active={activeSection} navigate={navigate} />
+      }
+      <SocialLinks />
+    </div>
+  );
+}
+
+export default function App() {
+  const isMobile = useIsMobile();
+  const location = useLocation();
+
+  return (
     <>
       <style>{`
-        html, body { overflow: hidden; overscroll-behavior: none; height: 100%; background: #141414; }
-        @media (hover: hover) {
-          *, *::before, *::after { cursor: none !important; }
+        html, body { 
+          overscroll-behavior: none; 
+          min-height: 100%; 
+          background: #141414; 
+          cursor: none !important; 
+          margin: 0; padding: 0; 
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE and Edge */
         }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none; /* Chrome, Safari and Opera */
+        }
+        *, *::before, *::after { cursor: none !important; }
         @keyframes lineUp {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0);    }
@@ -145,19 +174,25 @@ export default function App() {
           body { -webkit-text-size-adjust: 100%; }
         }
       `}</style>
-      <div style={{ position: 'fixed', inset: 0, background: '#141414', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-          {sections.map((section, i) => <div key={i} style={getStyle(i)}>{section}</div>)}
-        </div>
-        {isMobile
-          ? <MobileIndicator active={activeSection} navigate={navigate} />
-          : <ProgressIndicator active={activeSection} navigate={navigate} />
-        }
-        <SocialLinks />
-      </div>
+
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home isMobile={isMobile} />} />
+        <Route path="/case-study/camber" element={<CamberCaseStudy />} />
+        <Route path="/case-study/voca" element={<VocaCaseStudy />} />
+        <Route path="/case-study/vocaforms" element={<VocaCaseStudy />} />
+        <Route path="/case-study/voca-form" element={<VocaCaseStudy />} />
+        <Route path="/case-study/find-my-repo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/findmyrepo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
+        <Route path="/case-study/sportfolio" element={<SportfolioCaseStudy />} />
+        <Route path="/case-study/sportsolio" element={<SportfolioCaseStudy />} />
+        <Route path="/case-study/:slug" element={<CaseStudy />} />
+      </Routes>
+
       <BackgroundGlow />
       <NoiseOverlay />
       {!isMobile && <CustomCursor />}
     </>
   );
 }
+

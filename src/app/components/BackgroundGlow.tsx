@@ -52,7 +52,7 @@ export function BackgroundGlow() {
           position: 'absolute',
           top: '-50vw', left: '-50vw',
           width: '100vw', height: '100vw',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.008) 0%, rgba(255,255,255,0) 60%)',
           willChange: 'transform'
         }}
       />
