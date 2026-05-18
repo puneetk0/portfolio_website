@@ -130,14 +130,13 @@ export const PROJECT_LAYOUTS: ImgDef[][] = [
     { src: '/assets/sportfolio/portfolio.png', x: 180, y: -40, w: 210, h: 440, r: -1.5, delay: 160 },
   ],
   [
-    { src: '/assets/projects/findmyrepo-01.jpg', x: 28, y: -128, w: 348, h: 238, r: 1.0, delay: 0 },
-    { src: '/assets/projects/findmyrepo-02.jpg', x: 352, y: 8, w: 182, h: 252, r: -2.0, delay: 80 },
-    { src: '/assets/projects/findmyrepo-03.jpg', x: 38, y: 138, w: 228, h: 172, r: 1.5, delay: 160 },
+    { src: '/assets/find-my-repo/home.jpeg', x: 30, y: -270, w: 420, h: 270, r: -1.5, delay: 0 },
+    { src: '/assets/find-my-repo/hidden-gems.jpeg', x: 10, y: 60, w: 420, h: 270, r: -1.0, delay: 160 },
+    { src: '/assets/find-my-repo/find-my-repo-search.gif', x: 240, y: -60, w: 420, h: 270, r: 2.5, delay: 80 },
   ],
   [
-    { src: '/assets/camber/camber-demo.gif', x: 45, y: -162, w: 460, h: 280, r: 1.0, delay: 0 },
-    { src: '/assets/camber/camber-track-view.png', x: 360, y: 5, w: 400, h: 250, r: -2.0, delay: 80 },
-    { src: '/assets/camber/camber-constructor-select.png', x: 78, y: 108, w: 400, h: 250, r: 1.5, delay: 160 },
+    { src: '/assets/camber/camber-website.png', x: 30, y: -250, w: 480, h: 320, r: -1.0, delay: 0 },
+    { src: '/assets/camber/camber-track-view.png', x: 160, y: 20, w: 480, h: 320, r: 2.0, delay: 80 },
   ],
 ];
 

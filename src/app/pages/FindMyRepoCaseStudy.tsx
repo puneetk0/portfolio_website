@@ -584,8 +584,7 @@ export function FindMyRepoCaseStudy() {
                         filename="find-my-repo-search.gif"
                         aspect="auto"
                         objectFit="contain"
-                        padding="4rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="Search interface — natural language query returning results"
                     />
                 </div>
@@ -794,18 +793,17 @@ export function FindMyRepoCaseStudy() {
 
             {/* MEDIA 2 — results / hidden gems feed */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', padding: `0 ${PAD}` }}>
                     {/*
                       MEDIA HINT (left):
                       Results page — showing semantic search output with relevance scores.
                       Ideal: find-my-repo-results.png
                     */}
                     <Media
-                        filename="find-my-repo-results.png"
+                        filename="all-repos.jpeg"
                         aspect="auto"
                         objectFit="contain"
-                        padding="3rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="Results page — semantic search output"
                     />
                     {/*
@@ -814,11 +812,10 @@ export function FindMyRepoCaseStudy() {
                       Ideal: find-my-repo-gems.png
                     */}
                     <Media
-                        filename="find-my-repo-gems.png"
+                        filename="hidden-gems.jpeg"
                         aspect="auto"
                         objectFit="contain"
-                        padding="3rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="Hidden Gems feed — under-1k-star repos"
                     />
                 </div>
@@ -922,11 +919,10 @@ export function FindMyRepoCaseStudy() {
                       Ideal: find-my-repo-onboarding.png or find-my-repo-onboarding.mp4
                     */}
                     <Media
-                        filename="find-my-repo-dashboard.png"
+                        filename="home.jpeg"
                         aspect="auto"
                         objectFit="contain"
-                        padding="5rem"
-                        bgColor="#080808"
+                        bgColor="transparent"
                         hint="User onboarding — role and stack preference input"
                     />
                 </div>
