@@ -6,6 +6,7 @@ import { NoiseOverlay } from './components/NoiseOverlay';
 import { BackgroundGlow } from './components/BackgroundGlow';
 import { CustomCursor } from './components/CustomCursor';
 import { SocialLinks } from './components/SocialLinks';
+import { ThemeToggle } from './components/ThemeToggle';
 import { ProgressIndicator } from './components/ProgressIndicator';
 import { MobileIndicator } from './components/MobileIndicator';
 import { Hero } from './sections/Hero';
@@ -128,7 +129,7 @@ function Home({ isMobile }: { isMobile: boolean }) {
   ];
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#141414', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--bg-color)', color: 'var(--text-color)', transition: 'background-color 300ms ease, color 300ms ease', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         {sections.map((section, i) => <div key={i} style={getStyle(i)}>{section}</div>)}
       </div>
@@ -145,13 +146,113 @@ export default function App() {
   const isMobile = useIsMobile();
   const location = useLocation();
 
+  // Run on mount to prevent Flash of Dark Mode (FOUC)
+  useEffect(() => {
+    const saved = localStorage.getItem('portfolio-theme');
+    if (saved === 'light') {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  }, []);
+
   return (
     <>
       <style>{`
+        :root {
+          --bg-color: #141414;
+          --text-color: #ffffff;
+          --text-secondary: #aaa;
+          --text-muted: #888;
+          --border-color: #1e1e1e;
+          --label-color: #666;
+          --link-color: #eaeaea;
+          --glow-color: rgba(255, 255, 255, 0.008);
+          --radial-bg: radial-gradient(ellipse at top right, rgba(255,255,255,0.02) 0%, transparent 60%);
+          --polaroid-shadow: 0 15px 35px rgba(0,0,0,0.5);
+          --polaroid-border: 1px solid rgba(255,255,255,0.05);
+          --indicator-active: #ffffff;
+          --indicator-inactive: rgba(255, 255, 255, 0.25);
+          --indicator-text: rgba(255, 255, 255, 0.65);
+          --indicator-hover-border: rgba(255, 255, 255, 0.8);
+        }
+        body.light-mode {
+          --bg-color: #f7f7f7;
+          --text-color: #141414;
+          --text-secondary: #333333;
+          --text-muted: #666666;
+          --border-color: #e2e2e2;
+          --label-color: #888888;
+          --link-color: #141414;
+          --glow-color: rgba(0, 0, 0, 0.015);
+          --radial-bg: radial-gradient(ellipse at top right, rgba(0,0,0,0.02) 0%, transparent 60%);
+          --polaroid-shadow: 0 15px 35px rgba(0,0,0,0.15);
+          --polaroid-border: 1px solid rgba(0,0,0,0.08);
+          --indicator-active: #141414;
+          --indicator-inactive: rgba(0, 0, 0, 0.25);
+          --indicator-text: rgba(0, 0, 0, 0.65);
+          --indicator-hover-border: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Dynamic Case Study Text Overrides for Light Mode */
+        body.light-mode h1,
+        body.light-mode h2,
+        body.light-mode h3,
+        body.light-mode h4,
+        body.light-mode h5,
+        body.light-mode h6 {
+          color: var(--text-color) !important;
+        }
+        body.light-mode p,
+        body.light-mode li,
+        body.light-mode blockquote {
+          color: var(--text-secondary) !important;
+        }
+        /* Muted colors maintain hierarchy in light mode */
+        body.light-mode p[style*="color: #888"],
+        body.light-mode p[style*="color: #999"],
+        body.light-mode p[style*="color: rgb(136, 136, 136)"],
+        body.light-mode p[style*="color: rgb(153, 153, 153)"],
+        body.light-mode span[style*="color: #888"],
+        body.light-mode span[style*="color: #999"] {
+          color: var(--text-muted) !important;
+        }
+        /* Sidebar active and inactive visual weight correction */
+        body.light-mode .cs-sidenav button span:first-child {
+          color: var(--text-muted) !important;
+        }
+        body.light-mode .cs-sidenav button:hover span:first-child {
+          color: var(--text-color) !important;
+        }
+        body.light-mode .cs-sidenav button span:last-child {
+          background: var(--border-color) !important;
+        }
+        body.light-mode .cs-sidenav button:hover span:last-child {
+          background: var(--text-color) !important;
+        }
+        /* Target active side navigation elements by opacity */
+        body.light-mode .cs-sidenav button[style*="opacity: 1"] span:first-child {
+          color: var(--text-color) !important;
+        }
+        body.light-mode .cs-sidenav button[style*="opacity: 1"] span:last-child {
+          background: var(--text-color) !important;
+        }
+        /* Back button styling correction */
+        body.light-mode button[style*="color: #888"],
+        body.light-mode button[style*="color: rgb(136, 136, 136)"] {
+          color: var(--text-muted) !important;
+        }
+        body.light-mode button[style*="color: #888"]:hover,
+        body.light-mode button[style*="color: rgb(136, 136, 136)"]:hover {
+          color: var(--text-color) !important;
+        }
+
         html, body { 
           overscroll-behavior: none; 
           min-height: 100%; 
-          background: #141414; 
+          background: var(--bg-color) !important;
+          color: var(--text-color);
+          transition: background-color 300ms ease, color 300ms ease;
           cursor: none !important; 
           margin: 0; padding: 0; 
           /* Hide scrollbar for Chrome, Safari and Opera */
@@ -175,6 +276,17 @@ export default function App() {
         }
       `}</style>
 
+      <style>{`
+        @media (pointer: coarse) {
+          *, *::before, *::after { cursor: auto !important; }
+          html, body { cursor: auto !important; }
+        }
+        @media (max-width: 768px) {
+          *, *::before, *::after { cursor: auto !important; }
+          html, body { cursor: auto !important; }
+        }
+      `}</style>
+
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home isMobile={isMobile} />} />
         <Route path="/case-study/camber" element={<CamberCaseStudy />} />
@@ -192,6 +304,7 @@ export default function App() {
       <BackgroundGlow />
       <NoiseOverlay />
       {!isMobile && <CustomCursor />}
+      <ThemeToggle />
     </>
   );
 }

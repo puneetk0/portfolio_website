@@ -14,11 +14,13 @@ export function SocialLinks() {
         }
         .social-text {
           position: relative;
-          color: rgba(255, 255, 255, 0.4);
-          transition: color 200ms ease;
+          color: var(--text-muted);
+          opacity: 0.6;
+          transition: color 200ms ease, opacity 200ms ease;
         }
         .social-link:hover .social-text {
-          color: rgba(255, 255, 255, 1);
+          color: var(--text-color);
+          opacity: 1;
         }
         .social-text::after {
           content: '';
@@ -27,7 +29,7 @@ export function SocialLinks() {
           height: 1px;
           bottom: -2px;
           left: 0;
-          background-color: white;
+          background-color: var(--text-color);
           transform: scaleX(0);
           transform-origin: bottom right;
           transition: transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -38,8 +40,11 @@ export function SocialLinks() {
         }
       `}</style>
       <div style={{
-        position: 'fixed', bottom: '36px', left: CONTENT_LEFT,
-        zIndex: 1000, display: 'flex', alignItems: 'center', gap: '28px',
+        position: 'fixed', bottom: '28px', left: CONTENT_LEFT,
+        zIndex: 1000, display: 'flex', alignItems: 'center',
+        gap: 'clamp(14px, 3.5vw, 28px)',
+        maxWidth: 'calc(100vw - 2 * min(142px, 9.4vw))',
+        flexWrap: 'wrap' as const,
       }}>
         {SOCIAL_LINKS.map(link => (
           <a

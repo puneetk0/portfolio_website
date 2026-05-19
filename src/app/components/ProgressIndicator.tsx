@@ -17,16 +17,16 @@ export function ProgressIndicator({ active, navigate }: { active: number; naviga
         
         // Calculate circle styles (reverted to the hollow circlet design)
         let size = '4px';
-        let bg = 'rgba(255,255,255,0.25)';
-        let border = '0px solid white';
+        let bg = 'var(--indicator-inactive)';
+        let border = '0px solid var(--indicator-active)';
         
         if (isActive) {
           size = '6px';
-          bg = 'white';
+          bg = 'var(--indicator-active)';
         } else if (isHov) {
           size = '14px';
           bg = 'transparent';
-          border = '1.5px solid rgba(255,255,255,0.8)';
+          border = '1.5px solid var(--indicator-hover-border)';
         }
 
         return (
@@ -38,7 +38,7 @@ export function ProgressIndicator({ active, navigate }: { active: number; naviga
           >
             <span style={{
               ...geist, fontSize: '11px', letterSpacing: '0.06em', whiteSpace: 'nowrap',
-              color: 'rgba(255,255,255,0.65)', pointerEvents: 'none',
+              color: 'var(--indicator-text)', pointerEvents: 'none',
               opacity: isHov ? 1 : 0,
               transform: isHov ? 'translateX(0)' : 'translateX(6px)',
               transition: 'opacity 160ms ease, transform 160ms ease',

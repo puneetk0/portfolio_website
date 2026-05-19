@@ -43,8 +43,9 @@ function useSmoothScroll() {
             raf.current = requestAnimationFrame(loop);
         }
 
-        target.current = window.scrollY;
-        current.current = window.scrollY;
+        window.scrollTo(0, 0);
+        target.current = 0;
+        current.current = 0;
         raf.current = requestAnimationFrame(loop);
 
         window.addEventListener('wheel', onWheel, { passive: false });
@@ -98,13 +99,13 @@ function Reveal({ children, delay = 0, y = 28 }: { children: React.ReactNode; de
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const PAD = 'min(142px, 9.4vw)';
-const BG = '#141414';
+const BG = 'var(--bg-color)';
 
 const LBL: React.CSSProperties = {
     fontSize: '0.68rem',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.22em',
-    color: '#888',
+    color: 'var(--text-muted)',
     ...figtree,
     margin: 0,
 };
@@ -112,21 +113,21 @@ const LBL: React.CSSProperties = {
 function SL({ children }: { children: React.ReactNode }) {
     return (
         <p style={{ ...LBL, margin: '0 0 3rem' }}>
-            <span style={{ ...serifItalic, color: '#888', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+            <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
 }
 
 function HR() {
-    return <div style={{ width: '100%', height: '1px', background: '#333' }} />;
+    return <div style={{ width: '100%', height: '1px', background: 'var(--border-color)' }} />;
 }
 
 function Code({ children }: { children: React.ReactNode }) {
     return (
         <code style={{
-            color: '#bbb', fontSize: '0.875em',
-            background: '#1c1c1c', padding: '2px 7px', borderRadius: '3px',
+            color: 'var(--text-secondary)', fontSize: '0.875em',
+            background: 'var(--border-color)', padding: '2px 7px', borderRadius: '3px',
             fontFamily: 'monospace',
         }}>
             {children}
@@ -139,7 +140,7 @@ const NAV_SECTIONS = ['Problem', 'Thinking', 'Design', 'Execution', 'Impact', 'L
 
 function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void }) {
     return (
-        <div style={{
+        <div className="cs-sidenav" style={{
             position: 'fixed', right: '36px', top: '50%',
             transform: 'translateY(-50%)',
             display: 'flex', flexDirection: 'column', gap: '20px',
@@ -530,6 +531,23 @@ export function SportfolioCaseStudy() {
 
     return (
         <div style={{ minHeight: '100vh', background: BG, color: 'white', ...figtree, overflowX: 'hidden' }}>
+            <style>{`
+                @media (max-width: 900px) {
+                    .cs-sidenav { display: none !important; }
+                    .cs-2col { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+                    .cs-3col { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                    .cs-4col { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
+                    .cs-section { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+                    .cs-hero { height: auto !important; min-height: 100svh !important; }
+                    .cs-media-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+                    .cs-mockup-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem !important; }
+                }
+                @media (max-width: 540px) {
+                    .cs-4col { grid-template-columns: 1fr !important; }
+                    .cs-mockup-grid { grid-template-columns: 1fr !important; }
+                    .cs-hero h1 { font-size: clamp(3rem, 14vw, 6rem) !important; }
+                }
+            `}</style>
 
             {/* ── Back ── */}
             <button
@@ -569,7 +587,7 @@ export function SportfolioCaseStudy() {
 
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
                     <span style={{ ...serifItalic, color: '#888', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                    Case Study · Fintech · Hackathon · 2024
+                    Case Study · Fintech · Hackathon · 2026
                 </p>
 
                 <h1 style={{
@@ -722,53 +740,53 @@ export function SportfolioCaseStudy() {
                 </div>
             </Reveal>
 
-    {/* ══════════════════════════════════════════════════
+            {/* ══════════════════════════════════════════════════
                 DESIGN
             ══════════════════════════════════════════════════ */}
-    <div ref={setRef(2)} style={{ padding: `8rem ${PAD}` }}>
-        <Reveal><SL>The Design</SL></Reveal>
+            <div ref={setRef(2)} style={{ padding: `8rem ${PAD}` }}>
+                <Reveal><SL>The Design</SL></Reveal>
 
-        <Reveal delay={60}>
-            <h2 style={{
-                fontSize: 'clamp(2rem, 4.5vw, 3.8rem)',
-                fontWeight: 700, lineHeight: 1.0,
-                color: '#ffffff', margin: '0 0 2rem',
-                letterSpacing: '-0.025em', maxWidth: '20ch',
-            }}>
-                A market that feels like it has skin in the game.
-            </h2>
-        </Reveal>
+                <Reveal delay={60}>
+                    <h2 style={{
+                        fontSize: 'clamp(2rem, 4.5vw, 3.8rem)',
+                        fontWeight: 700, lineHeight: 1.0,
+                        color: '#ffffff', margin: '0 0 2rem',
+                        letterSpacing: '-0.025em', maxWidth: '20ch',
+                    }}>
+                        A market that feels like it has skin in the game.
+                    </h2>
+                </Reveal>
 
-        <Reveal delay={100}>
-            <p style={{
-                ...figtree, fontSize: '0.975rem', color: '#999',
-                lineHeight: 1.9, maxWidth: '56ch', margin: '0 0 7rem',
-            }}>
-                The full product covers both sides of the market: athletes managing their profile and seeing how investors view them, and investors discovering, researching, trading, and tracking their portfolio. Every screen had to pull its weight.
-            </p>
-        </Reveal>
-    </div>
+                <Reveal delay={100}>
+                    <p style={{
+                        ...figtree, fontSize: '0.975rem', color: '#999',
+                        lineHeight: 1.9, maxWidth: '56ch', margin: '0 0 7rem',
+                    }}>
+                        The full product covers both sides of the market: athletes managing their profile and seeing how investors view them, and investors discovering, researching, trading, and tracking their portfolio. Every screen had to pull its weight.
+                    </p>
+                </Reveal>
+            </div>
 
-    {/* Screen showcase — uniform 3-column grid */ }
-    <div style={{ padding: `8rem ${PAD} 12rem` }}>
-        {[
-            ['dashboard.png', 'marketplace.png', 'portfolio.png'],
-            ['analytics.png', 'athelete_detail.png', 'compare.png']
-        ].map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem', marginBottom: '4rem' }}>
-                {row.map((file, j) => (
-                    <div key={file} style={{ width: 'min(320px, 100%)', margin: '0 auto' }}>
-                        <Reveal y={10} delay={(i * 3 + j) * 80}>
-                            <Media filename={file} />
-                            <ScreenLabel name={file.replace('.png', '').split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')} note="Interface" />
-                        </Reveal>
+            {/* Screen showcase — uniform 3-column grid */}
+            <div style={{ padding: `8rem ${PAD} 12rem` }}>
+                {[
+                    ['dashboard.png', 'marketplace.png', 'portfolio.png'],
+                    ['analytics.png', 'athelete_detail.png', 'compare.png']
+                ].map((row, i) => (
+                    <div key={i} className="cs-mockup-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem', marginBottom: '4rem' }}>
+                        {row.map((file, j) => (
+                            <div key={file} style={{ width: 'min(320px, 100%)', margin: '0 auto' }}>
+                                <Reveal y={10} delay={(i * 3 + j) * 80}>
+                                    <Media filename={file} />
+                                    <ScreenLabel name={file.replace('.png', '').split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')} note="Interface" />
+                                </Reveal>
+                            </div>
+                        ))}
                     </div>
                 ))}
             </div>
-        ))}
-    </div>
 
-    {/* ══════════════════════════════════════════════════
+            {/* ══════════════════════════════════════════════════
                 EXECUTION — redesigned
             ══════════════════════════════════════════════════ */}
             <HR />
@@ -883,62 +901,62 @@ export function SportfolioCaseStudy() {
             </div>
             <HR />
 
-    {/* ══════════════════════════════════════════════════
+            {/* ══════════════════════════════════════════════════
                 IMPACT
             ══════════════════════════════════════════════════ */}
-    <div ref={setRef(4)} style={{ padding: `8rem ${PAD}` }}>
-        <Reveal><SL>Impact</SL></Reveal>
+            <div ref={setRef(4)} style={{ padding: `8rem ${PAD}` }}>
+                <Reveal><SL>Impact</SL></Reveal>
 
-        <Reveal delay={60}>
-            <div style={{ margin: '0 0 6rem' }}>
-                <p style={{
-                    fontSize: 'clamp(1.8rem, 4vw, 3.4rem)',
-                    ...serifItalic, color: '#e0e0e0',
-                    lineHeight: 1.15, margin: '0 0 1.5rem',
-                    letterSpacing: '-0.01em', maxWidth: '24ch',
-                }}>
-                    "This is the first hackathon project that actually felt like a real product."
-                </p>
-                <p style={{ ...LBL, fontSize: '0.58rem', color: '#888' }}>
-                    Judge feedback, post-demo
-                </p>
-            </div>
-        </Reveal>
-
-        <Reveal delay={80}>
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                borderTop: '1px solid #1e1e1e',
-            }}>
-                {[
-                    {
-                        head: 'Full product scope',
-                        body: 'Both the investor and athlete sides of the market are fully designed and functional, not mocked. Two user types, two dashboards, one coherent system.',
-                    },
-                    {
-                        head: 'Live market feel',
-                        body: 'Prices move in real time as match data comes in. The UI absorbs WebSocket updates without reflows or visual noise, which is harder than it sounds.',
-                    },
-                    {
-                        head: 'Conviction first',
-                        body: 'The design proved the core thesis: fans with genuine conviction about athletes will engage with a financial product if it respects their intelligence and doesn\'t hide the signal.',
-                    },
-                ].map(({ head, body }, i) => (
-                    <div key={head} style={{
-                        padding: '2.5rem 2.5rem 2.5rem 0',
-                        paddingLeft: i > 0 ? '2.5rem' : '0',
-                        borderRight: i < 2 ? '1px solid #1e1e1e' : 'none',
-                    }}>
-                        <p style={{ ...figtree, fontSize: '1rem', fontWeight: 600, color: '#ffffff', margin: '0 0 0.9rem' }}>{head}</p>
-                        <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>{body}</p>
+                <Reveal delay={60}>
+                    <div style={{ margin: '0 0 6rem' }}>
+                        <p style={{
+                            fontSize: 'clamp(1.8rem, 4vw, 3.4rem)',
+                            ...serifItalic, color: '#e0e0e0',
+                            lineHeight: 1.15, margin: '0 0 1.5rem',
+                            letterSpacing: '-0.01em', maxWidth: '24ch',
+                        }}>
+                            "This is the first hackathon project that actually felt like a real product."
+                        </p>
+                        <p style={{ ...LBL, fontSize: '0.58rem', color: '#888' }}>
+                            Judge feedback, post-demo
+                        </p>
                     </div>
-                ))}
-            </div>
-        </Reveal>
-    </div>
+                </Reveal>
 
-    {/* ══════════════════════════════════════════════════
+                <Reveal delay={80}>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        borderTop: '1px solid #1e1e1e',
+                    }}>
+                        {[
+                            {
+                                head: 'Full product scope',
+                                body: 'Both the investor and athlete sides of the market are fully designed and functional, not mocked. Two user types, two dashboards, one coherent system.',
+                            },
+                            {
+                                head: 'Live market feel',
+                                body: 'Prices move in real time as match data comes in. The UI absorbs WebSocket updates without reflows or visual noise, which is harder than it sounds.',
+                            },
+                            {
+                                head: 'Conviction first',
+                                body: 'The design proved the core thesis: fans with genuine conviction about athletes will engage with a financial product if it respects their intelligence and doesn\'t hide the signal.',
+                            },
+                        ].map(({ head, body }, i) => (
+                            <div key={head} style={{
+                                padding: '2.5rem 2.5rem 2.5rem 0',
+                                paddingLeft: i > 0 ? '2.5rem' : '0',
+                                borderRight: i < 2 ? '1px solid #1e1e1e' : 'none',
+                            }}>
+                                <p style={{ ...figtree, fontSize: '1rem', fontWeight: 600, color: '#ffffff', margin: '0 0 0.9rem' }}>{head}</p>
+                                <p style={{ ...figtree, fontSize: '0.875rem', color: '#666', lineHeight: 1.8, margin: 0 }}>{body}</p>
+                            </div>
+                        ))}
+                    </div>
+                </Reveal>
+            </div>
+
+            {/* ══════════════════════════════════════════════════
                 REFLECTION
             ══════════════════════════════════════════════════ */}
             <HR />
@@ -973,7 +991,7 @@ export function SportfolioCaseStudy() {
                 </Reveal>
             </div>
 
-    {/* FOOTER */ }
+            {/* FOOTER */}
             <HR />
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -981,12 +999,12 @@ export function SportfolioCaseStudy() {
             }}>
                 <Reveal>
                     <div>
-                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#888' }}>Next project</p>
+                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: 'var(--text-muted)' }}>Next project</p>
                         <button
                             onClick={() => navigate('/case-study/camber')}
                             style={{
                                 background: 'transparent', border: 'none',
-                                color: '#ffffff',
+                                color: 'var(--text-color)',
                                 fontSize: 'clamp(1.4rem, 3vw, 2.4rem)', fontWeight: 700,
                                 cursor: 'pointer', padding: 0, ...figtree,
                                 letterSpacing: '-0.02em',
@@ -1004,13 +1022,13 @@ export function SportfolioCaseStudy() {
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            background: 'transparent', border: '1px solid #1e1e1e',
-                            color: '#555', padding: '10px 24px', cursor: 'pointer',
+                            background: 'transparent', border: '1px solid var(--border-color)',
+                            color: 'var(--text-muted)', padding: '10px 24px', cursor: 'pointer',
                             ...figtree, fontSize: '0.8rem',
                             transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#555'; e.currentTarget.style.color = '#fff'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e1e1e'; e.currentTarget.style.color = '#555'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-color)'; e.currentTarget.style.color = 'var(--text-color)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                     >
                         All projects
                     </button>

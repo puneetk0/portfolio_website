@@ -27,26 +27,26 @@ export function Hero({ ek, isMobile, isActive, navigate }: { ek: number; isMobil
         position: 'absolute', left: CONTENT_LEFT,
         top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
         maxWidth: isMobile ? 'calc(100vw - 80px)' : undefined,
-        ...figtree, color: 'white', zIndex: 2,
+        ...figtree, color: 'var(--text-color)', zIndex: 2,
       }}>
         <div
           data-cursor="greeting"
           onMouseEnter={() => setGreetingHover(true)}
           onMouseLeave={() => setGreetingHover(false)}
         >
-          <p style={{ fontWeight: 600, ...T.name, color: '#888', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(0) }}>
+          <p style={{ fontWeight: 600, ...T.name, color: 'var(--text-muted)', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(0) }}>
             {PERSONAL_INFO.greeting}
           </p>
-          <p style={{ fontWeight: 600, ...T.hero, color: 'white', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(1) }}>
+          <p style={{ fontWeight: 600, ...T.hero, color: 'var(--text-color)', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(1) }}>
             {PERSONAL_INFO.tagline}
           </p>
         </div>
 
         <div style={{ height: isMobile ? '12px' : 'clamp(14px, 2vw, 28px)' }} />
 
-        <p style={{ fontWeight: 400, ...T.label, color: '#888', lineHeight: 'normal', margin: isMobile ? '0 0 8px' : '0 0 12px', ...ls(2) }}>
-          <span style={{ ...serifItalic, color: '#555', fontSize: '1.2em', marginRight: '6px' }}>//</span>
-          <span style={{ color: '#888' }}>&nbsp;What I'm building</span>
+        <p style={{ fontWeight: 400, ...T.label, color: 'var(--text-muted)', lineHeight: 'normal', margin: isMobile ? '0 0 8px' : '0 0 12px', ...ls(2) }}>
+          <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.2em', marginRight: '6px' }}>//</span>
+          <span style={{ color: 'var(--text-muted)' }}>&nbsp;What I'm building</span>
         </p>
 
         {BUILDING_PROJECTS.map((item, i) => {
@@ -69,8 +69,8 @@ export function Hero({ ek, isMobile, isActive, navigate }: { ek: number; isMobil
               }}
             >
               <div data-magnetic="true" style={{ display: 'inline-block', lineHeight: isMobile ? 1.65 : 2, ...ls(i + 3) }}>
-                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{item.name}</span>
-                <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{item.desc}</span>
+                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? 'var(--text-color)' : 'var(--text-secondary)', transition: 'color 300ms ease' }}>{item.name}</span>
+                <span style={{ fontWeight: 400, ...T.desc, color: 'var(--text-muted)' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{item.desc}</span>
               </div>
             </Link>
           );
@@ -86,18 +86,18 @@ export function Hero({ ek, isMobile, isActive, navigate }: { ek: number; isMobil
             onClick={() => navigate(1)}
             style={{
               background: 'none', border: 'none', padding: 0,
-              color: '#666', cursor: 'pointer', ...figtree,
+              color: 'var(--label-color)', cursor: 'pointer', ...figtree,
               fontSize: '0.68rem', textTransform: 'uppercase',
               letterSpacing: '0.15em', fontWeight: 500,
               display: 'flex', alignItems: 'center', gap: '8px',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.color = 'var(--text-color)';
               e.currentTarget.style.transform = 'translateX(5px)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.color = '#666';
+              e.currentTarget.style.color = 'var(--label-color)';
               e.currentTarget.style.transform = 'translateX(0px)';
             }}
           >

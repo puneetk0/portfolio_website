@@ -43,8 +43,9 @@ function useSmoothScroll() {
             raf.current = requestAnimationFrame(loop);
         }
 
-        target.current = window.scrollY;
-        current.current = window.scrollY;
+        window.scrollTo(0, 0);
+        target.current = 0;
+        current.current = 0;
         raf.current = requestAnimationFrame(loop);
 
         window.addEventListener('wheel', onWheel, { passive: false });
@@ -98,13 +99,13 @@ function Reveal({ children, delay = 0, y = 28 }: { children: React.ReactNode; de
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PAD = 'min(300px, 15vw)';
-const BG = '#141414';
+const BG = 'var(--bg-color)';
 
 const LBL: React.CSSProperties = {
     fontSize: '0.68rem',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.22em',
-    color: '#666',
+    color: 'var(--text-muted)',
     ...figtree,
     margin: 0,
 };
@@ -112,36 +113,36 @@ const LBL: React.CSSProperties = {
 function SL({ children }: { children: React.ReactNode }) {
     return (
         <p style={{ ...LBL, margin: '0 0 3rem' }}>
-            <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+            <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
 }
 
 function HR() {
-    return <div style={{ width: '100%', height: '1px', background: '#1e1e1e' }} />;
+    return <div style={{ width: '100%', height: '1px', background: 'var(--border-color)' }} />;
 }
 
 function ActionLink({ href, label }: { href: string; label: string }) {
     return (
-        <a 
+        <a
             href={href} target="_blank" rel="noreferrer"
             style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '0.65rem 1.25rem',
-                border: '1px solid #2a2a2a', borderRadius: '4px',
-                textDecoration: 'none', color: '#eaeaea',
+                border: '1px solid var(--border-color)', borderRadius: '4px',
+                textDecoration: 'none', color: 'var(--link-color)',
                 fontSize: '0.75rem', letterSpacing: '0.04em', ...figtree,
                 transition: 'all 0.2s ease',
                 background: 'rgba(255,255,255,0.015)',
             }}
             onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                e.currentTarget.style.borderColor = '#444';
+                e.currentTarget.style.borderColor = 'var(--text-color)';
             }}
             onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.015)';
-                e.currentTarget.style.borderColor = '#2a2a2a';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
             }}
         >
             {label} ↗
@@ -160,7 +161,7 @@ function SideNav({
     onNav: (i: number) => void;
 }) {
     return (
-        <div style={{
+        <div className="cs-sidenav" style={{
             position: 'fixed',
             right: '36px',
             top: '50%',
@@ -369,6 +370,23 @@ export function CamberCaseStudy() {
 
     return (
         <div style={{ minHeight: '100vh', background: BG, color: 'white', ...figtree, overflowX: 'hidden' }}>
+            <style>{`
+                @media (max-width: 900px) {
+                    .cs-sidenav { display: none !important; }
+                    .cs-2col { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+                    .cs-3col { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                    .cs-4col { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
+                    .cs-section { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+                    .cs-hero { height: auto !important; min-height: 100svh !important; }
+                    .cs-pipeline { flex-direction: column !important; gap: 0 !important; }
+                    .cs-pipeline-arrow { display: none !important; }
+                    .cs-media-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+                }
+                @media (max-width: 540px) {
+                    .cs-4col { grid-template-columns: 1fr !important; }
+                    .cs-hero h1 { font-size: clamp(3.5rem, 15vw, 6rem) !important; }
+                }
+            `}</style>
 
             {/* ── Back ── */}
             <button
@@ -409,7 +427,7 @@ export function CamberCaseStudy() {
 
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
                     <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                    Case Study · macOS App · 2024
+                    Case Study · macOS App · 2026
                 </p>
 
                 <h1 style={{
@@ -435,8 +453,8 @@ export function CamberCaseStudy() {
                     display: 'flex', gap: '1rem',
                     animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s both',
                 }}>
-                    <ActionLink href="https://github.com" label="GitHub Repository" />
-                    <ActionLink href="https://example.com" label="Live Website" />
+                    <ActionLink href="https://github.com/puneetk0/camber" label="GitHub Repository" />
+                    <ActionLink href="https://camber-app.vercel.app/" label="Live Website" />
                 </div>
 
                 <div style={{
@@ -598,7 +616,7 @@ export function CamberCaseStudy() {
 
             {/* MEDIA 2 */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
+                <div className="cs-2col cs-media-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', padding: `0 ${PAD}` }}>
                     <Media filename="camber-track-view.png" aspect="auto" objectFit="contain" />
                     <Media filename="camber-constructor-select.png" aspect="auto" objectFit="contain" />
                 </div>
@@ -622,7 +640,7 @@ export function CamberCaseStudy() {
                 </Reveal>
 
                 <Reveal delay={100}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(3rem, 6vw, 7rem)' }}>
+                    <div className="cs-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(3rem, 6vw, 7rem)' }}>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#bbb', lineHeight: 1.9, margin: 0 }}>
                             Hover over the MacBook notch and Camber drops down: an F1 race track rendered inside a minimal popover, with your tasks mapped as cars on constructor-themed lanes. Each subtask you complete advances the car. Finish everything and the car crosses the line.
                         </p>
@@ -771,7 +789,7 @@ export function CamberCaseStudy() {
                 </Reveal>
 
                 <Reveal delay={100}>
-                    <div style={{
+                    <div className="cs-2col" style={{
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
                         gap: 'clamp(3rem, 6vw, 7rem)',
@@ -797,12 +815,12 @@ export function CamberCaseStudy() {
             }}>
                 <Reveal>
                     <div>
-                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#666' }}>Next project</p>
+                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: 'var(--text-muted)' }}>Next project</p>
                         <button
-                            onClick={() => navigate('/case-study/vocaforms')}
+                            onClick={() => navigate('/case-study/findmyrepo')}
                             style={{
                                 background: 'transparent', border: 'none',
-                                color: '#ffffff',
+                                color: 'var(--text-color)',
                                 fontSize: 'clamp(1.4rem, 3vw, 2.4rem)', fontWeight: 700,
                                 cursor: 'pointer', padding: 0, ...figtree,
                                 letterSpacing: '-0.02em',
@@ -811,7 +829,7 @@ export function CamberCaseStudy() {
                             onMouseEnter={e => (e.currentTarget.style.opacity = '0.3')}
                             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                         >
-                            Vocaforms →
+                            FindMyRepo →
                         </button>
                     </div>
                 </Reveal>
@@ -820,13 +838,13 @@ export function CamberCaseStudy() {
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            background: 'transparent', border: '1px solid #1e1e1e',
-                            color: '#555', padding: '10px 24px', cursor: 'pointer',
+                            background: 'transparent', border: '1px solid var(--border-color)',
+                            color: 'var(--text-muted)', padding: '10px 24px', cursor: 'pointer',
                             ...figtree, fontSize: '0.8rem',
                             transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#555'; e.currentTarget.style.color = '#fff'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e1e1e'; e.currentTarget.style.color = '#555'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-color)'; e.currentTarget.style.color = 'var(--text-color)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                     >
                         All projects
                     </button>

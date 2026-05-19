@@ -27,7 +27,7 @@ export function MobileIndicator({ active, navigate }: { active: number; navigate
               width: isActive ? '18px' : '4px',
               height: '4px',
               borderRadius: isActive ? '2px' : '50%',
-              background: isActive ? 'white' : 'rgba(255,255,255,0.28)',
+              background: isActive ? 'var(--indicator-active)' : 'var(--indicator-inactive)',
               transition: 'width 280ms cubic-bezier(0.76, 0, 0.24, 1), background 220ms ease, border-radius 280ms ease',
             }} />
           </button>

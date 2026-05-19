@@ -24,11 +24,11 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
         position: 'absolute', left: CONTENT_LEFT,
         top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
         maxWidth: isMobile ? 'calc(100vw - 80px)' : undefined,
-        ...figtree, color: 'white', zIndex: 2,
+        ...figtree, color: 'var(--text-color)', zIndex: 2,
       }}>
-        <p style={{ fontWeight: 400, ...T.label, color: '#888', lineHeight: 'normal', margin: isMobile ? '0 0 10px' : '0 0 14px', ...ls(0) }}>
-          <span style={{ ...serifItalic, color: '#555', fontSize: '1.2em', marginRight: '6px' }}>//</span>
-          <span style={{ color: '#888' }}>&nbsp;Selected Projects</span>
+        <p style={{ fontWeight: 400, ...T.label, color: 'var(--text-muted)', lineHeight: 'normal', margin: isMobile ? '0 0 10px' : '0 0 14px', ...ls(0) }}>
+          <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.2em', marginRight: '6px' }}>//</span>
+          <span style={{ color: 'var(--text-muted)' }}>&nbsp;Selected Projects</span>
         </p>
         {SELECTED_PROJECTS.map((p, i) => {
           const isHovered = hovered === i;
@@ -49,8 +49,8 @@ export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boo
               }}
             >
               <div data-magnetic="true" style={{ display: 'inline-block', lineHeight: isMobile ? 1.65 : 2, ...ls(i + 1) }}>
-                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? '#fff' : '#eaeaea', transition: 'color 300ms ease' }}>{p.name}</span>
-                <span style={{ fontWeight: 400, ...T.desc, color: '#888' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
+                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? 'var(--text-color)' : 'var(--text-secondary)', transition: 'color 300ms ease' }}>{p.name}</span>
+                <span style={{ fontWeight: 400, ...T.desc, color: 'var(--text-muted)' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
               </div>
             </Link>
           );

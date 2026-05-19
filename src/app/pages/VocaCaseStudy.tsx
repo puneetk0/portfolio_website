@@ -43,8 +43,9 @@ function useSmoothScroll() {
             raf.current = requestAnimationFrame(loop);
         }
 
-        target.current = window.scrollY;
-        current.current = window.scrollY;
+        window.scrollTo(0, 0);
+        target.current = 0;
+        current.current = 0;
         raf.current = requestAnimationFrame(loop);
 
         window.addEventListener('wheel', onWheel, { passive: false });
@@ -98,13 +99,13 @@ function Reveal({ children, delay = 0, y = 28 }: { children: React.ReactNode; de
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PAD = 'min(300px, 15vw)';
-const BG = '#141414';
+const BG = 'var(--bg-color)';
 
 const LBL: React.CSSProperties = {
     fontSize: '0.68rem',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.22em',
-    color: '#666',
+    color: 'var(--text-muted)',
     ...figtree,
     margin: 0,
 };
@@ -112,14 +113,14 @@ const LBL: React.CSSProperties = {
 function SL({ children }: { children: React.ReactNode }) {
     return (
         <p style={{ ...LBL, margin: '0 0 3rem' }}>
-            <span style={{ ...serifItalic, color: '#555', fontSize: '1.3em', marginRight: '6px' }}>//</span>
+            <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.3em', marginRight: '6px' }}>//</span>
             {children}
         </p>
     );
 }
 
 function HR() {
-    return <div style={{ width: '100%', height: '1px', background: '#1e1e1e' }} />;
+    return <div style={{ width: '100%', height: '1px', background: 'var(--border-color)' }} />;
 }
 
 function ActionLink({ href, label }: { href: string; label: string }) {
@@ -129,19 +130,19 @@ function ActionLink({ href, label }: { href: string; label: string }) {
             style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '0.65rem 1.25rem',
-                border: '1px solid #2a2a2a', borderRadius: '4px',
-                textDecoration: 'none', color: '#eaeaea',
+                border: '1px solid var(--border-color)', borderRadius: '4px',
+                textDecoration: 'none', color: 'var(--link-color)',
                 fontSize: '0.75rem', letterSpacing: '0.04em', ...figtree,
                 transition: 'all 0.2s ease',
                 background: 'rgba(255,255,255,0.015)',
             }}
             onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                e.currentTarget.style.borderColor = '#444';
+                e.currentTarget.style.borderColor = 'var(--text-color)';
             }}
             onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.015)';
-                e.currentTarget.style.borderColor = '#2a2a2a';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
             }}
         >
             {label} ↗
@@ -154,7 +155,7 @@ const NAV_SECTIONS = ['Problem', 'Thinking', 'Solution', 'Execution', 'Impact', 
 
 function SideNav({ active, onNav }: { active: number; onNav: (i: number) => void }) {
     return (
-        <div style={{
+        <div className="cs-sidenav" style={{
             position: 'fixed', right: '36px', top: '50%',
             transform: 'translateY(-50%)',
             display: 'flex', flexDirection: 'column', gap: '20px',
@@ -364,6 +365,25 @@ export function VocaCaseStudy() {
 
     return (
         <div style={{ minHeight: '100vh', background: BG, color: 'white', ...figtree, overflowX: 'hidden' }}>
+            <style>{`
+                @media (max-width: 900px) {
+                    .cs-sidenav { display: none !important; }
+                    .cs-2col { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+                    .cs-3col { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                    .cs-4col { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
+                    .cs-section { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+                    .cs-hero { height: auto !important; min-height: 100svh !important; }
+                    .cs-pipeline { flex-direction: column !important; gap: 0 !important; }
+                    .cs-pipeline-arrow { display: none !important; }
+                    .cs-media-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+                    .cs-phone-grid { grid-template-columns: repeat(2, minmax(0, 200px)) !important; gap: 3rem !important; justify-content: center !important; }
+                }
+                @media (max-width: 540px) {
+                    .cs-4col { grid-template-columns: 1fr !important; }
+                    .cs-phone-grid { grid-template-columns: minmax(0, 240px) !important; }
+                    .cs-hero h1 { font-size: clamp(3.5rem, 15vw, 6rem) !important; }
+                }
+            `}</style>
 
             {/* ── Back ── */}
             <button
@@ -397,7 +417,7 @@ export function VocaCaseStudy() {
             }}>
                 <p style={{ ...LBL, margin: '0 0 2.5rem', animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
                     <span style={{ ...serifItalic, color: '#666', fontSize: '1.3em', marginRight: '6px' }}>//</span>
-                    Case Study : Voice AI : Web App : 2024
+                    Case Study : Voice AI : Web App : 2026
                 </p>
 
                 <h1 style={{
@@ -419,12 +439,7 @@ export function VocaCaseStudy() {
                     Forms treat users like data-entry clerks, stripping the nuance out of how answers are actually spoken.
                 </p>
 
-                <div style={{
-                    display: 'flex', gap: '1rem',
-                    animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s both',
-                }}>
-                    <ActionLink href="https://example.com" label="Live Website" />
-                </div>
+
 
                 <div style={{
                     position: 'absolute', bottom: '2.5rem', right: PAD,
@@ -451,7 +466,7 @@ export function VocaCaseStudy() {
                         { k: 'Platform', v: 'Web (Next.js 14)' },
                         { k: 'Stack', v: 'Gemini : Groq Whisper : Supabase' },
                         { k: 'Also known as', v: 'Vocaforms' },
-                        { k: 'Status', v: 'Shipped : MVP' },
+                        { k: 'Status', v: 'Building' },
                     ].map(({ k, v }, i, arr) => (
                         <div key={k} style={{
                             flex: '1 0 auto',
@@ -473,7 +488,7 @@ export function VocaCaseStudy() {
             <div ref={setRef(0)} style={{ padding: `8rem ${PAD}` }}>
                 <Reveal><SL>The Problem</SL></Reveal>
 
-                <div style={{
+                <div className="cs-2col" style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
                     gap: 'clamp(5rem, 10vw, 12rem)',
@@ -579,7 +594,7 @@ export function VocaCaseStudy() {
 
             {/* MEDIA 2 */}
             <Reveal y={10}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 280px))', justifyContent: 'center', gap: '16rem', padding: `0 ${PAD}` }}>
+                <div className="voca-phone-pair" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 280px))', justifyContent: 'center', gap: '16rem', padding: `0 ${PAD}` }}>
                     <Media
                         filename="voca-form-builder.png"
                         aspect="auto"
@@ -615,7 +630,7 @@ export function VocaCaseStudy() {
                 </Reveal>
 
                 <Reveal delay={100}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(4rem, 8vw, 10rem)', marginBottom: '6rem' }}>
+                    <div className="cs-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(4rem, 8vw, 10rem)', marginBottom: '6rem' }}>
                         <p style={{ ...figtree, fontSize: '0.975rem', color: '#aaa', lineHeight: 1.9, margin: 0 }}>
                             The user speaks to an AI agent that guides them through the form as a natural conversation. No fields, no next buttons, no mandatory format. The agent extracts structured data from whatever they say and stores it, alongside the original audio, in real time.
                         </p>
@@ -645,7 +660,7 @@ export function VocaCaseStudy() {
                                 outcome: 'The app plays local filler audio (Hmm..., Let me see...) while querying Gemini in the background, latency becomes invisible.',
                             },
                         ].map(({ decision, rationale, outcome }, i) => (
-                            <div key={decision} style={{
+                            <div key={decision} className="cs-3col" style={{
                                 display: 'grid',
                                 gridTemplateColumns: '1fr 1fr 1fr',
                                 gap: '4rem',
@@ -678,7 +693,7 @@ export function VocaCaseStudy() {
             <div ref={setRef(3)} style={{ padding: `6rem ${PAD}` }}>
                 <Reveal><SL>Execution</SL></Reveal>
 
-                <div style={{
+                <div className="cs-2col" style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 300px',
                     gap: 'clamp(4rem, 6vw, 7rem)',
@@ -809,7 +824,7 @@ export function VocaCaseStudy() {
                 </Reveal>
 
                 <Reveal delay={100}>
-                    <div style={{
+                    <div className="cs-2col" style={{
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
                         gap: 'clamp(3rem, 6vw, 7rem)',
@@ -835,16 +850,12 @@ export function VocaCaseStudy() {
             }}>
                 <Reveal>
                     <div>
-                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: '#666' }}>Next project</p>
-                        {/*
-                          UPDATE: Change the label and slug below to your next case study.
-                          navigate('/case-study/YOUR_NEXT_SLUG')
-                        */}
+                        <p style={{ ...LBL, fontSize: '0.56rem', margin: '0 0 0.6rem', color: 'var(--text-muted)' }}>Next project</p>
                         <button
-                            onClick={() => navigate('/case-study/visual-vortex')}
+                            onClick={() => navigate('/case-study/sportfolio')}
                             style={{
                                 background: 'transparent', border: 'none',
-                                color: '#ffffff',
+                                color: 'var(--text-color)',
                                 fontSize: 'clamp(1.4rem, 3vw, 2.4rem)', fontWeight: 700,
                                 cursor: 'pointer', padding: 0, ...figtree,
                                 letterSpacing: '-0.02em',
@@ -853,7 +864,7 @@ export function VocaCaseStudy() {
                             onMouseEnter={e => (e.currentTarget.style.opacity = '0.3')}
                             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                         >
-                            Visual Vortex →
+                            Sportfolio →
                         </button>
                     </div>
                 </Reveal>
@@ -862,13 +873,13 @@ export function VocaCaseStudy() {
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            background: 'transparent', border: '1px solid #1e1e1e',
-                            color: '#555', padding: '10px 24px', cursor: 'pointer',
+                            background: 'transparent', border: '1px solid var(--border-color)',
+                            color: 'var(--text-muted)', padding: '10px 24px', cursor: 'pointer',
                             ...figtree, fontSize: '0.8rem',
                             transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#555'; e.currentTarget.style.color = '#fff'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e1e1e'; e.currentTarget.style.color = '#555'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-color)'; e.currentTarget.style.color = 'var(--text-color)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                     >
                         All projects
                     </button>
