@@ -344,6 +344,12 @@ export function VocaCaseStudy() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        document.title = "Voca | Voice AI Storytelling Platform";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute("content", "Case study of Voca, an audio-first conversational voice AI that turns standard input into engaging storytelling records.");
+        }
+
         const onScroll = () => {
             const y = window.scrollY;
             setScrollY(y);

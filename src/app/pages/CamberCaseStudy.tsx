@@ -345,6 +345,12 @@ export function CamberCaseStudy() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        document.title = "Camber | Minimal macOS Task Manager";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute("content", "Case study of Camber, a keyboard-driven task manager for macOS designed for extreme speed and a native-like experience.");
+        }
+
         const onScroll = () => {
             const y = window.scrollY;
             setScrollY(y);

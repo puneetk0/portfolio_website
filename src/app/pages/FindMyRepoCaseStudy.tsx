@@ -402,6 +402,12 @@ export function FindMyRepoCaseStudy() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        document.title = "FindMyRepo | Intelligent Open Source Finder";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute("content", "Case study of FindMyRepo, a full-stack search engine matching developers to open-source contributions using intelligent repository indexing.");
+        }
+
         const onScroll = () => {
             const y = window.scrollY;
             setScrollY(y);

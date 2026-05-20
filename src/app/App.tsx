@@ -17,6 +17,7 @@ import { CamberCaseStudy } from './pages/CamberCaseStudy';
 import { VocaCaseStudy } from './pages/VocaCaseStudy';
 import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
 import { SportfolioCaseStudy } from './pages/SportfolioCaseStudy';
+import { Resume } from './pages/Resume';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -37,6 +38,12 @@ function Home({ isMobile }: { isMobile: boolean }) {
   const activeSection = target !== null ? target : current;
 
   useEffect(() => {
+    document.title = "Puneet Kathuria | Product Designer & Engineer";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute("content", "Portfolio of Puneet Kathuria, a product-minded Full-Stack Engineer and AI undergrad. Designing and building high-performance macOS apps, voice interfaces, and fintech solutions.");
+    }
+
     const imagesToPreload: string[] = [];
     HERO_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
     PROJECT_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
@@ -298,6 +305,7 @@ export default function App() {
         <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
         <Route path="/case-study/sportfolio" element={<SportfolioCaseStudy />} />
         <Route path="/case-study/sportsolio" element={<SportfolioCaseStudy />} />
+        <Route path="/resume" element={<Resume />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 

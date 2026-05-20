@@ -510,6 +510,12 @@ export function SportfolioCaseStudy() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        document.title = "Sportfolio | Real-Time Fintech Trading Platform";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute("content", "Case study of Sportfolio, a fintech fan-engagement trading market combining sports performance metrics with financial stock market mechanics.");
+        }
+
         const onScroll = () => {
             const y = window.scrollY;
             setScrollY(y);
