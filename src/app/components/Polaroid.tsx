@@ -37,12 +37,8 @@ export function Polaroid({ card, isVisible, cancelLeave, scheduleLeave }: {
       style={{
         width: 260, // Scaled up further
         backgroundColor: '#f9f8f4', 
-        boxShadow: [
-          '0 2px 4px rgba(0,0,0,0.4)',
-          '0 8px 16px rgba(0,0,0,0.3)',
-          '0 16px 32px rgba(0,0,0,0.3)',
-          '0 32px 64px rgba(0,0,0,0.4)',
-        ].join(', '),
+        boxShadow: 'var(--polaroid-shadow)',
+        border: 'var(--polaroid-border)',
         padding: '16px 16px 70px 16px', 
         opacity: isVisible ? 1 : 0,
         transform: `scale(${isVisible ? 1 : 0.85}) translateY(${isVisible ? 0 : 20}px)`,

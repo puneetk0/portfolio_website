@@ -37,6 +37,7 @@ export function BackgroundGlow() {
 
   return (
     <div
+      className="background-glow"
       style={{
         position: 'fixed',
         top: 0, left: 0,

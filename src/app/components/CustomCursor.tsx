@@ -132,16 +132,23 @@ export function CustomCursor() {
 
   return (
     <>
-      <div ref={dotRef} style={{
-        position: 'fixed', top: 0, left: 0, zIndex: 99999,
-        width: '8px', height: '8px', borderRadius: '50%',
-        backgroundColor: 'white', border: 'none',
-        transform: 'translate(-50%, -50%)', pointerEvents: 'none',
-        mixBlendMode: 'difference',
-        transition: 'width 140ms ease, height 140ms ease, background-color 140ms ease, border 140ms ease, opacity 140ms ease, border-radius 140ms ease',
-      }} />
-      <div ref={labelRef} style={{
-        position: 'fixed', top: 0, left: 0, zIndex: 99999,
+      <div 
+        ref={dotRef} 
+        className="custom-cursor"
+        style={{
+          position: 'fixed', top: 0, left: 0, zIndex: 99999,
+          width: '8px', height: '8px', borderRadius: '50%',
+          backgroundColor: 'white', border: 'none',
+          transform: 'translate(-50%, -50%)', pointerEvents: 'none',
+          mixBlendMode: 'difference',
+          transition: 'width 140ms ease, height 140ms ease, background-color 140ms ease, border 140ms ease, opacity 140ms ease, border-radius 140ms ease',
+        }} 
+      />
+      <div 
+        ref={labelRef} 
+        className="custom-cursor"
+        style={{
+          position: 'fixed', top: 0, left: 0, zIndex: 99999,
         transform: 'translate(-50%, -50%) scale(0.85)',
         pointerEvents: 'none', opacity: 0,
         transition: 'opacity 180ms ease, transform 180ms ease',

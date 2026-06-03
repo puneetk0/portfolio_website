@@ -17,7 +17,6 @@ import { CamberCaseStudy } from './pages/CamberCaseStudy';
 import { VocaCaseStudy } from './pages/VocaCaseStudy';
 import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
 import { SportfolioCaseStudy } from './pages/SportfolioCaseStudy';
-import { Resume } from './pages/Resume';
 import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
 
 function Home({ isMobile }: { isMobile: boolean }) {
@@ -157,8 +156,10 @@ export default function App() {
   useEffect(() => {
     const saved = localStorage.getItem('portfolio-theme');
     if (saved === 'light') {
+      document.documentElement.classList.add('light-mode');
       document.body.classList.add('light-mode');
     } else {
+      document.documentElement.classList.remove('light-mode');
       document.body.classList.remove('light-mode');
     }
   }, []);
@@ -193,7 +194,7 @@ export default function App() {
           --link-color: #141414;
           --glow-color: rgba(0, 0, 0, 0.015);
           --radial-bg: radial-gradient(ellipse at top right, rgba(0,0,0,0.02) 0%, transparent 60%);
-          --polaroid-shadow: 0 15px 35px rgba(0,0,0,0.15);
+          --polaroid-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
           --polaroid-border: 1px solid rgba(0,0,0,0.08);
           --indicator-active: #141414;
           --indicator-inactive: rgba(0, 0, 0, 0.25);
@@ -305,7 +306,6 @@ export default function App() {
         <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
         <Route path="/case-study/sportfolio" element={<SportfolioCaseStudy />} />
         <Route path="/case-study/sportsolio" element={<SportfolioCaseStudy />} />
-        <Route path="/resume" element={<Resume />} />
         <Route path="/case-study/:slug" element={<CaseStudy />} />
       </Routes>
 

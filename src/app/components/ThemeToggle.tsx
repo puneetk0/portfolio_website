@@ -12,8 +12,10 @@ export function ThemeToggle() {
 
   useEffect(() => {
     if (theme === 'light') {
+      document.documentElement.classList.add('light-mode');
       document.body.classList.add('light-mode');
     } else {
+      document.documentElement.classList.remove('light-mode');
       document.body.classList.remove('light-mode');
     }
     localStorage.setItem('portfolio-theme', theme);
@@ -62,10 +64,13 @@ export function ThemeToggle() {
           transform-origin: bottom left;
         }
       `}</style>
-      <div style={{
-        position: 'fixed', bottom: '28px', right: '36px',
-        zIndex: 1000, display: 'flex', alignItems: 'center',
-      }}>
+      <div 
+        className="theme-toggle-container"
+        style={{
+          position: 'fixed', bottom: '28px', right: '36px',
+          zIndex: 1000, display: 'flex', alignItems: 'center',
+        }}
+      >
         <button
           onClick={toggle}
           data-magnetic="true"

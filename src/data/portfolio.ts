@@ -49,7 +49,7 @@ export const SOCIAL_LINKS = [
   { id: 'linkedin', label: 'linkedin', href: 'https://www.linkedin.com/in/puneet-kathuria-33a296220/' },
   { id: 'instagram', label: 'instagram', href: 'https://instagram.com/puneet.25_' },
   { id: 'github', label: 'github', href: 'https://github.com/puneetk0' },
-  { id: "Resume", label: "Resume", href: "/resume" }
+  { id: "Resume", label: "Resume", href: "https://drive.google.com/file/d/1d7C1dxbENGdrzsumzRkZ5LFrHBmSmW7h/view?usp=sharing" }
 ];
 
 export const BUILDING_PROJECTS: ProjectDef[] = [
