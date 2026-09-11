@@ -1,4 +1,13 @@
+/* Import order is the cascade order — do not reorder casually.
+   tailwind first (Preflight), then tokens, then base, then type/primitives. */
 @import './fonts.css';
 @import './tailwind.css';
-@import './theme.css';
+@import './tokens.css';
+@import './base.css';
+@import './type.css';
+@import './primitives.css';
+@import './home.css';
+@import './print.css';
+@import './animations.css';
+@import './case-study.css';
 @import './mobile.css';

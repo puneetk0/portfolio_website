@@ -1,1 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Geist:wght@100;400;600&display=swap');
+/* Intentionally empty.
+   The font requests live in a <link> in index.html's <head>.
+
+   This file used to hold a remote `@import url(fonts.googleapis.com/...)`,
+   which is the worst available option: an @import inside a stylesheet cannot
+   start until that stylesheet has itself been fetched and parsed, so the fonts
+   were serialised behind the whole CSS bundle instead of being discovered by
+   the preload scanner in the initial HTML.
+
+   Kept as a file rather than deleted so the import order in index.css stays
+   explicit about where fonts come from. */

@@ -1,0 +1,371 @@
+/* ═══ Darkroom prints and the decks they sit in ═══════════════════════════════
+
+   Replaces the polaroid scatter. Three separable pieces:
+
+     .print      — the object itself: mount, image well, rebate.
+     .deck       — the desktop arrangement: cards deal out from a stack.
+     .print-strip— the mobile arrangement: one flat x-snap row, no tilt.
+
+   Depth here is structural, per the project's standing rule: hairlines, honest
+   stacking order, layered elevation and a ground-contact shadow. No colour, no
+   glow, no accent.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+
+/* ── The object ──────────────────────────────────────────────────────────── */
+
+.print {
+  margin: 0;
+
+  /* ── Uniform frame HEIGHT, width derived from the frame's own ratio ──
+     This is the load-bearing decision in the file, and it is what a contact
+     sheet actually is: same-format frames off one roll, laid in a row.
+
+     Sizing by a uniform *width* instead — which is what this did first — turns
+     ratio variance into height variance, and the source frames here run from
+     0.49 (a 312x640 phone capture) to 1.78 (a 16:9 auditorium shot). At one
+     width that is a 3.6x spread in height: the tall frames became ~590px
+     towers that dominated the headline and reached the footer, while the wide
+     ones sat as stubs beside them. The row read as a bug rather than as a
+     strip. Uniform height bounds the vertical budget by construction and lets
+     the widths vary, which is the variation a real strip has.
+
+     --ar-fit clamps the ratio into a band. Outside it, `cover` crops — and the
+     band is chosen so the crop stays small on everything that matters: a 3:4
+     portrait loses 6% of its height, a 16:9 loses 10% of its width. The
+     previous forced 1:1 cost 44% and decapitated the group shots; this is the
+     narrow version of the same trade, taken deliberately so one very wide frame
+     cannot blow out the row. */
+  --ar-fit: clamp(0.8, calc(var(--ar, 1)), 1.35);
+  width: calc(var(--print-h) * var(--ar-fit) + var(--print-bleed) * 2);
+
+  /* The tilt arrives from the data as --tilt. Kept on the outer element so the
+     mount's own hover lift can use `transform` without fighting it. */
+  transform: rotate(var(--tilt, 0deg));
+}
+
+.print__mount {
+  position: relative;
+  display: block;
+  padding: var(--print-bleed) var(--print-bleed) 0;
+  background-color: var(--print-mount);
+  /* Shared grain, so the paper stock reads as stock and not as a flat fill.
+     The veil layer on top is what keeps it at paper strength: the grain
+     data-URI is full-contrast noise, and multiplied straight onto the mount it
+     read as a speckled screen rather than as paper. `color-mix` derives the
+     veil from the mount itself, so there is no second colour literal that has
+     to be kept in agreement with the first. */
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--print-mount) 93%, transparent),
+      color-mix(in srgb, var(--print-mount) 93%, transparent)
+    ),
+    var(--grain);
+  box-shadow: var(--elev-2);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+
+/* Ground contact. --elev-3 alone reads as "floating a centimetre off the page";
+   a wide, soft, dark ellipse directly beneath the card is what makes it read as
+   lying ON the page. A gradient, not a blur — already soft, and far cheaper. */
+.print__mount::after {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -14px;
+  height: 22px;
+  background: radial-gradient(ellipse at center, var(--print-contact) 0%, transparent 72%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.print__mount:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Image well ──
+   Height is set, not derived: every frame in a strip is the same height, and
+   the mount's width above was solved from it. */
+.print__well {
+  position: relative;
+  height: var(--print-h);
+  background: var(--print-emulsion);
+  overflow: hidden;
+}
+
+/* The keyline where emulsion meets mount. Drawn inset on a pseudo-element so it
+   sits above the image and can never affect the box. */
+.print__well::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px var(--print-keyline);
+  pointer-events: none;
+}
+
+.print__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  /* Colour, at Puneet's call on 2026-09-12: "give the colors back please, it's
+     not looking good in b&w."
+
+     These are photographs of events and people, not UI, so they are the one
+     place the monochrome rule was costing more than it bought — a desaturated
+     group shot reads as a stock photo, and the point of this section is that
+     these are real. The frame around them stays neutral, so the colour sits
+     inside the paper rather than leaking into the page.
+
+     What is NOT restored is the old grayscale-to-colour transition on hover:
+     that put the only colour on the page behind an interaction, which was both
+     the most overused effect in the genre and a reason to miss it entirely. */
+  filter: contrast(1.04) saturate(1.02);
+}
+
+/* Glare. --gx/--gy/--g are written by a ref in Print.tsx; this used to be React
+   state updated on every mousemove across seven mounted cards. */
+.print__gloss {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    rgb(255 255 255 / 0.18) 0%,
+    transparent 58%
+  );
+  opacity: var(--g, 0);
+  transition: opacity var(--dur) ease;
+  pointer-events: none;
+}
+
+/* ── Rebate ──
+   The wide bottom margin a print is annotated on. Type comes from the site's
+   own scale rather than a script face: two lines of handwriting per card was
+   the single loudest "low effort" signal on the page. Exactly one handwritten
+   mark survives, and only on cards that have a real remark to make. */
+.print__rebate {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0 10px;
+  padding: 11px 2px 13px;
+  color: var(--print-ink);
+}
+
+.print__frame,
+.print__meta {
+  font-variant-numeric: tabular-nums;
+}
+
+.print__frame {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  /* Between the title ink and the muted ink: at 10px in the fully muted tone it
+     read as a smudge rather than as a frame number. */
+  color: color-mix(in oklab, var(--print-ink) 62%, var(--print-mount));
+}
+
+.print__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.print__title {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  line-height: 1.1;
+}
+
+.print__meta {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  color: var(--print-ink-muted);
+}
+
+/* Grease-pencil mark, made on the emulsion rather than in the rebate. Absolute
+   so an annotated print is never taller than an un-annotated one. */
+.print__note {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  z-index: 2;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+  color: rgb(255 255 255 / 0.94);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.55);
+  transform: rotate(-4deg);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── The strip ───────────────────────────────────────────────────────────────
+   Frames rest stacked and then lay out left to right when their category
+   becomes active, each landing on the one before it with a per-frame delay
+   from --i. The dealt-hand motion is the reason the stack exists: it makes the
+   frames read as physical objects being spread rather than as images fading in.
+
+   Laid out with FLEX, not absolute positions. With uniform height the widths
+   differ per frame, and absolute positioning would need to accumulate those
+   widths — which CSS cannot do. Flex accumulates them for free, and the
+   overlap becomes one negative margin instead of an --x/--x-mid solve per
+   slot. */
+
+.deck-stage {
+  position: absolute;
+  /* Full section height; the flex row centres itself inside it. Geometry comes
+     from `top`, never `translateY(-50%)` — a parallax hook used to be handed
+     this element and assigned `style.transform` wholesale every frame, silently
+     clobbering any transform declared here. That hook is deleted, but the
+     separation is worth keeping: geometry in `top`, motion in `transform`. */
+  top: 0;
+  bottom: 0;
+  right: var(--gutter);
+
+  /* Reserve the text column FIRST, then size the frames to what is left, so a
+     collision with the headline is structurally impossible at every width
+     rather than at the one that happened to get checked. Sections override the
+     reserve: the hero has to clear a 52px headline, "Beyond the screen" only a
+     28px row. */
+  --text-reserve: 40rem;
+
+  /* Two expressions for the same span, on purpose.
+     `width` uses `100%` of the section, which is exact. The solve below cannot:
+     a percentage in a custom property is substituted as a token, so a `100%`
+     that reaches `--print-h` would re-resolve against the element's HEIGHT, and
+     `--print-h` is used as a height. So the solve goes through 100vw — which
+     includes the classic scrollbar the section's box does not, and that 12px
+     was enough to push the strip past the right gutter and give the page a
+     horizontal scrollbar. The allowance below makes the solve conservative
+     instead: on overlay scrollbars it costs 16 invisible pixels of frame width,
+     and on classic ones it is correct. */
+  --scrollbar-allow: 16px;
+  --stage-avail: calc(
+    100vw - var(--scrollbar-allow) - var(--gutter) * 2 - var(--text-reserve)
+  );
+  width: calc(100% - var(--gutter) * 2 - var(--text-reserve));
+
+  --overlap: 0.14;
+}
+
+.deck {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+
+  /* The frame-height solve lives HERE, not on .deck-stage, because --n and
+     --sum-ar are set on this element. Custom properties inherit downward only,
+     so computing it on the parent silently fell back to `--sum-ar: 1` — which
+     sized every strip as though it held one square frame and let a three-frame
+     strip overflow 60px left, back into the text column.
+
+     A laid-out strip is `--sum-ar` frame-heights wide, less the overlap it
+     recovers. --sum-ar is the sum of the frames' CLAMPED ratios, passed from
+     the data, so it is exact: guarding a worst case instead would shrink every
+     strip to fit a shape none of them actually have. */
+  --span: calc(var(--sum-ar, 1) - (var(--n, 1) - 1) * var(--overlap));
+  /* The paper margins are a FIXED cost per frame, not a multiple of the frame
+     height, so they come off the available room before the solve rather than
+     going into --span. Folding them in was a 60px error on a three-frame strip
+     — exactly the overlap it recovered — which pushed the strip back over the
+     text column it had just been sized to clear. */
+  --span-px: calc(var(--stage-avail) - var(--n, 1) * var(--print-bleed) * 2);
+  --print-h: clamp(148px, min(30svh, var(--span-px) / var(--span)), 300px);
+}
+
+.deck__slot {
+  flex: none;
+  /* Stacking ASCENDS with index, so each frame lands on the one before it — a
+     strip laid left to right. The direction is chosen for legibility, not
+     realism: the rebate type is set flush left, so dealing the other way put
+     every frame's number and the head of its title under the frame in front. */
+  z-index: calc(10 + var(--i));
+  opacity: 0;
+  /* Stacked: pulled back onto the frame before it. */
+  --lay: calc(var(--print-h) * -0.5);
+  margin-left: var(--lay);
+  transform: translateY(calc(var(--i) * 3px)) scale(0.96);
+  transition:
+    margin-left 520ms var(--ease-out),
+    transform 520ms var(--ease-out),
+    opacity 300ms ease;
+  transition-delay: calc(var(--i) * 60ms);
+}
+.deck__slot:first-child {
+  margin-left: 0;
+}
+
+.deck[data-on='true'] .deck__slot {
+  --lay: calc(var(--print-h) * var(--overlap) * -1);
+  /* A small vertical stagger keeps the "laid on a table" read once the frames
+     are no longer a single pile. */
+  transform: translateY(calc(var(--i) * 14px - (var(--n) - 1) * 7px)) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Elevation follows the laying order, so the frame that landed last casts the
+   most shadow. Written first/last-child so it holds for a strip of any size. */
+.deck__slot:first-child .print__mount { box-shadow: var(--elev-1); }
+.deck__slot:last-child .print__mount { box-shadow: var(--elev-3); }
+
+/* Hovering one frame brings it fully forward — also the escape hatch for
+   whatever the overlap happens to be covering. */
+.deck__slot:hover { z-index: 30; }
+.deck__slot:hover .print__mount { box-shadow: var(--elev-3); }
+
+.print {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+/* ── Mobile: one flat row, no tilt, no stack ─────────────────────────────── */
+
+@media (max-width: 1199px) {
+  /* The tilt is desktop decoration that costs legible width at 375px, and a
+     rotated card next to a flush-left text column reads as misalignment rather
+     than as an object. */
+  .print-strip .print {
+    transform: none;
+    /* Height-driven here as well, and capped by BOTH budgets. A frame keeps a
+       ratio, so sizing on width alone made a 3:4 print ~360px tall and pushed
+       the hero's CTAs into the fixed footer; capping on height alone would let
+       a 16:9 frame run past the column. The width term is expressed as a
+       height by dividing by the frame's own clamped ratio.
+
+       Everything is a plain min(), never min(100%, ...): inside the strip's
+       auto-width flex item a percentage resolves against a width that depends
+       on this one, and the circularity blew a card out to 545px at 375px. */
+    --print-h: min(32svh, calc((100vw - var(--gutter) * 2) / var(--ar-fit)));
+  }
+  .print-strip .print__mount:hover { transform: none; }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .deck__slot {
+    transition: opacity 1ms linear;
+    transition-delay: 0ms;
+  }
+  .print__mount,
+  .print__gloss {
+    transition: none;
+  }
+  .print__mount:hover { transform: none; }
+  .print__gloss { display: none; }
+}

@@ -4,10 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 
+// NOTE: kept only for Figma Make round-trips. It resolves into src/assets, which
+// does not exist yet — once the asset pipeline creates that directory this plugin
+// becomes a live footgun and must be removed.
 function figmaAssetResolver() {
   return {
     name: 'figma-asset-resolver',
-    resolveId(id) {
+    resolveId(id: string) {
       if (id.startsWith('figma:asset/')) {
         const filename = id.replace('figma:asset/', '')
         return path.resolve(__dirname, 'src/assets', filename)

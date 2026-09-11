@@ -1,0 +1,56 @@
+/* ─── Shared keyframes ─────────────────────────────────────────────────────────
+   Previously duplicated verbatim in all four case-study pages' inline <style>
+   blocks, which also meant `fadeUp` was undefined on the home route where
+   Hero.tsx references it. Defined once here so every route can reach them.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 0.5; }
+}
+
+/* Moved out of the App.tsx inline <style> block. */
+@keyframes lineUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* No `opacity` term, on purpose.
+   This ran `opacity: 0 -> 1` with `animation-fill-mode: forwards` on the
+   wrapper around the entire page. Any condition that pauses or never starts a
+   CSS animation — a background tab, a throttled renderer, an engine that
+   skips animations — left the whole site at `opacity: 0`, i.e. blank. Same
+   failure class as the de-emphasis bug that was already fixed by making the
+   base state legible and layering the effect on top.
+
+   Frozen at 0% this now reads as blurred and very slightly enlarged: degraded,
+   never absent. The content's own per-line `lineUp` stagger still supplies the
+   fade-in. */
+/* Blur only — no `opacity`, no `transform`.
+   `opacity` went first: animated 0 -> 1 with `forwards` on a wrapper around the
+   whole page, any condition that pauses or skips a CSS animation left the site
+   blank.
+   `scale` goes now for the same kind of reason: a scaled box is wider than the
+   viewport for the duration, so the page took an ~11px horizontal scrollbar on
+   every load (and kept it indefinitely in a tab whose animations are paused).
+   `overflow-x: clip` on the wrapper clips its children, not its own scaled box.
+   Blur changes no layout geometry at all, so there is nothing left to overflow
+   and nothing left to hide. */
+@keyframes bootSequence {
+  0%   { filter: blur(12px); }
+  100% { filter: blur(0px); }
+}
+
+@keyframes staticNoise {
+  0%   { background-position: 0px 0px; }
+  20%  { background-position: -50px 50px; }
+  40%  { background-position: 50px -50px; }
+  60%  { background-position: 100px 100px; }
+  80%  { background-position: -100px -100px; }
+  100% { background-position: 0px 0px; }
+}

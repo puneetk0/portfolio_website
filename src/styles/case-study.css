@@ -1,0 +1,535 @@
+/* ─── Case study responsive layer ─────────────────────────────────────────────
+   The SINGLE place case-study media queries live. Previously the same rules
+   existed in five places — an inline <style> block in each of the four pages
+   plus a copy in mobile.css — and most of them targeted class names that were
+   never applied to any element, so the layouts did not collapse at all:
+
+     .cs-section, .cs-hero, .cs-4col, .cs-phone-grid   applied nowhere
+     .cs-pipeline, .cs-pipeline-arrow                   applied nowhere (in any file)
+     .cs-3col                                           only ever used in Voca
+
+   Grids are now tagged `data-cols` with their real column count, because an
+   inline `gridTemplateColumns` cannot be overridden from a stylesheet — which
+   is precisely why the old rules were inert.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-cs-section] {
+  scroll-margin-top: var(--cs-scroll-offset, 5rem);
+}
+
+/* ── Tablet and below ── */
+@media (max-width: 900px) {
+  /* `.cs-sidenav` is gone: the rail and the mobile bar are now one
+     component, `CaseStudyChrome`, switched by CSS at the bottom of this file. */
+
+  /* Inline grid templates are overridden here on purpose: this is the one
+     case where !important is the correct tool, because the value being
+     overridden is an inline style set per-element in JSX. */
+  [data-cols='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 1.5rem !important; }
+  [data-cols='3'] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 1.5rem !important; }
+  [data-cols='2'] { grid-template-columns: minmax(0, 1fr) !important; gap: 2rem !important; }
+
+  /* Divider hairlines must switch edges on collapse. Without this the
+     full-bleed bordered grids leave stray vertical lines stacked down the
+     page — and hairlines are the whole depth strategy here. */
+  [data-cols] > * {
+    border-right: 0 !important;
+    padding-left: 0 !important;
+  }
+  [data-cols] > * + * {
+    border-top: 1px solid var(--cs-line-faint) !important;
+    padding-top: 2rem !important;
+  }
+
+  /* The hero was height:100vh unconditionally in all four files, because
+     `.cs-hero` was never applied to anything. svh, not vh, so mobile browser
+     chrome doesn't push the content out of view. */
+  .cs-hero {
+    height: auto !important;
+    min-height: 100svh !important;
+  }
+
+  /* Prose measure is tuned for a ~1000px column; it is far too loose at 340px. */
+  [data-cs-section] p {
+    font-size: 1rem !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* ── Phone ── */
+@media (max-width: 540px) {
+  [data-cols='4'],
+  [data-cols='3'],
+  [data-cols='2'] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* 4rem with -0.03em tracking overflows on "FindMyRepo" and "Sportfolio"
+     at 375px, so the clamp floor has to come down. */
+  .cs-hero h1,
+  [data-cs-hero] h1 {
+    font-size: clamp(2.5rem, 13vw, 4rem) !important;
+    letter-spacing: -0.02em !important;
+  }
+}
+
+/* ── The architecture diagram ──
+   213 lines of hand-authored SVG on a 960x480 viewBox with 6-9.5px type. It
+   scales down with the viewBox until illegible, so below the breakpoint it
+   scrolls horizontally at a readable minimum width instead of shrinking. */
+@media (max-width: 900px) {
+  .cs-diagram {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cs-diagram > svg {
+    min-width: 720px;
+  }
+}
+
+/* ─── Architecture diagram: two views, one model ──────────────────────────────
+   Desktop gets the hand-authored SVG; below the breakpoint it is replaced by a
+   stacked tier list built from the same data. The SVG's 6-9.5px labels are
+   simply not legible once a 960-wide viewBox is squeezed into 375px, and
+   horizontal scrolling a diagram is a poor substitute for reading it.
+   ───────────────────────────────────────────────────────────────────────────── */
+.arch-tiers { display: none; }
+
+@media (max-width: 900px) {
+  .cs-diagram { display: none; }
+
+  .arch-tiers {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .arch-tier {
+    border-top: 1px solid var(--cs-line);
+    padding: 1.4rem 0 0.2rem;
+  }
+
+  .arch-tier__label {
+    font-size: 0.6rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--cs-fg-faint);
+    margin: 0 0 0.9rem;
+  }
+
+  .arch-tier__nodes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .arch-node {
+    display: grid;
+    gap: 2px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--cs-line-faint);
+    background: var(--cs-wash);
+  }
+  /* Sub-components sit inset and unboxed, so tier hierarchy survives the
+     collapse without needing the SVG's spatial layout. */
+  .arch-node[data-primary='false'] {
+    border: 0;
+    background: none;
+    padding: 0.1rem 0 0.1rem 0.9rem;
+    border-left: 1px solid var(--cs-line-faint);
+    margin-left: 0.4rem;
+  }
+
+  .arch-node__name {
+    font-size: 0.875rem;
+    color: var(--cs-fg);
+  }
+  .arch-node[data-primary='true'] .arch-node__name {
+    font-weight: 600;
+    color: var(--cs-fg-strong);
+  }
+  .arch-node__detail {
+    font-size: 0.72rem;
+    color: var(--cs-fg-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .arch-tier__edge {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cs-fg-faint);
+    margin: 1rem 0 1.2rem;
+  }
+}
+
+/* ─── Evidence components ─────────────────────────────────────────────────── */
+
+.tradeoffs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tradeoffs[data-variant='columns'] {
+  display: grid;
+  gap: 0;
+}
+.tradeoffs[data-variant='columns'] > .tradeoff + .tradeoff {
+  border-left: 1px solid var(--cs-line-faint);
+}
+.tradeoffs[data-variant='boxes'] {
+  display: grid;
+  gap: 1px;
+  background: var(--cs-line-faint);
+}
+.tradeoffs[data-variant='stack'] {
+  display: grid;
+  gap: 0;
+}
+
+.tradeoff {
+  position: relative;
+  padding: 3rem 2.5rem;
+  background: var(--cs-surface);
+}
+.tradeoffs[data-variant='stack'] > .tradeoff {
+  padding-inline: 0;
+  border-top: 1px solid var(--cs-line-faint);
+}
+.tradeoff[data-status='chosen'] {
+  background: var(--cs-wash-2);
+}
+
+.tradeoff__id { margin: 0 0 1.25rem !important; font-size: 0.55rem !important; }
+.tradeoff__badge {
+  position: absolute;
+  top: 3rem;
+  right: 2.5rem;
+  font-size: 0.5rem !important;
+  color: var(--cs-fg-3) !important;
+}
+.tradeoff__title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--cs-fg-2);
+  margin: 0 0 1.5rem;
+}
+.tradeoff[data-status='chosen'] .tradeoff__title { color: var(--cs-fg-strong); }
+.tradeoff__rationale {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--cs-fg-3);
+  margin: 0;
+}
+.tradeoff__verdict {
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--cs-fg-faint);
+  margin: 1.75rem 0 0;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--cs-line-faint);
+}
+.tradeoff[data-status='rejected'] .tradeoff__glyph { color: var(--cs-fg-faint); }
+.tradeoff__metric {
+  display: block;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--cs-fg-2);
+}
+
+/* ── Stats ── */
+.stat-row {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--cs-line-faint);
+  border-bottom: 1px solid var(--cs-line-faint);
+}
+.stat-row[data-cols='3'] { grid-template-columns: repeat(3, 1fr); }
+.stat-row[data-cols='4'] { grid-template-columns: repeat(4, 1fr); }
+.stat {
+  padding: 2.25rem 2rem 2.25rem 0;
+}
+.stat + .stat {
+  padding-left: 2rem;
+  border-left: 1px solid var(--cs-line-faint);
+}
+.stat__value {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--cs-fg-strong);
+  font-variant-numeric: tabular-nums;
+}
+.stat__label { margin: 0 !important; font-size: 0.56rem !important; }
+.stat__sub {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--cs-fg-3);
+}
+
+/* ── Pull quote ── */
+.pull-quote { margin: 0; }
+.pull-quote blockquote {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--cs-fg);
+  max-width: 24ch;
+}
+.pull-quote__source { color: var(--cs-fg-faint); }
+.pull-quote__evidence {
+  color: var(--cs-fg-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pull-quote__evidence:hover { color: var(--cs-fg-strong); }
+
+/* ── Before / after ── */
+.before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--cs-line-faint);
+}
+.before-after__side { padding: 2rem 2rem 2rem 0; }
+.before-after__side[data-side='after'] {
+  padding-left: 2rem;
+  border-left: 1px solid var(--cs-line-faint);
+}
+.before-after__body {
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--cs-fg-3);
+}
+.before-after__side[data-side='after'] .before-after__body { color: var(--cs-fg-2); }
+.before-after__delta {
+  margin: 1.25rem 0 0;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--cs-fg-strong);
+}
+
+@media (max-width: 900px) {
+  .tradeoffs[data-variant='columns'] > .tradeoff + .tradeoff { border-left: 0; }
+  .tradeoff { padding: 2rem 0; }
+  .tradeoff__badge { position: static; display: block; margin-bottom: 0.75rem; }
+  .stat-row[data-cols='3'],
+  .stat-row[data-cols='4'] { grid-template-columns: 1fr 1fr; }
+  .stat, .stat + .stat { padding: 1.5rem 1rem 1.5rem 0; border-left: 0; }
+  .before-after { grid-template-columns: 1fr; }
+  .before-after__side[data-side='after'] { padding-left: 0; border-left: 0; border-top: 1px solid var(--cs-line-faint); }
+}
+
+/* ═══ Case-study chrome: desktop rail + mobile bar ════════════════════════════
+   Replaces `.cs-sidenav { display: none }` — which removed the only navigation
+   on mobile and put nothing in its place — and the absolutely-positioned 43x19
+   back control that scrolled away.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Desktop right rail ── */
+.cs-nav {
+  position: fixed;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+}
+.cs-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+}
+.cs-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  /* 44px of hit area for a 1px tick. */
+  min-height: 44px;
+  margin-block: -13px;
+  text-decoration: none;
+  color: var(--cs-fg-faint);
+  opacity: 0.6;
+  transition: opacity var(--dur) ease, color var(--dur) ease;
+}
+.cs-nav__link:hover,
+.cs-nav__link:focus-visible { opacity: 1; }
+.cs-nav__link[aria-current] {
+  opacity: 1;
+  color: var(--cs-fg-strong);
+}
+.cs-nav__label {
+  font-family: var(--font-ui);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+}
+/* Revealed on hover AND focus — keyboard users previously got unlabelled ticks. */
+.cs-nav__link:hover .cs-nav__label,
+.cs-nav__link:focus-visible .cs-nav__label,
+.cs-nav__link[aria-current] .cs-nav__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+.cs-nav__tick {
+  display: block;
+  flex: none;
+  width: 8px;
+  height: 1px;
+  background: currentColor;
+  transition: width 500ms var(--ease-out);
+}
+.cs-nav__link[aria-current] .cs-nav__tick { width: 24px; }
+
+/* ── Mobile sticky bar ── */
+.cs-bar { display: none; }
+
+@media (max-width: 900px) {
+  .cs-nav { display: none; }
+
+  .cs-bar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding-inline: var(--cs-gutter);
+    background: color-mix(in oklab, var(--cs-surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cs-line-faint);
+  }
+
+  .cs-bar__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    /* Was 43x19 with zero padding. */
+    min-height: 44px;
+    min-width: 44px;
+    padding-inline: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--cs-fg-2);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+  }
+  .cs-bar__back:hover { color: var(--cs-fg-strong); }
+
+  .cs-bar__name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cs-fg-3);
+  }
+
+  .cs-bar__menu { position: relative; }
+  .cs-bar__menu > summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 4px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-ui);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cs-fg-2);
+  }
+  .cs-bar__menu > summary::-webkit-details-marker { display: none; }
+
+  .cs-bar__list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 1;
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    min-width: 168px;
+    background: var(--cs-surface-raised);
+    border: 1px solid var(--cs-line);
+    box-shadow: var(--elev-3);
+  }
+  /* The rail's geometry is desktop-only; in the menu the items are plain rows. */
+  .cs-bar__list .cs-nav__link {
+    justify-content: flex-start;
+    gap: 10px;
+    margin-block: 0;
+    padding-inline: 14px;
+    color: var(--cs-fg-2);
+    opacity: 1;
+  }
+  .cs-bar__list .cs-nav__link[aria-current] { color: var(--cs-fg-strong); }
+  .cs-bar__list .cs-nav__label {
+    opacity: 1;
+    transform: none;
+    font-size: 0.66rem;
+  }
+  .cs-bar__list .cs-nav__tick { width: 8px; }
+  .cs-bar__list .cs-nav__link[aria-current] .cs-nav__tick { width: 16px; }
+
+  /* Reading progress. Scales from --cs-progress, written to <html> by
+     useScrollVars, so the bar never causes a React render on scroll. */
+  .cs-bar__progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--cs-fg-strong);
+    transform: scaleX(var(--cs-progress, 0));
+    transform-origin: left center;
+  }
+
+  /* The hero was forced to a full viewport height on mobile too, which put
+     ~470px of dead space above the kicker before anything readable appeared. */
+  .cs-hero {
+    min-height: auto !important;
+    padding-block: 3.5rem 2.5rem !important;
+  }
+
+  /* Vertical "SCROLL" hint: decorative, illegible at this size, and it sat on
+     top of the action links. */
+  .cs-scroll-hint { display: none !important; }
+}
+
+/* ── Footer controls ──
+   The next-project and all-projects buttons at the end of every case study are
+   inline-styled in the pages, but none of them declares a min-height — so this
+   reaches them. They measured 151x34 and 115x41. */
+[data-cs-footer] a,
+[data-cs-footer] button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
