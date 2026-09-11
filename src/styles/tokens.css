@@ -1,0 +1,244 @@
+/* ─── Design tokens ───────────────────────────────────────────────────────────
+   The ONLY place literal values live. Nothing else in the codebase should
+   contain a hex colour, a z-index number, a duration, or an easing curve.
+
+   Two groups:
+     NEW      — the structural-depth system (surfaces, ink, rules, elevation, z)
+     LEGACY   — the original var names, values preserved byte-for-byte so the
+                existing components keep rendering identically. These are
+                migrated away from progressively, then deleted.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Surfaces: a real elevation ladder, not a single background ── */
+  --surface-0: #101010;
+  --surface-1: #141414;
+  --surface-2: #1a1a1a;
+
+  /* ── Ink ── */
+  --ink-1: #f5f5f5;
+  --ink-2: #a8a8a8;
+  --ink-3: #767676;
+  --ink-4: #555555;
+
+  /* ── Hairlines: the primary depth device ──
+     Alpha-based so they read correctly over any surface in the ladder. */
+  --rule-faint: rgba(255, 255, 255, 0.045);
+  --rule: rgba(255, 255, 255, 0.09);
+  --rule-strong: rgba(255, 255, 255, 0.16);
+
+  /* ── Elevation: 3 layers, offset+blur doubling, constant opacity,
+        neutral slate tint — never pure black. ── */
+  --shadow-tint: 17 24 39;
+  --elev-1:
+    0 1px 2px rgb(var(--shadow-tint) / 0.12),
+    0 2px 4px rgb(var(--shadow-tint) / 0.12),
+    0 4px 8px rgb(var(--shadow-tint) / 0.12);
+  --elev-2:
+    0 2px 4px rgb(var(--shadow-tint) / 0.14),
+    0 4px 8px rgb(var(--shadow-tint) / 0.14),
+    0 8px 16px rgb(var(--shadow-tint) / 0.14);
+  --elev-3:
+    0 4px 8px rgb(var(--shadow-tint) / 0.16),
+    0 8px 16px rgb(var(--shadow-tint) / 0.16),
+    0 16px 32px rgb(var(--shadow-tint) / 0.16);
+
+  /* ── Honest z-index: the single source of stacking values.
+        Declaring these in one ordered list is what prevents the class of bug
+        where a z:0 root-level sibling paints above a z:auto stacking context. ── */
+  --z-bg: 0;
+  --z-media: 5;
+  --z-content: 10;
+  --z-nav: 50;
+  --z-grain: 60;
+  --z-cursor: 70;
+
+  /* ── Physical-print exception. Deliberately not themed — these read as
+        objects resting on the page, not as UI.
+
+        The object is a darkroom contact print, not a Polaroid. That choice is
+        load-bearing on a monochrome site: a Polaroid's white frame exists to
+        hold a *colour* print, and its sepia cast is a colour move, so it was
+        the one thing on the page fighting the palette. A contact print is
+        paper, silver and black — the metaphor is already monochrome.
+
+        `--print-mount` is neutral, not the old warm #f9f8f4: warmth was the
+        colour. `--print-keyline` is the hairline where the emulsion meets the
+        mount; `--print-rebate` is the wide bottom margin the frame number and
+        the annotation are printed on. ── */
+  --print-mount: #f2f1ee;
+  --print-ink: #17171a;
+  --print-ink-muted: #6e6d72;
+  --print-keyline: rgba(23, 23, 26, 0.24);
+  --print-emulsion: #0e0e0f;
+  /* The paper margin around the emulsion. A token because the mount's width
+     is solved from the frame height and has to add it back. */
+  --print-bleed: 10px;
+
+  /* Ground contact. `--elev-3` alone makes a card look like it is hovering a
+     centimetre off the page; a wide, soft, nearly-black ellipse *under* the
+     card is what makes it look like it is lying on the page. Drawn as a
+     separate blurred pseudo-element, so it never competes with --elev-3. */
+  --print-contact: rgb(var(--shadow-tint) / 0.55);
+
+  /* ── Grain: shared by the noise overlay and the print mount ── */
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-opacity: 0.05;
+
+  /* ── Space ── */
+  --gutter: clamp(20px, 9.4vw, 142px);
+  --measure: 34rem;
+
+  /* ── Custom cursor ──
+     White in BOTH themes on purpose: the dot paints with
+     `mix-blend-mode: difference`, so white inverts whatever is behind it —
+     near-black on the light surface, white on the dark one. Tokenised so the
+     value is stated once rather than hardcoded in three places in the
+     component. */
+  --cursor-ink: #ffffff;
+  --cursor-ring: rgba(255, 255, 255, 0.75);
+
+  /* ── Focus ── */
+  --focus-ring: 2px solid var(--ink-1);
+  --focus-offset: 3px;
+
+  /* ── Motion ── */
+  --dur-fast: 160ms;
+  --dur: 280ms;
+  --dur-page: 650ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-page: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-text: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ═══ LEGACY — values preserved exactly as they were in App.tsx ═══ */
+  --bg-color: #141414;
+  --text-color: #ffffff;
+  --text-secondary: #aaa;
+  --text-muted: #888;
+  --border-color: #1e1e1e;
+  --label-color: #666;
+  --link-color: #eaeaea;
+  --glow-color: rgba(255, 255, 255, 0.008);
+  --radial-bg: radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.02) 0%, transparent 60%);
+  --indicator-active: #ffffff;
+  --indicator-inactive: rgba(255, 255, 255, 0.25);
+  --indicator-text: rgba(255, 255, 255, 0.65);
+  --indicator-hover-border: rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Light theme ─────────────────────────────────────────────────────────────
+   Scoped to :root (not body) so html itself is themed — that's what makes
+   rubber-band overscroll show the right colour.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-0: #ffffff;
+  --surface-1: #f7f7f7;
+  --surface-2: #f0f0f0;
+
+  --ink-1: #141414;
+  --ink-2: #3d3d3d;
+  --ink-3: #6b6b6b;
+  --ink-4: #8f8f8f;
+
+  --rule-faint: rgba(0, 0, 0, 0.05);
+  --rule: rgba(0, 0, 0, 0.1);
+  --rule-strong: rgba(0, 0, 0, 0.18);
+
+  /* Same tint, far lower alpha — shadows on light surfaces must whisper. */
+  --elev-1:
+    0 1px 2px rgb(var(--shadow-tint) / 0.05),
+    0 2px 4px rgb(var(--shadow-tint) / 0.05),
+    0 4px 8px rgb(var(--shadow-tint) / 0.05);
+  --elev-2:
+    0 2px 4px rgb(var(--shadow-tint) / 0.06),
+    0 4px 8px rgb(var(--shadow-tint) / 0.06),
+    0 8px 16px rgb(var(--shadow-tint) / 0.06);
+  --elev-3:
+    0 4px 8px rgb(var(--shadow-tint) / 0.07),
+    0 8px 16px rgb(var(--shadow-tint) / 0.07),
+    0 16px 32px rgb(var(--shadow-tint) / 0.07);
+
+  --grain-opacity: 0.035;
+
+  /* On a light page the mount can no longer separate itself by being brighter
+     than the surface, so it separates by being very slightly warmer and by its
+     contact shadow instead. The ink stays the same — it is printed ink. */
+  --print-mount: #fbfaf8;
+  --print-keyline: rgba(23, 23, 26, 0.16);
+  --print-contact: rgb(var(--shadow-tint) / 0.16);
+
+  /* ═══ LEGACY — light values preserved exactly ═══ */
+  --bg-color: #f7f7f7;
+  --text-color: #141414;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --border-color: #e2e2e2;
+  --label-color: #888888;
+  --link-color: #141414;
+  --glow-color: rgba(0, 0, 0, 0.015);
+  --radial-bg: radial-gradient(ellipse at top right, rgba(0, 0, 0, 0.02) 0%, transparent 60%);
+  --indicator-active: #141414;
+  --indicator-inactive: rgba(0, 0, 0, 0.25);
+  --indicator-text: rgba(0, 0, 0, 0.65);
+  --indicator-hover-border: rgba(0, 0, 0, 0.8);
+}
+
+/* ─── Case-study tokens ───────────────────────────────────────────────────────
+   ~50 distinct greys across the four case-study files collapse into these 11.
+   Ten distinct border greys between #191919 and #383838 was accidental
+   precision, not design — and it is the reason light mode was impossible:
+   colours lived in inline React styles, which the cascade cannot reach, which
+   is why an !important attribute-substring hack existed at all.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --cs-fg-strong: #ffffff;
+  --cs-fg: #e8e8e8;
+  --cs-fg-2: #bbbbbb;
+  --cs-fg-3: #888888;
+  --cs-fg-faint: #666666;
+
+  --cs-line-strong: #333333;
+  --cs-line: #262626;
+  --cs-line-faint: #1e1e1e;
+
+  --cs-surface: #141414;
+  --cs-surface-raised: #1c1c1c;
+  --cs-media-bg: #0a0a0a;
+}
+
+:root[data-theme='light'] {
+  --cs-fg-strong: #0d0d0d;
+  --cs-fg: #1f1f1f;
+  --cs-fg-2: #3d3d3d;
+  --cs-fg-3: #6b6b6b;
+  --cs-fg-faint: #8a8a8a;
+
+  --cs-line-strong: #c9c9c9;
+  --cs-line: #dedede;
+  --cs-line-faint: #ebebeb;
+
+  --cs-surface: #f7f7f7;
+  --cs-surface-raised: #efefef;
+  --cs-media-bg: #ededed;
+}
+
+/* Subtle raised washes. A white-alpha overlay disappears on a light surface, so
+   these mix the theme's own foreground into transparency instead — the same
+   "barely lifted" reading in both themes. */
+:root {
+  --cs-wash: color-mix(in oklab, var(--cs-fg-strong) 1.5%, transparent);
+  --cs-wash-2: color-mix(in oklab, var(--cs-fg-strong) 2%, transparent);
+  --cs-wash-3: color-mix(in oklab, var(--cs-fg-strong) 5%, transparent);
+}
+
+/* Case-study measure. Replaces two divergent PAD values (min(300px,15vw) in
+   three files, min(142px,9.4vw) in Sportfolio). */
+:root {
+  --cs-gutter: clamp(20px, 6vw, 96px);
+  --cs-measure: min(1100px, 100% - 2 * var(--cs-gutter));
+  --cs-scroll-offset: 5rem;
+}

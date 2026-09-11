@@ -1,61 +1,86 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
+import { ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
 import { ImageCluster } from '../components/ImageCluster';
+import { RowMedia } from '../components/RowMedia';
 import { SELECTED_PROJECTS, PROJECT_LAYOUTS } from '../../data/portfolio';
 
-export function Projects({ ek, isMobile, isActive }: { ek: number; isMobile: boolean; isActive: boolean }) {
+export function Projects({ isMobile, isActive }: { isMobile: boolean; isActive: boolean }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
 
-  return (
-    <div
-      ref={sectionRef}
-      style={{ width: '100%', height: '100%', position: 'relative' }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      aria-hidden={!isActive}
-      tabIndex={isActive ? 0 : -1}
-    >
-      {!isMobile && <ImageCluster layouts={PROJECT_LAYOUTS} activeGroup={hovered} groupRef={groupRef} />}
+  /* Default-active row. A recruiter's first pass is 30-60 seconds, and this
+     list previously rendered as three bare lines with no signal that hovering
+     did anything — so the work was invisible during exactly the pass that
+     decides whether they keep reading. Row 0 is active on entry and releases
+     on the first real pointer movement. */
+  const released = useRef(false);
+  useEffect(() => {
+    if (!isActive || isMobile) return;
+    if (!released.current) setHovered(0);
+    const release = () => {
+      released.current = true;
+      setHovered(null);
+      window.removeEventListener('pointermove', release);
+    };
+    window.addEventListener('pointermove', release, { once: true });
+    return () => window.removeEventListener('pointermove', release);
+  }, [isActive, isMobile]);
 
-      <div key={ek} style={{
-        position: 'absolute', left: CONTENT_LEFT,
-        top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
-        maxWidth: isMobile ? 'calc(100vw - 80px)' : undefined,
-        ...figtree, color: 'var(--text-color)', zIndex: 2,
-      }}>
-        <p style={{ fontWeight: 400, ...T.label, color: 'var(--text-muted)', lineHeight: 'normal', margin: isMobile ? '0 0 10px' : '0 0 14px', ...ls(0) }}>
-          <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.2em', marginRight: '6px' }}>//</span>
-          <span style={{ color: 'var(--text-muted)' }}>&nbsp;Selected Projects</span>
-        </p>
-        {SELECTED_PROJECTS.map((p, i) => {
-          const isHovered = hovered === i;
-          return (
-            <Link 
-              key={p.name}
-              to={`/case-study/${p.slug}`}
-              onMouseEnter={() => setHovered(i)} 
-              onMouseLeave={() => setHovered(null)}
-              style={{ 
-                display: 'block',
-                textDecoration: 'none',
-                opacity: hovered !== null && !isHovered ? 0.25 : 1, 
-                transform: isHovered ? 'translateX(10px)' : 'translateX(0px)',
-                transition: 'opacity 300ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                padding: '4px 0',
-                cursor: 'pointer'
-              }}
-            >
-              <div data-magnetic="true" style={{ display: 'inline-block', lineHeight: isMobile ? 1.65 : 2, ...ls(i + 1) }}>
-                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? 'var(--text-color)' : 'var(--text-secondary)', transition: 'color 300ms ease' }}>{p.name}</span>
-                <span style={{ fontWeight: 400, ...T.desc, color: 'var(--text-muted)' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{p.desc}</span>
-              </div>
-            </Link>
-          );
-        })}
+  return (
+    <>
+      {/* The hover cluster. This is the interaction the section is built around
+          — a row lights up and its work flies in, parallaxing with the pointer.
+          It was briefly replaced with an always-visible inline strip; that was
+          the wrong call and it is back. */}
+      {!isMobile && (
+        <div className="section-decor" ref={sectionRef} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+          <ImageCluster layouts={PROJECT_LAYOUTS} activeGroup={hovered} groupRef={groupRef} />
+        </div>
+      )}
+
+      <div className="home__inner">
+        <div className="section-content">
+          <h2 className="t-eyebrow section-label" style={ls(0)}>
+            <span aria-hidden="true" className="section-label__slash" style={serifItalic}>//</span>
+            Selected Projects
+          </h2>
+
+          <ol className="row-list">
+            {SELECTED_PROJECTS.map((p, i) => {
+              const isHovered = hovered === i;
+              return (
+                <li key={p.name} style={ls(i + 1)}>
+                  <Link
+                    to={`/case-study/${p.slug}`}
+                    className="row"
+                    data-dim={hovered !== null && !isHovered ? 'true' : 'false'}
+                    data-on={isHovered ? 'true' : 'false'}
+                    onMouseEnter={() => setHovered(i)}
+                    onMouseLeave={() => setHovered(null)}
+                    onFocus={() => setHovered(i)}
+                    onBlur={() => setHovered(null)}
+                  >
+                    <span className="t-eyebrow t-num row__index" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span data-magnetic="true" className="row__inner">
+                      <span className="t-row row__name">{p.name}</span>
+                      <span className="t-desc row__desc">{p.desc}</span>
+                    </span>
+                  </Link>
+
+                  {/* Mobile only — there is no hover to reveal the cluster
+                      with, and before this mobile visitors saw no work at all.
+                      Hidden above 900px by CSS, where the cluster takes over. */}
+                  {p.media && <RowMedia media={p.media} active={isHovered} />}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

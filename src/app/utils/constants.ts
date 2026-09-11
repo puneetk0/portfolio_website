@@ -1,6 +1,3 @@
-export const TOTAL = 3;
-export const DURATION = 650;
-export const EASE_PAGE = 'cubic-bezier(0.76, 0, 0.24, 1)';
 export const EASE_TEXT = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
 export const geist: React.CSSProperties = { fontFamily: "'Geist', sans-serif" };

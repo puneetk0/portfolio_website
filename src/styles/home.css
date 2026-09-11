@@ -1,0 +1,740 @@
+/* ─── Home: native scroll-snap paging ─────────────────────────────────────────
+   The scroller is the DOCUMENT, not an inner div. That distinction is the whole
+   point: a scrollable <div> only responds to arrow keys while it (or a
+   descendant) holds focus, whereas the document responds to arrows, Space,
+   PageUp/Down, Home/End, scrollbar drag, find-in-page and the screen-reader
+   virtual cursor with no JavaScript at all.
+
+   Scoped with :has() so case studies never snap.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+html:has(.home) {
+  scroll-snap-type: y mandatory;
+}
+
+/* Once mobile sections carry real content they exceed one viewport. Under
+   `mandatory` the browser must always rest on a snap point, which would make
+   that overflow unreachable — the same hard-clip bug the old fixed layout had,
+   from a different cause. `proximity` gives a paged *feel* that still scrolls. */
+@media (max-width: 900px) {
+  html:has(.home) {
+    scroll-snap-type: y proximity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.home) {
+    scroll-snap-type: none;
+  }
+}
+
+.home {
+  position: relative;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* The snapping element carries GEOMETRY ONLY.
+   A transform on a scroll-snap-align element shifts its own snap area in some
+   engines, so every bit of motion lives on the inner wrapper instead. */
+.home__section {
+  position: relative;
+  min-height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: grid;
+  align-content: center;
+  /* Chrome is RESERVED by padding instead of overlapped. This is what fixes the
+     landscape collision, where `top: calc(50% - 145px)` resolved to 42.5px at
+     812x375 and put the hero's first line under the mobile indicator band. */
+  padding-block: var(--chrome-top) var(--chrome-bottom);
+}
+
+@media (orientation: landscape) and (max-height: 480px) {
+  .home__section {
+    align-content: start;
+  }
+}
+
+/* Decorative layers are siblings of .home__inner, not children: the motion
+   wrapper's transform and blur each establish a containing block, so nesting
+   them would re-anchor and shift the artwork mid-animation. */
+.section-decor {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-media);
+  pointer-events: none;
+  overflow: hidden;
+}
+/* Strips must not be clipped: the ground-contact shadow sits below each frame's
+   box, and a hovered frame lifts out of it. */
+.section-decor--decks {
+  z-index: var(--z-media);
+  overflow: visible;
+}
+
+/* "Beyond the screen" reserves a narrower text column than the hero does: its
+   longest line is a 28px row, not a 52px headline, so holding back the hero's
+   40rem would shrink every frame to clear type that is not there. */
+#beyond .deck-stage {
+  --text-reserve: 32rem;
+}
+
+.section-content {
+  position: relative;
+  z-index: var(--z-content);
+  padding-inline: var(--gutter);
+  /* min-width: 0 all the way down the chain from the grid item.
+     A grid item defaults to `min-width: auto`, so it cannot shrink below its
+     max-content contribution — and a horizontally scrolling strip contributes
+     the full width of every card it holds. Without this, opening a print strip
+     at 375px widened .home__inner to ~684px and gave the whole page a
+     horizontal scrollbar. The scroll container has to be allowed to be
+     narrower than its contents; that is the entire point of it. */
+  min-width: 0;
+}
+
+/* Motion lives here.
+   This wrapper deliberately spans the full section: the three section
+   components still position their content absolutely against a full-height
+   parent, so collapsing this to content height would break their centering.
+   Converting them to flow layout happens with the layout work, not here —
+   this phase changes scrolling only. */
+.home__inner {
+  position: relative;
+  z-index: var(--z-content);
+  width: 100%;
+  min-width: 0;
+  /* Base state is fully legible ON PURPOSE. The de-emphasis below is additive
+     and applies only once JS confirms the observer is running, so if scripting
+     fails or IntersectionObserver never fires, the page still reads as three
+     plain sections rather than a blank screen. */
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition:
+    opacity var(--dur-page) var(--ease-page),
+    filter var(--dur-page) var(--ease-page),
+    transform var(--dur-page) var(--ease-page);
+}
+
+/* ±2%, not the old ±6%: the section now physically moves with the scroll, so
+   the large offset that used to fake that movement is no longer needed. */
+.home--observing .home__section[data-active='false'] .home__inner {
+  opacity: 0.35;
+  filter: blur(6px);
+  transform: translateY(2%) scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home--observing .home__section[data-active='false'] .home__inner {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Boot animation sits on an inner wrapper, NOT on the scroll container.
+   `filter: blur()` on an ancestor creates a containing block, which would
+   detach every position:fixed child (nav, footer, cursor) for its duration. */
+.home__boot {
+  animation: bootSequence 1.6s var(--ease-text) forwards;
+  /* Belt and braces. The keyframe no longer transforms anything, so nothing
+     here can exceed the viewport on its own; this keeps a future addition to
+     the boot effect from quietly reintroducing a horizontal scrollbar. */
+  overflow-x: clip;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home__boot { animation: none; }
+}
+
+/* ─── Section nav ─────────────────────────────────────────────────────────── */
+
+.section-nav {
+  position: fixed;
+  z-index: var(--z-nav);
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.section-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.section-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  /* WCAG 2.5.8: the previous dots were 20x24px hit targets. */
+  min-width: 44px;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.section-nav__label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--indicator-text);
+  pointer-events: none;
+  transition: opacity var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+
+.section-nav__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex: none;
+  box-sizing: border-box;
+  background: var(--indicator-inactive);
+  border: 0 solid var(--indicator-active);
+  transition:
+    width 250ms var(--ease-text), height 250ms var(--ease-text),
+    background 250ms ease, border 250ms ease;
+}
+
+.section-nav__link[aria-current='true'] .section-nav__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--indicator-active);
+}
+
+/* Label and ring reveal on hover AND on keyboard focus. Previously the label
+   was gated on :hover only, so keyboard users met three unlabeled dots. */
+.section-nav__link:hover .section-nav__dot,
+.section-nav__link:focus-visible .section-nav__dot {
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  border-width: 1.5px;
+  border-color: var(--indicator-hover-border);
+}
+.section-nav__link:hover[aria-current='true'] .section-nav__dot,
+.section-nav__link:focus-visible[aria-current='true'] .section-nav__dot {
+  background: transparent;
+}
+
+/* ── Mobile: top-centre pills ── */
+@media (max-width: 900px) {
+  .section-nav {
+    right: auto;
+    left: 50%;
+    top: 14px;
+    transform: translateX(-50%);
+  }
+  .section-nav__list {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+  }
+  .section-nav__link {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .section-nav__label {
+    display: none;
+  }
+  .section-nav__dot {
+    height: 4px;
+  }
+  .section-nav__link[aria-current='true'] .section-nav__dot {
+    width: 18px;
+    height: 4px;
+    border-radius: 2px;
+  }
+  .section-nav__link:hover .section-nav__dot,
+  .section-nav__link:focus-visible .section-nav__dot {
+    width: 4px;
+    height: 4px;
+    background: var(--indicator-inactive);
+    border-width: 0;
+  }
+}
+
+/* ─── Chrome footer ───────────────────────────────────────────────────────────
+   One flow container replacing two independently-fixed elements that overlapped
+   at narrow widths. Because it is a flex row with real padding, the social
+   links and the theme toggle can never collide, and a wrapping link row grows
+   the bar rather than climbing into the content.
+   ───────────────────────────────────────────────────────────────────────────── */
+.chrome-footer {
+  position: fixed;
+  z-index: var(--z-nav);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(14px, 3.5vw, 28px);
+  padding-inline: var(--gutter);
+  padding-block: 14px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  pointer-events: none;
+  /* The bar is fixed over the page, and once mobile rows carry real imagery it
+     was sitting directly on top of screenshots with nothing behind it — the
+     links became unreadable. A gradient scrim rather than a solid fill or a
+     hairline: a solid bar would cut the page in half, and a hairline would
+     imply an edge the layout does not have. */
+  background: linear-gradient(
+    to top,
+    var(--bg-color) 0%,
+    color-mix(in oklab, var(--bg-color) 82%, transparent) 58%,
+    transparent 100%
+  );
+  padding-top: 26px;
+}
+
+.chrome-footer > * {
+  pointer-events: auto;
+}
+
+.chrome-footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(14px, 3.5vw, 28px);
+}
+
+@media (max-width: 540px) {
+  .chrome-footer {
+    gap: 12px;
+  }
+  .chrome-footer__links {
+    gap: 14px;
+  }
+}
+
+/* Case studies keep their own in-flow footer, so only the theme toggle is
+   pinned there — a fixed social bar would sit on top of it. */
+.chrome-footer--toggle-only {
+  justify-content: flex-end;
+}
+
+/* ─── Section content: type, rows, depth ──────────────────────────────────── */
+
+:root {
+  --chrome-top: clamp(4rem, 9vh, 7rem);
+  --chrome-bottom: clamp(4.5rem, 10vh, 8rem);
+}
+
+/* ── The section label is a header band, not a floating caption ──
+   The rule goes ABOVE the label, so label + rows read as one ruled index.
+   Before this, the only hairline near the label was the first row's own top
+   rule — which landed *between* the label and the first row, orphaning the
+   label and making the rule look like it belonged to the section above. The
+   case studies already draw rule-then-label; the home page did not, so this is
+   an internal-consistency fix as much as a typographic one. */
+.section-label {
+  position: relative;
+  display: block;
+  margin: 0 0 0.9rem;
+  padding-top: 0.85rem;
+  letter-spacing: 0.18em;
+}
+.section-label::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: var(--rule);
+}
+.section-label__slash {
+  color: var(--label-color);
+  font-size: 1.25em;
+  margin-right: 8px;
+  letter-spacing: 0;
+}
+
+.hero__title {
+  margin: 0 0 clamp(1rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+}
+/* ── The greeting ──
+   Promoted out of 11px label type into real type. It previously used
+   `.t-eyebrow`, so the smallest and faintest type on the entire page was the
+   one carrying the site owner's name — and it was also the hover target, at a
+   hit area barely taller than a line rule. The name now sits at full ink and
+   the words around it step back, which is the contrast doing the work rather
+   than a colour doing it. */
+.hero__greeting {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: var(--t-h2);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--ink-3);
+}
+.hero__name {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* ── The portrait ──
+   One photograph, always on screen, set in the line that introduces him.
+
+   The size is the whole difference between this working and not. An earlier
+   version used `height: 2.1em`, which inherited the greeting's 24px line and
+   rendered 35x47px — and the subject occupies about a seventh of a 960x1280
+   café frame, so at that size it was a grey smudge. Sizing in px instead lets
+   the chip drive the line's height rather than inherit it, and `object-position`
+   crops onto the subject, so roughly a 384x512 region of the source lands in
+   51x68 — a legible downscale rather than a mush.
+
+   In colour, like the prints in "Beyond the screen": these are photographs of
+   a person, and desaturating them was costing more than it bought. */
+.hero__portrait {
+  display: inline-block;
+  vertical-align: -0.34em;
+  height: 68px;
+  aspect-ratio: 3 / 4;
+  margin-right: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--surface-2);
+  box-shadow: var(--elev-1);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.hero__portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  /* The scale and origin come from the data, inline. This element is also the
+     hover target's child, so its own transform must not be overwritten by the
+     lift — the lift is applied to the wrapper instead. */
+}
+
+/* Hovering the name acknowledges the photo rather than revealing it — nothing
+   is hidden, so there is nothing for a hover to uncover. */
+.hero__title[data-attend='true'] .hero__portrait {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--elev-2);
+}
+
+@media (max-width: 900px) {
+  .hero__portrait {
+    height: 56px;
+    vertical-align: -0.3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__portrait,
+  .hero__title[data-attend='true'] .hero__portrait {
+    transition: none;
+    transform: none;
+  }
+}
+.hero__title .t-h1 {
+  display: block;
+  /* Tighter than the shared 22ch. At the top of the scale 22ch is a 738px line,
+     which is a wide measure for a statement and — more concretely — wider than
+     the text column the deck stage reserves, so the headline and the first
+     print overlapped by ~150px at 1400px. Three shorter lines also give the
+     hero more presence than two long ones. */
+  max-width: 18ch;
+}
+
+/* ── Rows ──
+   Depth comes from a hairline per row plus weight contrast — no colour, no
+   shadow. The hairline is drawn as a background on a pseudo-element rather than
+   a border so it can never affect box sizing or snap geometry. */
+.row-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.row-list > li {
+  min-width: 0;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  /* The category rows measured 311x43 at 375px — one pixel short. */
+  min-height: 44px;
+  gap: clamp(10px, 1.6vw, 20px);
+  padding: clamp(0.55rem, 1.1vw, 0.9rem) 0;
+  text-decoration: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity var(--dur) ease, transform var(--dur) var(--ease-text);
+}
+.row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--rule-faint);
+  transition: background var(--dur) ease;
+}
+/* The first row used to carry a heavier rule because it was the list's top
+   edge. The label band is that edge now, so it goes back to matching its
+   siblings — two rules of equal weight 0.85rem apart read as a mistake. */
+.row[data-on='true']::before {
+  background: var(--rule-strong);
+}
+.row[data-dim='true'] {
+  opacity: 0.3;
+}
+.row[data-on='true'] {
+  transform: translateX(10px);
+}
+
+.row__index {
+  flex: none;
+  color: var(--label-color);
+  letter-spacing: 0.1em;
+}
+.row__inner {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem clamp(10px, 1.4vw, 18px);
+}
+.row__name {
+  color: var(--text-secondary);
+}
+.row[data-on='true'] .row__name {
+  color: var(--text-color);
+}
+.row__desc {
+  color: var(--text-muted);
+}
+
+/* Monochrome leaves only weight and hairlines to signal that a row does
+   something, which is the one place ruling out an accent hue makes the job
+   harder rather than easier. The count is the cheapest honest affordance: it
+   says there is something behind this row and how much of it there is. */
+.row__count {
+  color: var(--label-color);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  transition: color var(--dur) ease;
+}
+.row[data-on='true'] .row__count {
+  color: var(--text-muted);
+}
+
+/* ── Hero CTAs ── */
+.hero__cta {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 26px);
+  flex-wrap: wrap;
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+}
+.cta-link {
+  display: inline-flex;
+  align-items: center;
+  /* "Show more projects" measured 181x17 — a 17px-tall target. */
+  min-height: 44px;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  color: var(--label-color);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--dur) ease, transform var(--dur) ease, border-color var(--dur) ease;
+}
+.cta-link:hover,
+.cta-link:focus-visible {
+  color: var(--text-color);
+  transform: translateX(4px);
+}
+.cta-link__arrow {
+  font-size: 0.85em;
+  line-height: 1;
+}
+.cta-link--ghost {
+  padding: 0.6rem 1.1rem;
+  min-height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.cta-link--ghost:hover,
+.cta-link--ghost:focus-visible {
+  border-color: var(--text-color);
+  transform: none;
+}
+
+/* ── Mobile print strip (replaces the switched-off desktop scatter) ── */
+.print-strip {
+  gap: 14px;
+  padding: 18px 0 6px;
+  /* Bleeds off the RIGHT edge only, deliberately not both.
+     With a symmetric negative margin the container's left padding became a
+     snap-eligible gap, and `scroll-snap-align: start` aligned the first card to
+     the border box — so the strip mounted already scrolled 35px in, starting
+     the reader mid-inset. Bleeding one way leaves nothing to eat: the first
+     print lines up with the text column, and the overflow running off the right
+     edge is the "there is more" affordance. */
+  margin-inline: 0 calc(var(--gutter) * -1);
+  padding-inline: 0 var(--gutter);
+  /* Both required so the strip scrolls instead of stretching its ancestors:
+     min-width releases the intrinsic floor, width pins it to the column. */
+  min-width: 0;
+  width: 100%;
+}
+.print-strip__item {
+  flex: none;
+}
+
+/* ── The gutter hairline ──
+   One continuous 1px rule down the page at the content's left edge, behind
+   everything. Structural depth with no colour: it gives every section a shared
+   spine and makes the overlapping media read as layered rather than floating.
+   Drawn on a pseudo-element, never as a border. */
+.home::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--gutter);
+  width: 1px;
+  background: var(--rule-faint);
+  pointer-events: none;
+  z-index: var(--z-bg);
+}
+@media (max-width: 900px) {
+  .home::before { display: none; }
+}
+
+/* Media deliberately overlaps the gutter rule so the layers read as stacked. */
+.section-decor { --overlap: clamp(0px, 2vw, 28px); }
+
+/* ─── Row media ───────────────────────────────────────────────────────────────
+   The work, visible with no interaction, at every width.
+
+   This block previously read `.row-media { display: none }` with the comment
+   "desktop shows the parallax cluster instead" — so on desktop the imagery was
+   hover-only, and the hero row (whose media data already existed) rendered
+   nothing at all. That is the reported "hovering Voca Form shows nothing".
+
+   Frames share a uniform HEIGHT and take their width from their own ratio. The
+   sources run from a 9:19.5 phone capture to a 16:10 desktop one, so a uniform
+   width would turn that into a 4x spread in height — the same mistake the
+   prints made before they were fixed. It also replaces the old
+   `aspect-ratio: 16/10` + `object-position: top`, which on a phone screenshot
+   showed the status bar rather than the product.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* MOBILE ONLY. Above 900px the hover cluster owns the imagery — that is the
+   interaction the section is built around, and an always-visible inline strip
+   is not a substitute for it. Below 900px there is no hover, and without this
+   a phone visitor saw no work at all. */
+.row-media {
+  display: none;
+}
+
+@media (max-width: 900px) {
+.row-media {
+  display: flex;
+  --row-media-h: clamp(120px, 34vw, 190px);
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 calc(var(--gutter) * -1) clamp(0.9rem, 2vw, 1.5rem) 0;
+  padding-inline: 0 var(--gutter);
+  /* Both required so the strip scrolls instead of stretching its ancestors: a
+     grid item defaults to `min-width: auto` and cannot shrink below the summed
+     width of every frame it holds. */
+  min-width: 0;
+  width: 100%;
+}
+
+.row-media__frame {
+  flex: none;
+  margin: 0;
+  position: relative;
+  height: var(--row-media-h);
+  /* Clamped so neither a very tall phone capture nor a very wide desktop one
+     dominates the row. */
+  width: calc(var(--row-media-h) * clamp(0.46, var(--ar, 1), 1.78));
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  transition: border-color var(--dur) ease, box-shadow var(--dur) ease;
+}
+
+/* The resting/active distinction is drawn with the hairline and the elevation,
+   NOT with opacity.
+   It was `opacity: 0.62` lifting to 1 on hover, which is theme-blind: over the
+   dark ground it reads as dimming, but over the light one it composites the
+   image towards #f7f7f7 and bleaches a dark UI screenshot to pale grey. Only
+   the dark theme had been checked. Border and shadow behave the same way on
+   either ground, and they are the depth vocabulary the rest of the site already
+   uses. */
+.row-media[data-on='true'] .row-media__frame,
+.row-list > li:hover .row-media__frame,
+.row-list > li:focus-within .row-media__frame {
+  border-color: var(--rule-strong);
+  box-shadow: var(--elev-2);
+}
+
+.row-media__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  user-select: none;
+  /* Colour, matching the desktop hover cluster.
+     This is the SAME project imagery the cluster shows above 900px, and the
+     cluster is in colour — so leaving the strip desaturated split one piece of
+     content across two treatments depending on screen width. That is a
+     leftover, not a decision. */
+  filter: contrast(1.04);
+}
+
+  /* The row text stacks above its media. */
+  .row {
+    flex-wrap: wrap;
+  }
+  .row[data-on='true'] {
+    transform: none; /* no room to shift at 375px */
+  }
+  .row[data-dim='true'] {
+    opacity: 1; /* nothing is "hovered" on touch, so never dim */
+  }
+}
+
+/* ─── Not found ───────────────────────────────────────────────────────────── */
+.notfound {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding-inline: var(--gutter);
+  padding-block: var(--chrome-top) var(--chrome-bottom);
+  background: var(--bg-color);
+}
+.notfound .cta-link {
+  justify-self: start;
+  margin-top: 0.5rem;
+}

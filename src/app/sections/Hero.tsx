@@ -1,110 +1,130 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { figtree, CONTENT_LEFT, T, ls, serifItalic } from '../utils/constants';
+import { ls, serifItalic } from '../utils/constants';
 import { useParallax } from '../hooks/useParallax';
 import { ImageCluster } from '../components/ImageCluster';
-import { PERSONAL_INFO, BUILDING_PROJECTS, HERO_LAYOUTS } from '../../data/portfolio';
+import { RowMedia } from '../components/RowMedia';
+import { PERSONAL_INFO, BUILDING_PROJECTS, HERO_LAYOUTS, PORTRAIT, SOCIAL_LINKS } from '../../data/portfolio';
 
-export function Hero({ ek, isMobile, isActive, navigate }: { ek: number; isMobile: boolean; isActive: boolean; navigate: (to: number) => void }) {
-  const [greetingHover, setGreetingHover] = useState(false);
+export function Hero({ isMobile, isActive, navigate }: { isMobile: boolean; isActive: boolean; navigate: (to: number) => void }) {
   const [hoveredBuild, setHoveredBuild] = useState<number | null>(null);
+  /* Hovering the name lifts the portrait. It does not *reveal* it — the photo
+     is always on screen, which is what was asked for. Hover acknowledges. */
+  const [attend, setAttend] = useState(false);
   const { sectionRef, groupRef, onMouseMove, onMouseLeave } = useParallax(isMobile);
-
-  const activeGroup = greetingHover ? 0 : hoveredBuild !== null ? hoveredBuild + 1 : null;
+  const resume = SOCIAL_LINKS.find(l => l.id === 'Resume');
 
   return (
-    <div
-      ref={sectionRef}
-      style={{ width: '100%', height: '100%', position: 'relative' }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      aria-hidden={!isActive}
-      tabIndex={isActive ? 0 : -1}
-    >
-      {!isMobile && <ImageCluster layouts={HERO_LAYOUTS} activeGroup={activeGroup} groupRef={groupRef} />}
+    <>
+      {/* Hovering "Voca Form" now flies its screens in, the same way the
+          project rows do. The reported bug was that this row showed nothing at
+          all: its media existed in the data and was never rendered, and the
+          desktop strip was `display: none` anyway.
 
-      <div key={ek} style={{
-        position: 'absolute', left: CONTENT_LEFT,
-        top: isMobile ? 'calc(50% - 145px)' : 'calc(50% - 204px)',
-        maxWidth: isMobile ? 'calc(100vw - 80px)' : undefined,
-        ...figtree, color: 'var(--text-color)', zIndex: 2,
-      }}>
-        <div
-          data-cursor="greeting"
-          onMouseEnter={() => setGreetingHover(true)}
-          onMouseLeave={() => setGreetingHover(false)}
-        >
-          <p style={{ fontWeight: 600, ...T.name, color: 'var(--text-muted)', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(0) }}>
-            {PERSONAL_INFO.greeting}
-          </p>
-          <p style={{ fontWeight: 600, ...T.hero, color: 'var(--text-color)', lineHeight: isMobile ? 1.5 : 1.8, margin: 0, ...ls(1) }}>
-            {PERSONAL_INFO.tagline}
-          </p>
+          What is deliberately NOT here is the old group of three personal
+          photographs that appeared when you hovered your own name — that is the
+          one you asked to remove, and the name is no longer a hover target. */}
+      {!isMobile && (
+        <div className="section-decor" ref={sectionRef} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+          <ImageCluster layouts={HERO_LAYOUTS} activeGroup={hoveredBuild} groupRef={groupRef} />
         </div>
+      )}
 
-        <div style={{ height: isMobile ? '12px' : 'clamp(14px, 2vw, 28px)' }} />
+      <div className="home__inner">
+      <div className="section-content">
+        {/* The site's single <h1>. Both lines sit inside it so the page has one
+            heading carrying the name — the home route previously had no heading
+            of any level at all. */}
+        <h1
+          className="hero__title"
+          data-attend={attend ? 'true' : 'false'}
+          onMouseEnter={() => setAttend(true)}
+          onMouseLeave={() => setAttend(false)}
+        >
+          {/* Always on screen, one photograph, set in the line that introduces
+              him. Sized in px rather than em so the chip drives the line's
+              height instead of inheriting it — at 2.1em it came out 35x47 and
+              read as a smudge, because the subject is about a seventh of a
+              960x1280 frame. At 68px, cropped onto the subject, the same source
+              is legible. */}
+          <span className="hero__greeting" style={ls(0)}>
+            <span className="hero__portrait">
+              <img
+                src={PORTRAIT.src}
+                alt="Puneet Kathuria"
+                width={PORTRAIT.w}
+                height={PORTRAIT.h}
+                /* Zoom onto the subject. See PORTRAIT in portfolio.ts: the
+                   source and the chip are both 3:4, so `object-position` is
+                   inert and a transform is the only thing that can crop. */
+                style={{
+                  transformOrigin: PORTRAIT.focus,
+                  transform: `scale(${PORTRAIT.zoom})`,
+                }}
+                draggable={false}
+              />
+            </span>
+            {/* The trailing space is inside the text node on purpose: without
+                it the accessible name came out as
+                "Hi, I'm Puneet.I design and build products…" */}
+            {PERSONAL_INFO.greeting} <span className="hero__name">{PERSONAL_INFO.name}</span>.{' '}
+          </span>
+          <span className="t-h1" style={ls(1)}>{PERSONAL_INFO.tagline}</span>
+        </h1>
 
-        <p style={{ fontWeight: 400, ...T.label, color: 'var(--text-muted)', lineHeight: 'normal', margin: isMobile ? '0 0 8px' : '0 0 12px', ...ls(2) }}>
-          <span style={{ ...serifItalic, color: 'var(--label-color)', fontSize: '1.2em', marginRight: '6px' }}>//</span>
-          <span style={{ color: 'var(--text-muted)' }}>&nbsp;What I'm building</span>
-        </p>
+        <h2 className="t-eyebrow section-label" style={ls(2)}>
+          <span aria-hidden="true" className="section-label__slash" style={serifItalic}>//</span>
+          What I&rsquo;m building
+        </h2>
 
-        {BUILDING_PROJECTS.map((item, i) => {
-          const isHovered = hoveredBuild === i;
-          return (
-            <Link
-              key={item.name}
-              to={`/case-study/${item.slug}`}
-              onMouseEnter={() => setHoveredBuild(i)}
-              onMouseLeave={() => setHoveredBuild(null)}
-              style={{
-                display: 'block',
-                textDecoration: 'none',
-                opacity: hoveredBuild !== null && !isHovered ? 0.12 : 1,
-                transform: isHovered ? 'translateX(10px)' : 'translateX(0px)',
-                transition: 'opacity 280ms ease, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                margin: i === 0 ? '0 0 2px' : 0,
-                padding: '4px 0',
-                cursor: 'pointer'
-              }}
-            >
-              <div data-magnetic="true" style={{ display: 'inline-block', lineHeight: isMobile ? 1.65 : 2, ...ls(i + 3) }}>
-                <span style={{ fontWeight: 600, ...T.name, color: isHovered ? 'var(--text-color)' : 'var(--text-secondary)', transition: 'color 300ms ease' }}>{item.name}</span>
-                <span style={{ fontWeight: 400, ...T.desc, color: 'var(--text-muted)' }}>&nbsp;&nbsp;—&nbsp;&nbsp;{item.desc}</span>
-              </div>
-            </Link>
-          );
-        })}
+        <ol className="row-list">
+          {BUILDING_PROJECTS.map((item, i) => {
+            const isHovered = hoveredBuild === i;
+            return (
+              <li key={item.name} style={ls(i + 3)}>
+                <Link
+                  to={`/case-study/${item.slug}`}
+                  className="row"
+                  data-dim={hoveredBuild !== null && !isHovered ? 'true' : 'false'}
+                  data-on={isHovered ? 'true' : 'false'}
+                  onMouseEnter={() => setHoveredBuild(i)}
+                  onMouseLeave={() => setHoveredBuild(null)}
+                  onFocus={() => setHoveredBuild(i)}
+                  onBlur={() => setHoveredBuild(null)}
+                >
+                  <span className="row__inner">
+                    <span className="t-row row__name">{item.name}</span>
+                    <span className="t-desc row__desc">{item.desc}</span>
+                  </span>
+                </Link>
 
-        <div style={{
-          marginTop: isMobile ? '14px' : '24px',
-          opacity: 0.8,
-          animation: 'fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.6s both',
-          ...ls(5)
-        }}>
-          <button
-            onClick={() => navigate(1)}
-            style={{
-              background: 'none', border: 'none', padding: 0,
-              color: 'var(--label-color)', cursor: 'pointer', ...figtree,
-              fontSize: '0.68rem', textTransform: 'uppercase',
-              letterSpacing: '0.15em', fontWeight: 500,
-              display: 'flex', alignItems: 'center', gap: '8px',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = 'var(--text-color)';
-              e.currentTarget.style.transform = 'translateX(5px)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.color = 'var(--label-color)';
-              e.currentTarget.style.transform = 'translateX(0px)';
-            }}
-          >
-            Show more projects <span style={{ fontSize: '.5rem', lineHeight: 1 }}>→</span>
+                {/* The reported bug: this row's media existed in the data and
+                    was never rendered, while `.row-media` was `display: none`
+                    on desktop anyway — so hovering "Voca Form" did nothing at
+                    all. Now the same always-visible treatment the projects
+                    rows use. */}
+                {/* Mobile only; the cluster covers desktop. */}
+                {item.media && <RowMedia media={item.media} active={isHovered} />}
+              </li>
+            );
+          })}
+        </ol>
+
+        <div className="hero__cta" style={ls(5)}>
+          <button type="button" onClick={() => navigate(1)} className="cta-link">
+            Show more projects <span aria-hidden="true" className="cta-link__arrow">&rarr;</span>
           </button>
+          {/* Promoted out of the 11px footer row: it is the most
+              recruiter-relevant link on the site and was the fifth item in a
+              wrapping line of tiny text. */}
+          {resume && (
+            <a href={resume.href} target="_blank" rel="noopener noreferrer" className="cta-link cta-link--ghost">
+              Resume <span aria-hidden="true" className="cta-link__arrow">&#8599;</span>
+            </a>
+          )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

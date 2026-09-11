@@ -1,0 +1,138 @@
+/* ─── Base: reset, element defaults, focus, reduced motion ────────────────────
+   This file is deliberately self-sufficient. Tailwind's Preflight currently
+   supplies a reset too, but relying on it means the layout silently shifts the
+   day Tailwind is removed. Everything load-bearing is declared here instead.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* min-height, not height: `height: 100%` fights sticky positioning and svh */
+  min-height: 100%;
+  background: var(--bg-color);
+  color: var(--text-color);
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--bg-color);
+  /* Declared explicitly: previously this resolved to a near-black shadcn token
+     on the home route and white on case studies, depending on which stylesheet
+     won. Now it is deterministic. */
+  color: var(--text-color);
+  transition: background-color var(--dur) ease, color var(--dur) ease;
+}
+
+/* Scrollbars stay hidden (the design intent) but scrolling itself is native. */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Form elements inherit typography rather than using UA defaults.
+   Preserves the 16px buttons that previously came from theme.css. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+/* ─── Focus ───────────────────────────────────────────────────────────────────
+   There was no focus style anywhere in the project before this.
+   ───────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* While a keyboard user is focused somewhere, the native cursor comes back —
+   the standard escape hatch for a custom-cursor site. */
+:root:has(:focus-visible) * {
+  cursor: auto !important;
+}
+
+/* ─── Reduced motion ──────────────────────────────────────────────────────────
+   Absent from the entire project before this. The site is built almost
+   entirely out of motion, so this block matters more here than usual.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep the grain, drop its movement. */
+  .noise-overlay {
+    animation: none !important;
+  }
+}
+
+/* ─── Custom cursor ownership ─────────────────────────────────────────────────
+   `cursor: none` was previously declared in five separate places, including one
+   <style> tag injected into <head> at runtime. Because the breakpoints
+   disagreed (900px vs 768px), a non-touch viewport between 769 and 900px got
+   `cursor: none` while CustomCursor was not mounted — no visible pointer at all.
+
+   Now CustomCursor is the sole owner: it sets this attribute when it mounts and
+   clears it when it unmounts, so the two can never desync.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root[data-custom-cursor='on'],
+:root[data-custom-cursor='on'] *,
+:root[data-custom-cursor='on'] *::before,
+:root[data-custom-cursor='on'] *::after {
+  cursor: none;
+}
+
+/* Never hide the pointer on a touch device, whatever the attribute says. */
+@media (pointer: coarse) {
+  :root[data-custom-cursor='on'],
+  :root[data-custom-cursor='on'] * {
+    cursor: auto;
+  }
+}

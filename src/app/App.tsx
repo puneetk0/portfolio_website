@@ -1,149 +1,84 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { TOTAL, DURATION, EASE_PAGE } from './utils/constants';
 import { useIsMobile } from './hooks/useIsMobile';
 import { NoiseOverlay } from './components/NoiseOverlay';
-import { BackgroundGlow } from './components/BackgroundGlow';
 import { CustomCursor } from './components/CustomCursor';
-import { SocialLinks } from './components/SocialLinks';
-import { ThemeToggle } from './components/ThemeToggle';
-import { ProgressIndicator } from './components/ProgressIndicator';
-import { MobileIndicator } from './components/MobileIndicator';
+import { ChromeFooter } from './components/ChromeFooter';
+import { SectionNav } from './components/SectionNav';
+import { CaseStudyRoute } from './pages/CaseStudyRoute';
+import { NotFound } from './pages/NotFound';
 import { Hero } from './sections/Hero';
 import { Projects } from './sections/Projects';
 import { AndWhat } from './sections/AndWhat';
-import { CaseStudy } from './pages/CaseStudy';
-import { CamberCaseStudy } from './pages/CamberCaseStudy';
-import { VocaCaseStudy } from './pages/VocaCaseStudy';
-import { FindMyRepoCaseStudy } from './pages/FindMyRepoCaseStudy';
-import { SportfolioCaseStudy } from './pages/SportfolioCaseStudy';
-import { HERO_LAYOUTS, PROJECT_LAYOUTS, CATEGORIES } from '../data/portfolio';
+import { HERO_LAYOUTS, PROJECT_LAYOUTS, PORTRAIT, CATEGORIES, SECTIONS } from '../data/portfolio';
+import { useActiveSection, useHashLanding, useHashSync } from './hooks/useActiveSection';
+import { applyTheme, currentTheme } from './theme';
 
 function Home({ isMobile }: { isMobile: boolean }) {
-  const [current, setCurrent] = useState(0);
-  const [target, setTarget] = useState<number | null>(null);
-  const [isTrans, setIsTrans] = useState(false);
-  const [dir, setDir] = useState<'down' | 'up'>('down');
-  const [entryKeys, setEntryKeys] = useState([1, 0, 0]);
+  const { active, observing, setRef, goTo } = useActiveSection(SECTIONS.length);
 
-  const transiting = useRef(false);
-  const navLock = useRef(0);
-  const wheelAccum = useRef(0);
-  const lastWheelT = useRef(0);
-  const touchY = useRef(0);
-  const touchX = useRef(0);
-
-  const WHEEL_THRESHOLD = 120;
-  const activeSection = target !== null ? target : current;
+  useHashLanding(true);
+  useHashSync(SECTIONS[active]?.id, true);
 
   useEffect(() => {
-    document.title = "Puneet Kathuria | Product Designer & Engineer";
+    document.title = 'Puneet Kathuria | Product Designer & Engineer';
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute("content", "Portfolio of Puneet Kathuria, a product-minded Full-Stack Engineer and AI undergrad. Designing and building high-performance macOS apps, voice interfaces, and fintech solutions.");
+      metaDesc.setAttribute(
+        'content',
+        'Portfolio of Puneet Kathuria, a product-minded Full-Stack Engineer and AI undergrad. Designing and building high-performance macOS apps, voice interfaces, and fintech solutions.'
+      );
     }
+  }, []);
 
-    const imagesToPreload: string[] = [];
-    HERO_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
-    PROJECT_LAYOUTS.flat().forEach(img => imagesToPreload.push(img.src));
-    CATEGORIES.flatMap(cat => cat.cards).forEach(card => imagesToPreload.push(card.src));
+  // Preload only what the ADJACENT section needs, and never on a metered or
+  // touch connection. The previous implementation eagerly `new Image()`d all 21
+  // assets on mount — including on phones, where none of them render.
+  useEffect(() => {
+    if (isMobile) return;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (conn?.saveData) return;
+    if (conn?.effectiveType && /(^|-)2g$/.test(conn.effectiveType)) return;
 
-    imagesToPreload.forEach(src => {
+    const perSection: string[][] = [
+      [PORTRAIT.src, ...HERO_LAYOUTS.flat().map(i => i.src)],
+      PROJECT_LAYOUTS.flat().map(i => i.src),
+      CATEGORIES.flatMap(c => c.cards).map(c => c.src),
+    ];
+    const wanted = new Set([...(perSection[active] ?? []), ...(perSection[active + 1] ?? [])]);
+    wanted.forEach(src => {
       const img = new Image();
       img.src = src;
     });
-  }, []);
-
-  const navigate = useCallback((to: number) => {
-    if (transiting.current || to === current || to < 0 || to >= TOTAL) return;
-    navLock.current = Date.now();
-    wheelAccum.current = 0;
-    const d: 'down' | 'up' = to > current ? 'down' : 'up';
-    setDir(d); setTarget(to); setIsTrans(true);
-    transiting.current = true;
-    setEntryKeys(prev => { const n = [...prev]; n[to]++; return n; });
-    setTimeout(() => { setCurrent(to); setTarget(null); setIsTrans(false); transiting.current = false; }, DURATION);
-  }, [current]);
-
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - navLock.current < DURATION + 250) { wheelAccum.current = 0; return; }
-      if (now - lastWheelT.current > 150) wheelAccum.current = 0;
-      lastWheelT.current = now;
-      wheelAccum.current += e.deltaY;
-
-      if (Math.abs(wheelAccum.current) >= WHEEL_THRESHOLD) {
-        const direction = wheelAccum.current > 0 ? 1 : -1;
-        wheelAccum.current = 0;
-        navLock.current = now;
-        navigate(current + direction);
-      }
-    };
-    window.addEventListener('wheel', onWheel, { passive: false });
-    return () => window.removeEventListener('wheel', onWheel);
-  }, [current, navigate]);
-
-  useEffect(() => {
-    const onStart = (e: TouchEvent) => {
-      touchY.current = e.touches[0].clientY;
-      touchX.current = e.touches[0].clientX;
-    };
-    const onMove = (e: TouchEvent) => {
-      const dy = Math.abs(e.touches[0].clientY - touchY.current);
-      const dx = Math.abs(e.touches[0].clientX - touchX.current);
-      if (dy > dx && dy > 8) e.preventDefault();
-    };
-    const onEnd = (e: TouchEvent) => {
-      const delta = touchY.current - e.changedTouches[0].clientY;
-      if (Math.abs(delta) > 40) { if (delta > 0) navigate(current + 1); else navigate(current - 1); }
-    };
-    window.addEventListener('touchstart', onStart, { passive: true });
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onEnd, { passive: true });
-    return () => {
-      window.removeEventListener('touchstart', onStart);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onEnd);
-    };
-  }, [current, navigate]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') navigate(current + 1);
-      if (e.key === 'ArrowUp' || e.key === 'PageUp') navigate(current - 1);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [current, navigate]);
-
-  const getStyle = (i: number): React.CSSProperties => {
-    const isCurrent = i === current, isTarget = i === target;
-    const maxActive = target !== null ? Math.max(current, target) : current;
-    if (isCurrent && isTrans) return { position: 'absolute', inset: 0, transform: dir === 'down' ? 'translateY(-6%) scale(0.98)' : 'translateY(6%) scale(0.98)', opacity: 0, filter: 'blur(8px)', transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}, filter ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
-    if (isCurrent) return { position: 'absolute', inset: 0, transform: 'translateY(0) scale(1)', opacity: 1, filter: 'blur(0px)', transition: `filter 300ms ease`, zIndex: 2 };
-    if (isTarget && isTrans) return { position: 'absolute', inset: 0, transform: 'translateY(0) scale(1)', opacity: 1, filter: 'blur(0px)', transition: `transform ${DURATION}ms ${EASE_PAGE}, opacity ${DURATION}ms ${EASE_PAGE}, filter ${DURATION}ms ${EASE_PAGE}`, zIndex: 1, pointerEvents: 'none' };
-    if (i > maxActive) return { position: 'absolute', inset: 0, transform: 'translateY(100%)', opacity: 1, filter: 'blur(8px)', zIndex: 0, pointerEvents: 'none' };
-    return { position: 'absolute', inset: 0, transform: 'translateY(-100%)', opacity: 1, filter: 'blur(8px)', zIndex: 0, pointerEvents: 'none' };
-  };
+  }, [active, isMobile]);
 
   const sections = [
-    <Hero ek={entryKeys[0]} isMobile={isMobile} isActive={activeSection === 0} navigate={navigate} />,
-    <Projects ek={entryKeys[1]} isMobile={isMobile} isActive={activeSection === 1} />,
-    <AndWhat ek={entryKeys[2]} isMobile={isMobile} isActive={activeSection === 2} />,
+    (isActive: boolean) => <Hero isMobile={isMobile} isActive={isActive} navigate={goTo} />,
+    (isActive: boolean) => <Projects isMobile={isMobile} isActive={isActive} />,
+    (isActive: boolean) => <AndWhat isActive={isActive} />,
   ];
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'var(--bg-color)', color: 'var(--text-color)', transition: 'background-color 300ms ease, color 300ms ease', overflow: 'hidden', touchAction: 'none', animation: 'bootSequence 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' }}>
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {sections.map((section, i) => <div key={i} style={getStyle(i)}>{section}</div>)}
+    <div className={observing ? 'home home--observing' : 'home'}>
+      <div className="home__boot">
+        <main id="home">
+          {SECTIONS.map((section, i) => (
+            <section
+              key={section.id}
+              id={section.id}
+              ref={setRef(i)}
+              className="home__section"
+              data-active={i === active ? 'true' : 'false'}
+              aria-label={section.name}
+              tabIndex={-1}
+            >
+              {sections[i](i === active)}
+            </section>
+          ))}
+        </main>
       </div>
-      {isMobile
-        ? <MobileIndicator active={activeSection} navigate={navigate} />
-        : <ProgressIndicator active={activeSection} navigate={navigate} />
-      }
-      <SocialLinks />
+
+      <SectionNav active={active} onNavigate={goTo} />
     </div>
   );
 }
@@ -151,168 +86,25 @@ function Home({ isMobile }: { isMobile: boolean }) {
 export default function App() {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const isHome = location.pathname === '/';
 
-  // Run on mount to prevent Flash of Dark Mode (FOUC)
+  // The pre-paint script in index.html already resolved the theme onto <html>.
+  // This only mirrors it onto <body> for the legacy override block below.
   useEffect(() => {
-    const saved = localStorage.getItem('portfolio-theme');
-    if (saved === 'light') {
-      document.documentElement.classList.add('light-mode');
-      document.body.classList.add('light-mode');
-    } else {
-      document.documentElement.classList.remove('light-mode');
-      document.body.classList.remove('light-mode');
-    }
+    applyTheme(currentTheme());
   }, []);
 
   return (
     <>
-      <style>{`
-        :root {
-          --bg-color: #141414;
-          --text-color: #ffffff;
-          --text-secondary: #aaa;
-          --text-muted: #888;
-          --border-color: #1e1e1e;
-          --label-color: #666;
-          --link-color: #eaeaea;
-          --glow-color: rgba(255, 255, 255, 0.008);
-          --radial-bg: radial-gradient(ellipse at top right, rgba(255,255,255,0.02) 0%, transparent 60%);
-          --polaroid-shadow: 0 15px 35px rgba(0,0,0,0.5);
-          --polaroid-border: 1px solid rgba(255,255,255,0.05);
-          --indicator-active: #ffffff;
-          --indicator-inactive: rgba(255, 255, 255, 0.25);
-          --indicator-text: rgba(255, 255, 255, 0.65);
-          --indicator-hover-border: rgba(255, 255, 255, 0.8);
-        }
-        body.light-mode {
-          --bg-color: #f7f7f7;
-          --text-color: #141414;
-          --text-secondary: #333333;
-          --text-muted: #666666;
-          --border-color: #e2e2e2;
-          --label-color: #888888;
-          --link-color: #141414;
-          --glow-color: rgba(0, 0, 0, 0.015);
-          --radial-bg: radial-gradient(ellipse at top right, rgba(0,0,0,0.02) 0%, transparent 60%);
-          --polaroid-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
-          --polaroid-border: 1px solid rgba(0,0,0,0.08);
-          --indicator-active: #141414;
-          --indicator-inactive: rgba(0, 0, 0, 0.25);
-          --indicator-text: rgba(0, 0, 0, 0.65);
-          --indicator-hover-border: rgba(0, 0, 0, 0.8);
-        }
-
-        /* Dynamic Case Study Text Overrides for Light Mode */
-        body.light-mode h1,
-        body.light-mode h2,
-        body.light-mode h3,
-        body.light-mode h4,
-        body.light-mode h5,
-        body.light-mode h6 {
-          color: var(--text-color) !important;
-        }
-        body.light-mode p,
-        body.light-mode li,
-        body.light-mode blockquote {
-          color: var(--text-secondary) !important;
-        }
-        /* Muted colors maintain hierarchy in light mode */
-        body.light-mode p[style*="color: #888"],
-        body.light-mode p[style*="color: #999"],
-        body.light-mode p[style*="color: rgb(136, 136, 136)"],
-        body.light-mode p[style*="color: rgb(153, 153, 153)"],
-        body.light-mode span[style*="color: #888"],
-        body.light-mode span[style*="color: #999"] {
-          color: var(--text-muted) !important;
-        }
-        /* Sidebar active and inactive visual weight correction */
-        body.light-mode .cs-sidenav button span:first-child {
-          color: var(--text-muted) !important;
-        }
-        body.light-mode .cs-sidenav button:hover span:first-child {
-          color: var(--text-color) !important;
-        }
-        body.light-mode .cs-sidenav button span:last-child {
-          background: var(--border-color) !important;
-        }
-        body.light-mode .cs-sidenav button:hover span:last-child {
-          background: var(--text-color) !important;
-        }
-        /* Target active side navigation elements by opacity */
-        body.light-mode .cs-sidenav button[style*="opacity: 1"] span:first-child {
-          color: var(--text-color) !important;
-        }
-        body.light-mode .cs-sidenav button[style*="opacity: 1"] span:last-child {
-          background: var(--text-color) !important;
-        }
-        /* Back button styling correction */
-        body.light-mode button[style*="color: #888"],
-        body.light-mode button[style*="color: rgb(136, 136, 136)"] {
-          color: var(--text-muted) !important;
-        }
-        body.light-mode button[style*="color: #888"]:hover,
-        body.light-mode button[style*="color: rgb(136, 136, 136)"]:hover {
-          color: var(--text-color) !important;
-        }
-
-        html, body { 
-          overscroll-behavior: none; 
-          min-height: 100%; 
-          background: var(--bg-color) !important;
-          color: var(--text-color);
-          transition: background-color 300ms ease, color 300ms ease;
-          cursor: none !important; 
-          margin: 0; padding: 0; 
-          /* Hide scrollbar for Chrome, Safari and Opera */
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* IE and Edge */
-        }
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-          display: none; /* Chrome, Safari and Opera */
-        }
-        *, *::before, *::after { cursor: none !important; }
-        @keyframes lineUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0);    }
-        }
-        @keyframes bootSequence {
-          0% { opacity: 0; filter: blur(12px); transform: scale(1.02); }
-          100% { opacity: 1; filter: blur(0px); transform: scale(1); }
-        }
-        @media (max-width: 640px) {
-          body { -webkit-text-size-adjust: 100%; }
-        }
-      `}</style>
-
-      <style>{`
-        @media (pointer: coarse) {
-          *, *::before, *::after { cursor: auto !important; }
-          html, body { cursor: auto !important; }
-        }
-        @media (max-width: 768px) {
-          *, *::before, *::after { cursor: auto !important; }
-          html, body { cursor: auto !important; }
-        }
-      `}</style>
-
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home isMobile={isMobile} />} />
-        <Route path="/case-study/camber" element={<CamberCaseStudy />} />
-        <Route path="/case-study/voca" element={<VocaCaseStudy />} />
-        <Route path="/case-study/vocaforms" element={<VocaCaseStudy />} />
-        <Route path="/case-study/voca-form" element={<VocaCaseStudy />} />
-        <Route path="/case-study/find-my-repo" element={<FindMyRepoCaseStudy />} />
-        <Route path="/case-study/findmyrepo" element={<FindMyRepoCaseStudy />} />
-        <Route path="/case-study/gitrepo" element={<FindMyRepoCaseStudy />} />
-        <Route path="/case-study/sportfolio" element={<SportfolioCaseStudy />} />
-        <Route path="/case-study/sportsolio" element={<SportfolioCaseStudy />} />
-        <Route path="/case-study/:slug" element={<CaseStudy />} />
+        <Route path="/case-study/:slug" element={<CaseStudyRoute />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
-      <BackgroundGlow />
       <NoiseOverlay />
       {!isMobile && <CustomCursor />}
-      <ThemeToggle />
+      <ChromeFooter showLinks={isHome} />
     </>
   );
 }
